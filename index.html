@@ -18,6 +18,7 @@
       --light: #f8fafc;
       --gray: #666666;
       --success: #10b981;
+      --error: #ef4444;
     }
 
     * {
@@ -118,466 +119,284 @@
       box-shadow: 0 5px 15px rgba(255, 183, 0, 0.3);
     }
 
-    /* Hero Section */
-    .hero {
+    /* Auth Pages */
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-      color: white;
-      padding: 5rem 0;
+      padding: 2rem;
+    }
+
+    .auth-card {
+      background: white;
+      padding: 3rem;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-card h2 {
       text-align: center;
+      margin-bottom: 2rem;
+      color: var(--dark);
+      font-size: 2rem;
     }
 
-    .hero h1 {
-      font-size: 3.2rem;
+    .form-group {
       margin-bottom: 1.5rem;
-      font-weight: 700;
     }
 
-    .hero p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
-      opacity: 0.9;
-      color: #e5e5e5;
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
     }
 
-    .cta-button {
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .auth-btn {
+      width: 100%;
       background: var(--primary);
       color: var(--dark);
-      padding: 1rem 2.2rem;
       border: none;
+      padding: 1rem;
       border-radius: 6px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
-      text-decoration: none;
-      display: inline-block;
+      margin-bottom: 1rem;
     }
 
-    .cta-button:hover {
+    .auth-btn:hover {
       background: var(--primary-dark);
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(255, 183, 0, 0.3);
     }
 
-    /* Services */
-    .services {
-      padding: 5rem 0;
-      background: white;
-    }
-
-    .section-title {
+    .auth-switch {
       text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .section-title h2 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--dark);
-      margin-bottom: 1rem;
-    }
-
-    .section-title p {
       color: var(--gray);
-      max-width: 600px;
-      margin: 0 auto;
     }
 
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2.5rem;
-    }
-
-    .service-card {
-      background: white;
-      border-radius: 12px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-      text-align: center;
-      border: 1px solid #e2e8f0;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .service-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-    }
-
-    .service-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.12);
-    }
-
-    .service-icon {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      color: white;
-      font-size: 1.8rem;
-    }
-
-    .service-card h3 {
-      color: var(--dark);
-      margin-bottom: 1rem;
-      font-size: 1.4rem;
+    .auth-switch a {
+      color: var(--primary);
+      text-decoration: none;
       font-weight: 600;
     }
 
-    .service-card p {
-      color: var(--gray);
-      margin-bottom: 1.5rem;
+    .auth-switch a:hover {
+      text-decoration: underline;
     }
 
-    .price {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin: 1rem 0;
+    .error-message {
+      color: var(--error);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
     }
 
-    .price.free {
+    .success-message {
       color: var(--success);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
     }
 
-    /* Games Section */
-    .games {
-      padding: 5rem 0;
+    /* Control Panel */
+    .panel-container {
+      min-height: 100vh;
       background: #f1f5f9;
+      padding: 2rem 0;
+      display: none;
     }
 
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-    }
-
-    .game-card {
+    .panel-header {
       background: white;
-      border-radius: 12px;
       padding: 2rem;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
-      border-top: 4px solid var(--primary);
-    }
-
-    .game-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-    }
-
-    .game-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: var(--primary);
-    }
-
-    .game-card h3 {
-      color: var(--dark);
-      margin-bottom: 0.5rem;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 0.3rem 1rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    .status.available {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-    }
-
-    .status.soon {
-      background: rgba(255, 107, 0, 0.1);
-      color: var(--secondary);
-    }
-
-    /* Pricing */
-    .pricing {
-      padding: 5rem 0;
-      background: white;
-    }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2.5rem;
-    }
-
-    .pricing-card {
-      background: white;
       border-radius: 12px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-      text-align: center;
-      position: relative;
-      transition: all 0.3s ease;
-      border: 1px solid #e2e8f0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
     }
 
-    .pricing-card.popular {
-      border: 2px solid var(--primary);
-      transform: scale(1.05);
+    .panel-nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 1rem;
     }
 
-    .popular-badge {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
+    .panel-nav button {
+      background: none;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .panel-nav button.active {
       background: var(--primary);
       color: var(--dark);
-      padding: 0.4rem 1.5rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
     }
 
-    .plan-name {
-      font-size: 1.5rem;
-      color: var(--dark);
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-
-    .plan-price {
-      font-size: 2.8rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 1.5rem 0;
-    }
-
-    .plan-price span {
-      font-size: 1rem;
-      color: var(--gray);
-      font-weight: 500;
-    }
-
-    .features {
-      list-style: none;
-      margin: 2rem 0;
-      text-align: left;
-    }
-
-    .features li {
-      margin: 1rem 0;
-      padding-left: 1.8rem;
-      position: relative;
-      color: var(--dark);
-    }
-
-    .features li:before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: var(--success);
-      font-weight: bold;
-    }
-
-    /* Discord Special */
-    .discord-special {
-      padding: 5rem 0;
+    .panel-section {
       background: white;
-      text-align: center;
-    }
-
-    .discord-card {
-      background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-      border-radius: 16px;
-      padding: 3.5rem;
-      max-width: 600px;
-      margin: 0 auto;
-      color: white;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-
-    .discord-card h2 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-      font-weight: 700;
-    }
-
-    .discord-card p {
-      opacity: 0.9;
-      margin-bottom: 2rem;
-      color: #e5e5e5;
-    }
-
-    .free-price {
-      font-size: 3.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 1.5rem 0;
-    }
-
-    /* Testimonials */
-    .testimonials {
-      padding: 5rem 0;
-      background: #f1f5f9;
-    }
-
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2.5rem;
-    }
-
-    .testimonial-card {
-      background: white;
+      padding: 2rem;
       border-radius: 12px;
-      padding: 2.5rem;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .bot-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .bot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .bot-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--dark);
+    }
+
+    .btn-danger {
+      background: var(--error);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .add-bot-btn {
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .add-bot-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-align: center;
       border-left: 4px solid var(--primary);
     }
 
-    .testimonial-text {
-      font-style: italic;
-      margin-bottom: 1.5rem;
-      color: var(--dark);
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
     }
 
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-    }
-
-    .author-avatar {
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-
-    .author-info h4 {
-      color: var(--dark);
-      margin-bottom: 0.3rem;
-    }
-
-    .author-info p {
+    .stat-label {
       color: var(--gray);
       font-size: 0.9rem;
     }
 
-    /* Features */
-    .features-section {
-      padding: 5rem 0;
-      background: white;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2.5rem;
-    }
-
-    .feature-item {
-      text-align: center;
-      padding: 2rem 1.5rem;
-    }
-
-    .feature-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 12px;
-      display: flex;
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 1.5rem;
-      color: white;
-      font-size: 1.5rem;
     }
 
-    .feature-item h3 {
-      color: var(--dark);
-      margin-bottom: 1rem;
-      font-weight: 600;
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
     }
 
-    .feature-item p {
-      color: var(--gray);
-    }
-
-    /* Footer */
-    footer {
-      background: var(--darker);
-      color: white;
-      padding: 4rem 0 2rem;
-    }
-
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 3rem;
-      margin-bottom: 3rem;
-    }
-
-    .footer-column h3 {
-      color: white;
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 1.5rem;
-      font-size: 1.2rem;
-      font-weight: 600;
     }
 
-    .footer-links {
-      list-style: none;
-    }
-
-    .footer-links li {
-      margin-bottom: 0.8rem;
-    }
-
-    .footer-links a {
-      color: #cbd5e1;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    .footer-links a:hover {
-      color: var(--primary);
-    }
-
-    .footer-bottom {
-      text-align: center;
-      padding-top: 2rem;
-      border-top: 1px solid #334155;
-      color: #94a3b8;
-    }
-
-    .locations {
-      text-align: center;
-      margin-top: 2.5rem;
-      font-size: 1.15rem;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 600;
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
     }
 
     /* Responsive */
@@ -586,421 +405,479 @@
         display: none;
       }
       
-      .hero h1 {
-        font-size: 2.5rem;
+      .auth-card {
+        padding: 2rem;
       }
       
-      .pricing-card.popular {
-        transform: none;
-      }
-      
-      .discord-card {
-        padding: 2.5rem 1.5rem;
+      .panel-nav {
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Main Landing Page -->
+  <div id="landing-page">
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <a href="#" class="logo">
+            <i class="fas fa-server"></i>
+            Ruin Hosting
+          </a>
+          <nav class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#games">Games</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#discord">Discord</a>
+            <a href="#testimonials">Testimonials</a>
+          </nav>
+          <button class="login-btn" id="client-area-btn">Client Area</button>
+        </div>
+      </div>
+    </header>
 
-  <!-- Header -->
-  <header>
-    <div class="container">
-      <div class="header-content">
-        <a href="#" class="logo">
-          <i class="fas fa-server"></i>
-          Ruin Hosting
-        </a>
-        <nav class="nav-links">
-          <a href="#services">Services</a>
-          <a href="#games">Games</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#discord">Discord</a>
-          <a href="#testimonials">Testimonials</a>
-        </nav>
-        <button class="login-btn" id="client-area-btn">Client Area</button>
+    <!-- Landing Page Content -->
+    <div style="padding: 4rem 2rem; text-align: center;">
+      <h1 style="font-size: 3rem; margin-bottom: 1rem; color: var(--dark);">Welcome to Ruin Hosting</h1>
+      <p style="font-size: 1.2rem; color: var(--gray); max-width: 600px; margin: 0 auto 2rem;">
+        Premium hosting solutions for games, websites, and Discord bots
+      </p>
+      <button class="login-btn" style="font-size: 1.2rem; padding: 1rem 2rem;" id="landing-login-btn">
+        Get Started - Client Area
+      </button>
+    </div>
+  </div>
+
+  <!-- Login Page -->
+  <div id="login-page" class="auth-container" style="display: none;">
+    <div class="auth-card">
+      <h2>Login to Your Account</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required>
+          <div class="error-message" id="login-email-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required>
+          <div class="error-message" id="login-password-error"></div>
+        </div>
+        <button type="submit" class="auth-btn">Login</button>
+      </form>
+      <div class="auth-switch">
+        Don't have an account? <a href="#" id="show-signup">Sign up</a>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="container">
-      <h1>Hosting That Does Not Break The Bank</h1>
-      <p>Premium web hosting, game servers, and Discord bot hosting at prices that will not empty your wallet</p>
-      <a href="#services" class="cta-button">Explore Our Services</a>
-    </div>
-  </section>
-
-  <!-- Services -->
-  <section id="services" class="services">
-    <div class="container">
-      <div class="section-title">
-        <h2>Our Hosting Services</h2>
-        <p>Choose from our range of high-performance hosting solutions</p>
-      </div>
-      <div class="services-grid">
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fas fa-globe"></i>
-          </div>
-          <h3>Web Hosting</h3>
-          <p>Reliable hosting for websites, applications, and portfolios</p>
-          <div class="price free">FREE</div>
-          <button class="cta-button get-started-btn">Get Started</button>
+  <!-- Signup Page -->
+  <div id="signup-page" class="auth-container" style="display: none;">
+    <div class="auth-card">
+      <h2>Create Your Account</h2>
+      <form id="signup-form">
+        <div class="form-group">
+          <label for="signup-username">Username</label>
+          <input type="text" id="signup-username" required>
+          <div class="error-message" id="signup-username-error"></div>
         </div>
-        
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fab fa-discord"></i>
-          </div>
-          <h3>Discord Bots</h3>
-          <p>Keep your Discord community engaged with reliable bot hosting</p>
-          <div class="price free">FREE for first 2 bots</div>
-          <button class="cta-button get-started-btn">Get Started</button>
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" required>
+          <div class="error-message" id="signup-email-error"></div>
         </div>
-        
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fas fa-gamepad"></i>
-          </div>
-          <h3>Game Servers</h3>
-          <p>High-performance servers for Minecraft and other games</p>
-          <div class="price">From £2.50/month</div>
-          <button class="cta-button get-started-btn">View Plans</button>
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" required>
+          <div class="error-message" id="signup-password-error"></div>
         </div>
-      </div>
-      
-      <div class="locations">
-        🌐 Low-latency nodes in <strong>Australia</strong>, <strong>Central Europe</strong> & <strong>United Kingdom</strong> (<strong>North America coming soon</strong>)
+        <div class="form-group">
+          <label for="signup-confirm-password">Confirm Password</label>
+          <input type="password" id="signup-confirm-password" required>
+          <div class="error-message" id="signup-confirm-password-error"></div>
+        </div>
+        <button type="submit" class="auth-btn">Create Account</button>
+      </form>
+      <div class="auth-switch">
+        Already have an account? <a href="#" id="show-login">Login</a>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Games -->
-  <section id="games" class="games">
+  <!-- Control Panel -->
+  <div id="control-panel" class="panel-container">
     <div class="container">
-      <div class="section-title">
-        <h2>Games We Host</h2>
-        <p>We support a variety of popular games with more coming soon</p>
+      <div class="panel-header">
+        <h1>Control Panel</h1>
+        <p>Welcome, <span id="user-name">User</span>!</p>
+        <button class="btn btn-danger" id="logout-btn" style="margin-top: 1rem;">Logout</button>
       </div>
-      <div class="games-grid">
-        <div class="game-card">
-          <div class="game-icon">
-            <i class="fas fa-cube"></i>
+
+      <div class="panel-nav">
+        <button class="active" data-tab="dashboard">Dashboard</button>
+        <button data-tab="bots">My Bots</button>
+        <button data-tab="servers">Game Servers</button>
+        <button data-tab="billing">Billing</button>
+      </div>
+
+      <!-- Dashboard Tab -->
+      <div id="dashboard-tab" class="panel-section">
+        <h2>Dashboard Overview</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="bot-count">0</div>
+            <div class="stat-label">Active Bots</div>
           </div>
-          <h3>Minecraft Java</h3>
-          <div class="status available">Available Now</div>
-          <p>Fully customizable Java Edition servers with plugin support</p>
-          <button class="cta-button get-started-btn">Get Started</button>
-        </div>
-        
-        <div class="game-card">
-          <div class="game-icon">
-            <i class="fas fa-cube"></i>
+          <div class="stat-card">
+            <div class="stat-number" id="server-count">0</div>
+            <div class="stat-label">Game Servers</div>
           </div>
-          <h3>Minecraft Bedrock</h3>
-          <div class="status soon">Coming Soon</div>
-          <p>Cross-platform Bedrock Edition servers for all devices</p>
-          <button class="cta-button get-started-btn">Notify Me</button>
-        </div>
-        
-        <div class="game-card">
-          <div class="game-icon">
-            <i class="fas fa-skull-crossbones"></i>
+          <div class="stat-card">
+            <div class="stat-number" id="uptime-percent">100%</div>
+            <div class="stat-label">Uptime</div>
           </div>
-          <h3>DayZ</h3>
-          <div class="status soon">Coming Soon</div>
-          <p>Survival servers for the ultimate post-apocalyptic experience</p>
-          <button class="cta-button get-started-btn">Notify Me</button>
         </div>
-        
-        <div class="game-card">
-          <div class="game-icon">
-            <i class="fas fa-hammer"></i>
-          </div>
-          <h3>Rust</h3>
-          <div class="status soon">Coming Soon</div>
-          <p>Survival servers where the only goal is to survive</p>
-          <button class="cta-button get-started-btn">Notify Me</button>
+      </div>
+
+      <!-- Bots Tab -->
+      <div id="bots-tab" class="panel-section" style="display: none;">
+        <h2>My Discord Bots</h2>
+        <button class="add-bot-btn" id="add-bot-btn">
+          <i class="fas fa-plus"></i> Add New Bot
+        </button>
+        <div id="bots-list">
+          <p>No bots yet. Click "Add New Bot" to get started!</p>
         </div>
+      </div>
+
+      <!-- Servers Tab -->
+      <div id="servers-tab" class="panel-section" style="display: none;">
+        <h2>Game Servers</h2>
+        <p>No game servers yet. <a href="#">Create your first server</a></p>
+      </div>
+
+      <!-- Billing Tab -->
+      <div id="billing-tab" class="panel-section" style="display: none;">
+        <h2>Billing & Subscription</h2>
+        <p>No active subscriptions. All our basic services are free!</p>
       </div>
     </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="pricing">
-    <div class="container">
-      <div class="section-title">
-        <h2>Game Server Plans</h2>
-        <p>Choose the plan that works best for your gaming needs</p>
-      </div>
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h3 class="plan-name">Free Forever</h3>
-          <div class="plan-price">£0.00<span>/month</span></div>
-          <p>Ideal for testing and small projects</p>
-          <ul class="features">
-            <li>2 CPU Cores</li>
-            <li>3 GB RAM</li>
-            <li>15GB SSD Storage</li>
-            <li>Unlimited Player Slots</li>
-            <li>Basic DDoS Protection</li>
-            <li>Basic Support</li>
-          </ul>
-          <button class="cta-button get-started-btn">Get Started</button>
-        </div>
-        
-        <div class="pricing-card">
-          <h3 class="plan-name">Starter</h3>
-          <div class="plan-price">£2.50<span>/month</span></div>
-          <p>Perfect for small gaming communities</p>
-          <ul class="features">
-            <li>4 CPU Cores</li>
-            <li>6 GB RAM</li>
-            <li>30GB SSD Storage</li>
-            <li>Unlimited Player Slots</li>
-            <li>DDoS Protection</li>
-            <li>Priority Support</li>
-          </ul>
-          <button class="cta-button get-started-btn">Get Started</button>
-        </div>
-        
-        <div class="pricing-card">
-          <h3 class="plan-name">Pro</h3>
-          <div class="plan-price">£4.50<span>/month</span></div>
-          <p>Perfect for small gaming servers</p>
-          <ul class="features">
-            <li>6 CPU Cores</li>
-            <li>8 GB RAM</li>
-            <li>45GB SSD Storage</li>
-            <li>Unlimited Player Slots</li>
-            <li>DDoS Protection</li>
-            <li>Priority Support</li>
-          </ul>
-          <button class="cta-button get-started-btn">Get Started</button>
-        </div>
-        
-        <div class="pricing-card popular">
-          <div class="popular-badge">MOST POPULAR</div>
-          <h3 class="plan-name">Custom</h3>
-          <div class="plan-price">£10+<span>/month</span></div>
-          <p>Got a network? We got you</p>
-          <ul class="features">
-            <li>10+ CPU Cores</li>
-            <li>16+ GB RAM</li>
-            <li>100GB+ SSD Storage</li>
-            <li>Unlimited Player Slots</li>
-            <li>Advanced DDoS Protection</li>
-            <li>Priority 24/7 Support</li>
-          </ul>
-          <button class="cta-button get-started-btn" id="pro-btn">Get Started</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Discord Special -->
-  <section id="discord" class="discord-special">
-    <div class="container">
-      <div class="discord-card">
-        <h2>Discord Bot Hosting</h2>
-        <p>Get our premium Discord bot hosting completely free for your first 2 bots</p>
-        <div class="free-price">FREE</div>
-        <ul class="features" style="color: #e5e5e5; text-align: center; list-style: none; padding: 0;">
-          <li>1 CPU Core</li>
-          <li>1 GB RAM</li>
-          <li>4GB SSD Storage</li>
-          <li>24/7 Operation</li>
-        </ul>
-        <button class="cta-button get-started-btn" style="margin-top: 1.5rem;">Claim Free Hosting</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section id="features" class="features-section">
-    <div class="container">
-      <div class="section-title">
-        <h2>Why Choose Ruin Hosting</h2>
-        <p>We provide the best hosting experience with these key features</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-bolt"></i>
-          </div>
-          <h3>Lightning Fast</h3>
-          <p>NVMe storage and optimized servers for maximum performance</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h3>DDoS Protection</h3>
-          <p>Advanced protection to keep your servers safe from attacks</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-headset"></i>
-          </div>
-          <h3>24/7 Support</h3>
-          <p>Our support team is always available to help you</p>
-        </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-rocket"></i>
-          </div>
-          <h3>Instant Setup</h3>
-          <p>Your server is ready within minutes of ordering</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section id="testimonials" class="testimonials">
-    <div class="container">
-      <div class="section-title">
-        <h2>What Our Customers Say</h2>
-        <p>Don't just take our word for it - hear from our satisfied customers</p>
-      </div>
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <p class="testimonial-text">
-            "My Discord bot has been running smoothly for months without any downtime. The setup process was straightforward, and the control panel is intuitive to use."
-          </p>
-          <div class="testimonial-author">
-            <div class="author-avatar">C</div>
-            <div class="author-info">
-              <h4>Cosmic</h4>
-              <p>Gorilla Tag Mod Developer</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="testimonial-card">
-          <p class="testimonial-text">
-            "The free Discord bot hosting is incredible! My community bot has been running without any issues for months, and the setup was straightforward."
-          </p>
-          <div class="testimonial-author">
-            <div class="author-avatar">SR</div>
-            <div class="author-info">
-              <h4>Sarah Roberts</h4>
-              <p>Discord Community Manager</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="testimonial-card">
-          <p class="testimonial-text">
-            "As a small business owner, I needed reliable web hosting that wouldn't break the bank. Ruin Hosting delivered exactly what I needed at an affordable price."
-          </p>
-          <div class="testimonial-author">
-            <div class="author-avatar">TD</div>
-            <div class="author-info">
-              <h4>Thomas Davis</h4>
-              <p>Small Business Owner</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-column">
-          <h3>Ruin Hosting</h3>
-          <p style="color: #cbd5e1; margin-bottom: 1.5rem;">Premium hosting solutions for games, websites, and applications.</p>
-        </div>
-        
-        <div class="footer-column">
-          <h3>Services</h3>
-          <ul class="footer-links">
-            <li><a href="#">Game Servers</a></li>
-            <li><a href="#">Web Hosting</a></li>
-            <li><a href="#">Discord Bots</a></li>
-            <li><a href="#">VPS Hosting</a></li>
-          </ul>
-        </div>
-        
-        <div class="footer-column">
-          <h3>Company</h3>
-          <ul class="footer-links">
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">Support</a></li>
-            <li><a href="#">Blog</a></li>
-          </ul>
-        </div>
-        
-        <div class="footer-column">
-          <h3>Legal</h3>
-          <ul class="footer-links">
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Refund Policy</a></li>
-            <li><a href="#">Service Status</a></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="footer-bottom">
-        <p>© 2024 Ruin Hosting. All rights reserved.</p>
-        <p style="margin-top: 0.5rem;">* Free hosting includes Discord bot hosting and basic web hosting plans</p>
-      </div>
-    </div>
-  </footer>
+  </div>
 
   <script>
-    // Discord server URL
-    const DISCORD_URL = 'https://discord.gg/chxgX5bsFN';
-    
-    // Redirect all "Get Started" buttons to Discord
-    document.querySelectorAll('.get-started-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.open(DISCORD_URL, '_blank');
+    // User Management System
+    class UserManager {
+      constructor() {
+        this.users = JSON.parse(localStorage.getItem('ruinHostingUsers')) || [];
+        this.currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser')) || null;
+      }
+
+      // Save users to localStorage
+      saveUsers() {
+        localStorage.setItem('ruinHostingUsers', JSON.stringify(this.users));
+      }
+
+      // Save current user to localStorage
+      saveCurrentUser() {
+        localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(this.currentUser));
+      }
+
+      // Register new user
+      register(username, email, password) {
+        // Check if user already exists
+        if (this.users.find(user => user.email === email)) {
+          return { success: false, message: 'Email already registered' };
+        }
+
+        // Create new user
+        const newUser = {
+          id: Date.now().toString(),
+          username,
+          email,
+          password, // In a real app, this would be hashed
+          createdAt: new Date().toISOString(),
+          bots: [],
+          servers: []
+        };
+
+        this.users.push(newUser);
+        this.saveUsers();
+        return { success: true, user: newUser };
+      }
+
+      // Login user
+      login(email, password) {
+        const user = this.users.find(u => u.email === email && u.password === password);
+        if (user) {
+          this.currentUser = user;
+          this.saveCurrentUser();
+          return { success: true, user };
+        }
+        return { success: false, message: 'Invalid email or password' };
+      }
+
+      // Logout user
+      logout() {
+        this.currentUser = null;
+        this.saveCurrentUser();
+      }
+
+      // Get current user
+      getCurrentUser() {
+        return this.currentUser;
+      }
+
+      // Add bot to user
+      addBot(botName, botToken) {
+        if (!this.currentUser) return false;
+        
+        const newBot = {
+          id: Date.now().toString(),
+          name: botName,
+          token: botToken,
+          status: 'offline',
+          createdAt: new Date().toISOString()
+        };
+
+        this.currentUser.bots.push(newBot);
+        this.saveUsers();
+        this.saveCurrentUser();
+        return true;
+      }
+
+      // Get user bots
+      getUserBots() {
+        return this.currentUser ? this.currentUser.bots : [];
+      }
+    }
+
+    // Initialize User Manager
+    const userManager = new UserManager();
+
+    // DOM Elements
+    const landingPage = document.getElementById('landing-page');
+    const loginPage = document.getElementById('login-page');
+    const signupPage = document.getElementById('signup-page');
+    const controlPanel = document.getElementById('control-panel');
+
+    // Navigation Functions
+    function showLandingPage() {
+      landingPage.style.display = 'block';
+      loginPage.style.display = 'none';
+      signupPage.style.display = 'none';
+      controlPanel.style.display = 'none';
+    }
+
+    function showLoginPage() {
+      landingPage.style.display = 'none';
+      loginPage.style.display = 'flex';
+      signupPage.style.display = 'none';
+      controlPanel.style.display = 'none';
+    }
+
+    function showSignupPage() {
+      landingPage.style.display = 'none';
+      loginPage.style.display = 'none';
+      signupPage.style.display = 'flex';
+      controlPanel.style.display = 'none';
+    }
+
+    function showControlPanel() {
+      landingPage.style.display = 'none';
+      loginPage.style.display = 'none';
+      signupPage.style.display = 'none';
+      controlPanel.style.display = 'block';
+      updateControlPanel();
+    }
+
+    // Update Control Panel with user data
+    function updateControlPanel() {
+      const user = userManager.getCurrentUser();
+      if (user) {
+        document.getElementById('user-name').textContent = user.username;
+        
+        // Update bot count
+        const botCount = user.bots.length;
+        document.getElementById('bot-count').textContent = botCount;
+        
+        // Update server count
+        const serverCount = user.servers.length;
+        document.getElementById('server-count').textContent = serverCount;
+        
+        // Update bots list
+        updateBotsList();
+      }
+    }
+
+    // Update bots list in control panel
+    function updateBotsList() {
+      const botsList = document.getElementById('bots-list');
+      const user = userManager.getCurrentUser();
+      
+      if (!user || user.bots.length === 0) {
+        botsList.innerHTML = '<p>No bots yet. Click "Add New Bot" to get started!</p>';
+        return;
+      }
+
+      botsList.innerHTML = user.bots.map(bot => `
+        <div class="bot-card">
+          <div class="bot-header">
+            <h3>${bot.name}</h3>
+            <div class="bot-actions">
+              <button class="btn ${bot.status === 'online' ? 'btn-success' : 'btn-primary'}" onclick="toggleBot('${bot.id}')">
+                ${bot.status === 'online' ? 'Stop' : 'Start'}
+              </button>
+              <button class="btn btn-danger" onclick="deleteBot('${bot.id}')">Delete</button>
+            </div>
+          </div>
+          <p><strong>Status:</strong> <span style="color: ${bot.status === 'online' ? 'green' : 'red'}">${bot.status}</span></p>
+          <p><strong>Created:</strong> ${new Date(bot.createdAt).toLocaleDateString()}</p>
+        </div>
+      `).join('');
+    }
+
+    // Bot management functions
+    function toggleBot(botId) {
+      const user = userManager.getCurrentUser();
+      const bot = user.bots.find(b => b.id === botId);
+      if (bot) {
+        bot.status = bot.status === 'online' ? 'offline' : 'online';
+        userManager.saveUsers();
+        userManager.saveCurrentUser();
+        updateBotsList();
+      }
+    }
+
+    function deleteBot(botId) {
+      const user = userManager.getCurrentUser();
+      user.bots = user.bots.filter(b => b.id !== botId);
+      userManager.saveUsers();
+      userManager.saveCurrentUser();
+      updateBotsList();
+    }
+
+    // Add new bot
+    document.getElementById('add-bot-btn').addEventListener('click', function() {
+      const botName = prompt('Enter bot name:');
+      const botToken = prompt('Enter bot token (for demo, any value works):');
+      
+      if (botName && botToken) {
+        if (userManager.addBot(botName, botToken)) {
+          updateBotsList();
+          alert('Bot added successfully!');
+        }
+      }
+    });
+
+    // Tab navigation in control panel
+    document.querySelectorAll('.panel-nav button').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.panel-nav button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Hide all sections
+        document.querySelectorAll('.panel-section').forEach(section => {
+          section.style.display = 'none';
+        });
+        
+        // Show selected section
+        const tabName = this.getAttribute('data-tab');
+        document.getElementById(`${tabName}-tab`).style.display = 'block';
       });
     });
-    
-    // Redirect client area button to Discord
-    document.getElementById('client-area-btn').addEventListener('click', () => {
-      window.open(DISCORD_URL, '_blank');
-    });
-    
-    // Confetti on pro button click
-    const proBtn = document.getElementById('pro-btn');
-    if(proBtn){
-      proBtn.addEventListener('click', (e)=>{
+
+    // Form Handling
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      
+      // Clear previous errors
+      document.getElementById('login-email-error').style.display = 'none';
+      document.getElementById('login-password-error').style.display = 'none';
+      
+      const result = userManager.login(email, password);
+      
+      if (result.success) {
+        showControlPanel();
         confetti({
           particleCount: 100,
           spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#ffd700', '#ffb700', '#ff6b00']
+          origin: { y: 0.6 }
         });
-      });
-    }
+      } else {
+        document.getElementById('login-password-error').textContent = result.message;
+        document.getElementById('login-password-error').style.display = 'block';
+      }
+    });
 
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('signup-username').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const confirmPassword = document.getElementById('signup-confirm-password').value;
+      
+      // Clear previous errors
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
       });
+      
+      // Validation
+      if (password !== confirmPassword) {
+        document.getElementById('signup-confirm-password-error').textContent = 'Passwords do not match';
+        document.getElementById('signup-confirm-password-error').style.display = 'block';
+        return;
+      }
+      
+      if (password.length < 6) {
+        document.getElementById('signup-password-error').textContent = 'Password must be at least 6 characters';
+        document.getElementById('signup-password-error').style.display = 'block';
+        return;
+      }
+      
+      const result = userManager.register(username, email, password);
+      
+      if (result.success) {
+        userManager.login(email, password);
+        showControlPanel();
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } else {
+        document.getElementById('signup-email-error').textContent = result.message;
+        document.getElementById('signup-email-error').style.display = 'block';
+      }
+    });
+
+    // Navigation Event Listeners
+    document.getElementById('client-area-btn').addEventListener('click', showLoginPage);
+    document.getElementById('landing-login-btn').addEventListener('click', showLoginPage);
+    document.getElementById('show-signup').addEventListener('click', showSignupPage);
+    document.getElementById('show-login').addEventListener('click', showLoginPage);
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      userManager.logout();
+      showLandingPage();
+    });
+
+    // Check if user is already logged in
+    window.addEventListener('load', function() {
+      if (userManager.getCurrentUser()) {
+        showControlPanel();
+      } else {
+        showLandingPage();
+      }
     });
   </script>
-
 </body>
 </html>
