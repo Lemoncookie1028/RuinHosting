@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Ruin Hosting</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ffd700;
+      --primary-dark: #ffb700;
+      --secondary: #ff6b00;
+      --dark: #000000;
+      --light: #f8fafc;
+      --gray: #666666;
+      --error: #ef4444;
+      --success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
+      color: var(--light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .signup-container {
+      background: white;
+      padding: 3rem;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .signup-container h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--dark);
+      font-size: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .signup-btn {
+      width: 100%;
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 1rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 1rem;
+    }
+
+    .signup-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .login-link {
+      text-align: center;
+      color: var(--gray);
+    }
+
+    .login-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: var(--error);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .success-message {
+      color: var(--success);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .back-home a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-home a:hover {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <div class="logo">
+      <h1><i class="fas fa-server"></i> Ruin Hosting</h1>
+    </div>
+    
+    <h2>Create Your Account</h2>
+    
+    <form id="signup-form">
+      <div class="form-group">
+        <label for="signup-username">Username</label>
+        <input type="text" id="signup-username" required>
+        <div class="error-message" id="signup-username-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" required>
+        <div class="error-message" id="signup-email-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" required>
+        <div class="error-message" id="signup-password-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="signup-confirm-password">Confirm Password</label>
+        <input type="password" id="signup-confirm-password" required>
+        <div class="error-message" id="signup-confirm-password-error"></div>
+      </div>
+      
+      <button type="submit" class="signup-btn">Create Account</button>
+    </form>
+    
+    <div class="login-link">
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+    
+    <div class="back-home">
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('signup-username').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const confirmPassword = document.getElementById('signup-confirm-password').value;
+      
+      // Clear previous errors
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      // Validation
+      if (password !== confirmPassword) {
+        document.getElementById('signup-confirm-password-error').textContent = 'Passwords do not match';
+        document.getElementById('signup-confirm-password-error').style.display = 'block';
+        return;
+      }
+      
+      if (password.length < 6) {
+        document.getElementById('signup-password-error').textContent = 'Password must be at least 6 characters';
+        document.getElementById('signup-password-error').style.display = 'block';
+        return;
+      }
+      
+      // Get existing users
+      const users = JSON.parse(localStorage.getItem('ruinHostingUsers')) || [];
+      
+      // Check if user already exists
+      if (users.find(user => user.email === email)) {
+        document.getElementById('signup-email-error').textContent = 'Email already registered';
+        document.getElementById('signup-email-error').style.display = 'block';
+        return;
+      }
+      
+      // Create new user
+      const newUser = {
+        id: Date.now().toString(),
+        username,
+        email,
+        password, // In real app, this would be hashed
+        createdAt: new Date().toISOString(),
+        bots: [],
+        servers: []
+      };
+      
+      // Save user
+      users.push(newUser);
+      localStorage.setItem('ruinHostingUsers', JSON.stringify(users));
+      
+      // Auto login and redirect
+      localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(newUser));
+      window.location.href = 'dashboard.html';
+    });
+
+    // Check if user is already logged in
+    window.addEventListener('load', function() {
+      const currentUser = localStorage.getItem('ruinHostingCurrentUser');
+      if (currentUser) {
+        window.location.href = 'dashboard.html';
+      }
+    });
+  </script>
+</body>
+</html>
