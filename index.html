@@ -9,14 +9,14 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --secondary: #7c3aed;
-      --accent: #06b6d4;
-      --dark: #1e293b;
-      --darker: #0f172a;
+      --primary: #ffd700;
+      --primary-dark: #ffb700;
+      --secondary: #ff6b00;
+      --accent: #ff9500;
+      --dark: #000000;
+      --darker: #0a0a0a;
       --light: #f8fafc;
-      --gray: #64748b;
+      --gray: #666666;
       --success: #10b981;
     }
 
@@ -103,17 +103,19 @@
 
     .login-btn {
       background: var(--primary);
-      color: white;
+      color: var(--dark);
       border: none;
       padding: 0.7rem 1.5rem;
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
 
     .login-btn:hover {
       background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 183, 0, 0.3);
     }
 
     /* Hero Section */
@@ -135,12 +137,12 @@
       max-width: 600px;
       margin: 0 auto 2.5rem;
       opacity: 0.9;
-      color: #cbd5e1;
+      color: #e5e5e5;
     }
 
     .cta-button {
-      background: var(--accent);
-      color: white;
+      background: var(--primary);
+      color: var(--dark);
       padding: 1rem 2.2rem;
       border: none;
       border-radius: 6px;
@@ -153,9 +155,9 @@
     }
 
     .cta-button:hover {
-      background: #0891b2;
+      background: var(--primary-dark);
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
+      box-shadow: 0 10px 20px rgba(255, 183, 0, 0.3);
     }
 
     /* Services */
@@ -251,10 +253,67 @@
       color: var(--success);
     }
 
+    /* Games Section */
+    .games {
+      padding: 5rem 0;
+      background: #f1f5f9;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .game-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border-top: 4px solid var(--primary);
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+
+    .game-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .game-card h3 {
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .status.available {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .status.soon {
+      background: rgba(255, 107, 0, 0.1);
+      color: var(--secondary);
+    }
+
     /* Pricing */
     .pricing {
       padding: 5rem 0;
-      background: #f1f5f9;
+      background: white;
     }
 
     .pricing-grid {
@@ -285,7 +344,7 @@
       left: 50%;
       transform: translateX(-50%);
       background: var(--primary);
-      color: white;
+      color: var(--dark);
       padding: 0.4rem 1.5rem;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -359,13 +418,13 @@
     .discord-card p {
       opacity: 0.9;
       margin-bottom: 2rem;
-      color: #cbd5e1;
+      color: #e5e5e5;
     }
 
     .free-price {
       font-size: 3.5rem;
       font-weight: 800;
-      color: var(--accent);
+      color: var(--primary);
       margin: 1.5rem 0;
     }
 
@@ -500,7 +559,7 @@
     }
 
     .footer-links a:hover {
-      color: white;
+      color: var(--primary);
     }
 
     .footer-bottom {
@@ -508,6 +567,17 @@
       padding-top: 2rem;
       border-top: 1px solid #334155;
       color: #94a3b8;
+    }
+
+    .locations {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 1.15rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
     }
 
     /* Responsive */
@@ -542,11 +612,12 @@
         </a>
         <nav class="nav-links">
           <a href="#services">Services</a>
+          <a href="#games">Games</a>
           <a href="#pricing">Pricing</a>
-          <a href="#features">Features</a>
+          <a href="#discord">Discord</a>
           <a href="#testimonials">Testimonials</a>
         </nav>
-        <button class="login-btn">Client Area</button>
+        <button class="login-btn" id="client-area-btn">Client Area</button>
       </div>
     </div>
   </header>
@@ -554,9 +625,9 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
-      <h1>Premium Hosting Solutions</h1>
-      <p>High-performance hosting for games, websites, and applications. Reliable, scalable, and affordable.</p>
-      <a href="#pricing" class="cta-button">Get Started Today</a>
+      <h1>Hosting That Does Not Break The Bank</h1>
+      <p>Premium web hosting, game servers, and Discord bot hosting at prices that will not empty your wallet</p>
+      <a href="#services" class="cta-button">Explore Our Services</a>
     </div>
   </section>
 
@@ -570,22 +641,12 @@
       <div class="services-grid">
         <div class="service-card">
           <div class="service-icon">
-            <i class="fas fa-gamepad"></i>
-          </div>
-          <h3>Game Servers</h3>
-          <p>High-performance servers for Minecraft and other popular games</p>
-          <div class="price">From £2.37/month</div>
-          <button class="cta-button">View Plans</button>
-        </div>
-        
-        <div class="service-card">
-          <div class="service-icon">
             <i class="fas fa-globe"></i>
           </div>
           <h3>Web Hosting</h3>
           <p>Reliable hosting for websites, applications, and portfolios</p>
-          <div class="price">From £1.40/month</div>
-          <button class="cta-button">View Plans</button>
+          <div class="price free">FREE</div>
+          <button class="cta-button get-started-btn">Get Started</button>
         </div>
         
         <div class="service-card">
@@ -594,8 +655,73 @@
           </div>
           <h3>Discord Bots</h3>
           <p>Keep your Discord community engaged with reliable bot hosting</p>
-          <div class="price free">FREE Forever</div>
-          <button class="cta-button">Get Started</button>
+          <div class="price free">FREE for first 2 bots</div>
+          <button class="cta-button get-started-btn">Get Started</button>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-gamepad"></i>
+          </div>
+          <h3>Game Servers</h3>
+          <p>High-performance servers for Minecraft and other games</p>
+          <div class="price">From £2.50/month</div>
+          <button class="cta-button get-started-btn">View Plans</button>
+        </div>
+      </div>
+      
+      <div class="locations">
+        🌐 Low-latency nodes in <strong>Australia</strong>, <strong>Central Europe</strong> & <strong>United Kingdom</strong> (<strong>North America coming soon</strong>)
+      </div>
+    </div>
+  </section>
+
+  <!-- Games -->
+  <section id="games" class="games">
+    <div class="container">
+      <div class="section-title">
+        <h2>Games We Host</h2>
+        <p>We support a variety of popular games with more coming soon</p>
+      </div>
+      <div class="games-grid">
+        <div class="game-card">
+          <div class="game-icon">
+            <i class="fas fa-cube"></i>
+          </div>
+          <h3>Minecraft Java</h3>
+          <div class="status available">Available Now</div>
+          <p>Fully customizable Java Edition servers with plugin support</p>
+          <button class="cta-button get-started-btn">Get Started</button>
+        </div>
+        
+        <div class="game-card">
+          <div class="game-icon">
+            <i class="fas fa-cube"></i>
+          </div>
+          <h3>Minecraft Bedrock</h3>
+          <div class="status soon">Coming Soon</div>
+          <p>Cross-platform Bedrock Edition servers for all devices</p>
+          <button class="cta-button get-started-btn">Notify Me</button>
+        </div>
+        
+        <div class="game-card">
+          <div class="game-icon">
+            <i class="fas fa-skull-crossbones"></i>
+          </div>
+          <h3>DayZ</h3>
+          <div class="status soon">Coming Soon</div>
+          <p>Survival servers for the ultimate post-apocalyptic experience</p>
+          <button class="cta-button get-started-btn">Notify Me</button>
+        </div>
+        
+        <div class="game-card">
+          <div class="game-icon">
+            <i class="fas fa-hammer"></i>
+          </div>
+          <h3>Rust</h3>
+          <div class="status soon">Coming Soon</div>
+          <p>Survival servers where the only goal is to survive</p>
+          <button class="cta-button get-started-btn">Notify Me</button>
         </div>
       </div>
     </div>
@@ -605,14 +731,14 @@
   <section id="pricing" class="pricing">
     <div class="container">
       <div class="section-title">
-        <h2>Simple, Transparent Pricing</h2>
-        <p>Choose the plan that works best for your needs</p>
+        <h2>Game Server Plans</h2>
+        <p>Choose the plan that works best for your gaming needs</p>
       </div>
       <div class="pricing-grid">
         <div class="pricing-card">
           <h3 class="plan-name">Free Forever</h3>
           <div class="plan-price">£0.00<span>/month</span></div>
-          <p>Perfect for testing and small projects</p>
+          <p>Ideal for testing and small projects</p>
           <ul class="features">
             <li>2 CPU Cores</li>
             <li>3 GB RAM</li>
@@ -621,39 +747,72 @@
             <li>Basic DDoS Protection</li>
             <li>Basic Support</li>
           </ul>
-          <button class="cta-button">Get Started</button>
+          <button class="cta-button get-started-btn">Get Started</button>
         </div>
         
-        <div class="pricing-card popular">
-          <div class="popular-badge">MOST POPULAR</div>
+        <div class="pricing-card">
           <h3 class="plan-name">Starter</h3>
-          <div class="plan-price">£3.49<span>/month</span></div>
-          <p>Great for growing communities</p>
+          <div class="plan-price">£2.50<span>/month</span></div>
+          <p>Perfect for small gaming communities</p>
           <ul class="features">
-            <li>3.5 CPU Cores</li>
+            <li>4 CPU Cores</li>
             <li>6 GB RAM</li>
             <li>30GB SSD Storage</li>
             <li>Unlimited Player Slots</li>
             <li>DDoS Protection</li>
             <li>Priority Support</li>
           </ul>
-          <button class="cta-button">Get Started</button>
+          <button class="cta-button get-started-btn">Get Started</button>
         </div>
         
         <div class="pricing-card">
+          <h3 class="plan-name">Pro</h3>
+          <div class="plan-price">£4.50<span>/month</span></div>
+          <p>Perfect for small gaming servers</p>
+          <ul class="features">
+            <li>6 CPU Cores</li>
+            <li>8 GB RAM</li>
+            <li>45GB SSD Storage</li>
+            <li>Unlimited Player Slots</li>
+            <li>DDoS Protection</li>
+            <li>Priority Support</li>
+          </ul>
+          <button class="cta-button get-started-btn">Get Started</button>
+        </div>
+        
+        <div class="pricing-card popular">
+          <div class="popular-badge">MOST POPULAR</div>
           <h3 class="plan-name">Custom</h3>
           <div class="plan-price">£10+<span>/month</span></div>
-          <p>For networks and large projects</p>
+          <p>Got a network? We got you</p>
           <ul class="features">
-            <li>Unlimited Resources</li>
-            <li>Custom Configuration</li>
-            <li>Premium DDoS Protection</li>
-            <li>24/7 Priority Support</li>
-            <li>Dedicated Manager</li>
-            <li>Custom Solutions</li>
+            <li>10+ CPU Cores</li>
+            <li>16+ GB RAM</li>
+            <li>100GB+ SSD Storage</li>
+            <li>Unlimited Player Slots</li>
+            <li>Advanced DDoS Protection</li>
+            <li>Priority 24/7 Support</li>
           </ul>
-          <button class="cta-button">Contact Sales</button>
+          <button class="cta-button get-started-btn" id="pro-btn">Get Started</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Discord Special -->
+  <section id="discord" class="discord-special">
+    <div class="container">
+      <div class="discord-card">
+        <h2>Discord Bot Hosting</h2>
+        <p>Get our premium Discord bot hosting completely free for your first 2 bots</p>
+        <div class="free-price">FREE</div>
+        <ul class="features" style="color: #e5e5e5; text-align: center; list-style: none; padding: 0;">
+          <li>1 CPU Core</li>
+          <li>1 GB RAM</li>
+          <li>4GB SSD Storage</li>
+          <li>24/7 Operation</li>
+        </ul>
+        <button class="cta-button get-started-btn" style="margin-top: 1.5rem;">Claim Free Hosting</button>
       </div>
     </div>
   </section>
@@ -701,27 +860,6 @@
     </div>
   </section>
 
-  <!-- Discord Special -->
-  <section class="discord-special">
-    <div class="container">
-      <div class="discord-card">
-        <h2>Free Discord Bot Hosting</h2>
-        <p>Get our premium Discord bot hosting completely free - no hidden fees, no time limits</p>
-        <div class="free-price">FREE</div>
-        <ul class="features" style="color: #cbd5e1; text-align: center; list-style: none; padding: 0;">
-          <li>3 CPU Cores</li>
-          <li>4 GB RAM</li>
-          <li>30GB SSD Storage</li>
-          <li>Configuration Panel</li>
-          <li>24/7 Operation</li>
-          <li>Unlimited Bot Instances</li>
-          <li>Premium Support</li>
-        </ul>
-        <button class="cta-button" style="margin-top: 1.5rem;">Claim Free Hosting</button>
-      </div>
-    </div>
-  </section>
-
   <!-- Testimonials -->
   <section id="testimonials" class="testimonials">
     <div class="container">
@@ -732,13 +870,13 @@
       <div class="testimonials-grid">
         <div class="testimonial-card">
           <p class="testimonial-text">
-            "Ruin Hosting has been amazing for my Minecraft server. The performance is great and the support team is very helpful whenever I need assistance."
+            "My Discord bot has been running smoothly for months without any downtime. The setup process was straightforward, and the control panel is intuitive to use."
           </p>
           <div class="testimonial-author">
-            <div class="author-avatar">MJ</div>
+            <div class="author-avatar">C</div>
             <div class="author-info">
-              <h4>Michael Johnson</h4>
-              <p>Minecraft Server Owner</p>
+              <h4>Cosmic</h4>
+              <p>Gorilla Tag Mod Developer</p>
             </div>
           </div>
         </div>
@@ -820,18 +958,34 @@
   </footer>
 
   <script>
-    // Simple confetti effect
-    document.querySelectorAll('.cta-button').forEach(button => {
-      button.addEventListener('click', function(e) {
+    // Discord server URL
+    const DISCORD_URL = 'https://discord.gg/chxgX5bsFN';
+    
+    // Redirect all "Get Started" buttons to Discord
+    document.querySelectorAll('.get-started-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
         e.preventDefault();
-        confetti({
-          particleCount: 60,
-          spread: 50,
-          origin: { y: 0.6 },
-          colors: ['#2563eb', '#7c3aed', '#06b6d4']
-        });
+        window.open(DISCORD_URL, '_blank');
       });
     });
+    
+    // Redirect client area button to Discord
+    document.getElementById('client-area-btn').addEventListener('click', () => {
+      window.open(DISCORD_URL, '_blank');
+    });
+    
+    // Confetti on pro button click
+    const proBtn = document.getElementById('pro-btn');
+    if(proBtn){
+      proBtn.addEventListener('click', (e)=>{
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ffd700', '#ffb700', '#ff6b00']
+        });
+      });
+    }
 
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
