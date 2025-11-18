@@ -1,1013 +1,959 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RuinHosting - Premium Game Server Hosting</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --red: #ff0000;
-            --white: #ffffff;
-            --black: #000000;
-            --yellow: #ffff00;
-            --dark-red: #b30000;
-            --dark-yellow: #e6e600;
-            --dark-gray: #111111;
-            --light-gray: #222222;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--black);
-            color: var(--white);
-            overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        /* Enhanced Background with Canvas Particle System */
-        #background-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-        }
-
-        /* Grid Background */
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        /* Header Styles */
-        header {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 2px solid var(--red);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        header.scrolled {
-            background: rgba(0, 0, 0, 0.95);
-            padding: 0.5rem 2rem;
-        }
-
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--red);
-            text-shadow: 0 0 10px var(--red);
-            position: relative;
-            display: inline-block;
-            letter-spacing: 2px;
-        }
-
-        .logo::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--yellow);
-            animation: line-grow 3s infinite alternate;
-        }
-
-        @keyframes line-grow {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .nav-links a:hover {
-            color: var(--yellow);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background: var(--yellow);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            padding: 2rem;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 70%);
-            z-index: -1;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            z-index: 10;
-            position: relative;
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            color: var(--white);
-            text-shadow: 0 0 20px var(--red);
-            animation: glow 2s ease-in-out infinite alternate;
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 4px;
-            background: var(--yellow);
-            border-radius: 2px;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 10px var(--red), 0 0 20px var(--red); }
-            to { text-shadow: 0 0 20px var(--red), 0 0 30px var(--red), 0 0 40px var(--red); }
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            color: var(--yellow);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-        }
-
-        .cta-button {
-            background: linear-gradient(45deg, var(--red), var(--dark-red));
-            color: var(--white);
-            padding: 1rem 2.5rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            border: 1px solid var(--yellow);
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 0, 0.4), transparent);
-            transition: 0.5s;
-            z-index: -1;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .cta-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px var(--red);
-            background: linear-gradient(45deg, var(--dark-red), var(--red));
-        }
-
-        /* Features Section */
-        .features {
-            padding: 6rem 2rem;
-            background: rgba(0, 0, 0, 0.85);
-            position: relative;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            color: var(--yellow);
-            margin-bottom: 3rem;
-            text-shadow: 0 0 10px var(--yellow);
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: var(--red);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: rgba(30, 10, 10, 0.7);
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid var(--red);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            backdrop-filter: blur(5px);
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
-            transition: 0.5s;
-            z-index: -1;
-        }
-
-        .feature-card:hover::before {
-            left: 100%;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            background: rgba(40, 10, 10, 0.8);
-            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
-            border-color: var(--yellow);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            color: var(--yellow);
-            margin-bottom: 1rem;
-            display: inline-block;
-        }
-
-        .feature-card h3 {
-            color: var(--white);
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .feature-card p {
-            color: var(--white);
-            opacity: 0.8;
-            line-height: 1.6;
-        }
-
-        /* Stats Section */
-        .stats {
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, var(--red), var(--dark-red));
-            text-align: center;
-            position: relative;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .stat-item {
-            color: var(--black);
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--black);
-            text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
-        }
-
-        .stat-label {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--black);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Pricing Section */
-        .pricing {
-            padding: 6rem 2rem;
-            background: rgba(0, 0, 0, 0.9);
-            position: relative;
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .pricing-card {
-            background: rgba(30, 30, 30, 0.9);
-            padding: 2.5rem 2rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid var(--yellow);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(5px);
-        }
-
-        .pricing-card.popular {
-            border: 2px solid var(--yellow);
-            transform: scale(1.05);
-            z-index: 2;
-            box-shadow: 0 0 25px rgba(255, 255, 0, 0.3);
-        }
-
-        .pricing-card.popular::before {
-            content: 'POPULAR';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: var(--yellow);
-            color: var(--black);
-            padding: 0.2rem 1rem;
-            border-radius: 0 10px 0 10px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .pricing-card h3 {
-            color: var(--yellow);
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .price {
-            font-size: 2.5rem;
-            color: var(--white);
-            margin-bottom: 1.5rem;
-        }
-
-        .price span {
-            font-size: 1rem;
-            color: var(--yellow);
-        }
-
-        .pricing-features {
-            list-style: none;
-            margin-bottom: 2rem;
-        }
-
-        .pricing-features li {
-            padding: 0.7rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .pricing-features li:hover {
-            background: rgba(255, 0, 0, 0.1);
-            color: var(--yellow);
-        }
-
-        .pricing-features li:last-child {
-            border-bottom: none;
-        }
-
-        .pricing-button {
-            background: var(--yellow);
-            color: var(--black);
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
-            width: 100%;
-        }
-
-        .pricing-button:hover {
-            background: var(--dark-yellow);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 255, 0, 0.4);
-        }
-
-        /* Testimonials Section */
-        .testimonials {
-            padding: 6rem 2rem;
-            background: rgba(0, 0, 0, 0.85);
-            position: relative;
-        }
-
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .testimonial-card {
-            background: rgba(30, 10, 10, 0.7);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 1px solid var(--red);
-            position: relative;
-            backdrop-filter: blur(5px);
-        }
-
-        .testimonial-card::before {
-            content: '"';
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 4rem;
-            color: var(--red);
-            opacity: 0.3;
-            font-family: Georgia, serif;
-        }
-
-        .testimonial-text {
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-            color: var(--white);
-            position: relative;
-            z-index: 1;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--red);
-            margin-right: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .author-name {
-            color: var(--yellow);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--black);
-            padding: 4rem 2rem 2rem;
-            text-align: center;
-            border-top: 2px solid var(--red);
-            position: relative;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-column h3 {
-            color: var(--yellow);
-            margin-bottom: 1.5rem;
-            font-size: 1.3rem;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 2px;
-            background: var(--red);
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.8rem;
-        }
-
-        .footer-links a {
-            color: var(--white);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            display: block;
-            position: relative;
-            padding-left: 15px;
-        }
-
-        .footer-links a::before {
-            content: '▶';
-            position: absolute;
-            left: 0;
-            color: var(--red);
-            opacity: 0.5;
-            transition: all 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: var(--yellow);
-            padding-left: 20px;
-        }
-
-        .footer-links a:hover::before {
-            opacity: 1;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 0, 0, 0.2);
-            color: var(--white);
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border: 1px solid var(--red);
-        }
-
-        .social-link:hover {
-            background: var(--red);
-            transform: translateY(-5px) rotate(10deg);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
-        }
-
-        .copyright {
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero p {
-                font-size: 1.2rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .pricing-card.popular {
-                transform: scale(1);
-            }
-            
-            .section-title {
-                font-size: 2rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RuinHosting - Premium Hosting Solutions</title>
+  <link rel="icon" type="image/x-icon" href="https://lemon-storing-center.netlify.app/RuinHosting/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --ruin-yellow: #ffff00;
+      --ruin-dark-yellow: #e6e600;
+      --ruin-black: #000000;
+      --ruin-dark-gray: #1a1a1a;
+      --ruin-gray: #333333;
+      --ruin-light: #f0f0f0;
+      --ruin-red: #ff0000;
+      --ruin-dark-red: #b30000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--ruin-black);
+      color: var(--ruin-light);
+      overflow-x: hidden;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+
+    /* Enhanced Background Elements */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+      animation: grid-move 20s linear infinite;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(30px, 30px); }
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 0, 0, 0.3);
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .particle:nth-child(2n) {
+      background: rgba(255, 255, 0, 0.3);
+    }
+
+    .particle:nth-child(3n) {
+      background: rgba(255, 0, 0, 0.2);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(100px, 100px) rotate(90deg); }
+      50% { transform: translate(200px, 0) rotate(180deg); }
+      75% { transform: translate(100px, -100px) rotate(270deg); }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 5%;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--ruin-yellow), var(--ruin-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links a {
+      color: var(--ruin-light);
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: color 0.3s;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--ruin-yellow);
+    }
+
+    .login-btn {
+      background: linear-gradient(45deg, var(--ruin-yellow), var(--ruin-red));
+      color: var(--ruin-black);
+      border: none;
+      padding: 0.65rem 1.6rem;
+      border-radius: 50px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+    }
+
+    .login-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    section {
+      padding: 5rem 5%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 4rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(90deg, var(--ruin-yellow), var(--ruin-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+      to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 183, 0, 0.6); }
+    }
+
+    .tagline {
+      text-align: center;
+      font-size: 1.2rem;
+      opacity: 0.85;
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .services {
+      display: flex;
+      justify-content: center;
+      gap: 2.2rem;
+      flex-wrap: wrap;
+      margin: 3rem 0;
+    }
+
+    .service-card {
+      background: rgba(26, 26, 26, 0.7);
+      padding: 2rem;
+      border-radius: 24px;
+      width: 240px;
+      text-align: center;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-12px) rotate(1deg);
+      border-color: var(--ruin-yellow);
+      box-shadow: 0 12px 30px rgba(255, 215, 0, 0.2);
+    }
+
+    .service-card:hover::before {
+      left: 100%;
+    }
+
+    .service-card i {
+      font-size: 2.4rem;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(45deg, var(--ruin-yellow), var(--ruin-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .service-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.6rem;
+      color: var(--ruin-yellow);
+    }
+
+    .locations {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 1.15rem;
+      background: linear-gradient(90deg, var(--ruin-yellow), var(--ruin-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
+    }
+
+    /* PLANS */
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 2.2rem;
+      margin-top: 2.5rem;
+    }
+
+    .plan {
+      background: rgba(26, 26, 26, 0.8);
+      border-radius: 22px;
+      padding: 2.2rem 1.8rem;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan.popular {
+      border-color: var(--ruin-yellow);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+    }
+
+    .plan.popular::after {
+      content: "🔥 MOST POPULAR";
+      position: absolute;
+      top: 18px;
+      right: -42px;
+      background: var(--ruin-yellow);
+      color: var(--ruin-black);
+      padding: 0.35rem 2.8rem;
+      transform: rotate(45deg);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .plan:hover {
+      transform: scale(1.04);
+      border-color: var(--ruin-yellow);
+      box-shadow: 0 10px 35px rgba(255, 215, 0, 0.25);
+    }
+
+    .plan h3 {
+      font-size: 1.5rem;
+      margin: 1rem 0 0.5rem;
+      color: var(--ruin-yellow);
+    }
+
+    .price {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin: 1rem 0;
+      background: linear-gradient(90deg, var(--ruin-yellow), var(--ruin-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .features {
+      margin: 1.6rem 0;
+      text-align: left;
+    }
+
+    .features li {
+      margin: 0.9rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.98rem;
+    }
+
+    .features li::before {
+      content: "✓";
+      color: var(--ruin-yellow);
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .features li.cross::before {
+      content: "✗";
+      color: #ff6b6b;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 1.3rem;
+      padding: 0.75rem 2rem;
+      background: transparent;
+      color: var(--ruin-yellow);
+      border: 2px solid var(--ruin-yellow);
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: var(--ruin-yellow);
+      color: var(--ruin-black);
+      transform: translateY(-2px);
+    }
+
+    .btn.pro {
+      background: linear-gradient(45deg, var(--ruin-yellow), var(--ruin-red));
+      color: var(--ruin-black);
+      border: none;
+      font-weight: 800;
+    }
+
+    .btn.pro:hover {
+      transform: scale(1.07);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+    }
+
+    /* WHY CHOOSE */
+    .reasons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2.2rem;
+      margin-top: 2.5rem;
+    }
+
+    .reason {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      padding: 1.6rem;
+      background: rgba(26, 26, 26, 0.6);
+      border-radius: 18px;
+      border-left: 3px solid var(--ruin-yellow);
+      transition: transform 0.3s;
+    }
+
+    .reason:hover {
+      transform: translateX(8px);
+    }
+
+    .reason i {
+      font-size: 1.9rem;
+      background: linear-gradient(45deg, var(--ruin-yellow), var(--ruin-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      min-width: 38px;
+    }
+
+    .reason h3 {
+      color: var(--ruin-yellow);
+      margin-bottom: 0.4rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2.5rem;
+      margin-top: 4rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.95rem;
+      opacity: 0.7;
+    }
+
+    /* NEW LAYOUT ELEMENTS */
+    .hero-section {
+      position: relative;
+      padding: 8rem 5%;
+      text-align: center;
+      background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), 
+                  url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="black"/><path d="M0 0L100 100M100 0L0 100" stroke="%23ffd700" stroke-width="2"/></svg>');
+      background-size: 200px;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--ruin-yellow);
+      color: var(--ruin-black);
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.8rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: var(--ruin-yellow);
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .testimonial {
+      background: rgba(26, 26, 26, 0.7);
+      padding: 2rem;
+      border-radius: 15px;
+      border-left: 4px solid var(--ruin-yellow);
+    }
+
+    .testimonial-text {
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--ruin-yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ruin-black);
+      font-weight: bold;
+    }
+
+    .cta-section {
+      background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0.9) 100%);
+      padding: 5rem 5%;
+      text-align: center;
+      border-radius: 20px;
+      margin: 5rem 0;
+    }
+
+    .cta-title {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--ruin-yellow);
+      color: var(--ruin-black);
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: all 0.3s;
+      margin-top: 1.5rem;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(255,215,0,0.3);
+    }
+
+    .discord-section {
+      background: rgba(26, 26, 26, 0.7);
+      border-radius: 20px;
+      padding: 3rem;
+      margin-top: 3rem;
+      text-align: center;
+    }
+
+    .discord-icon {
+      font-size: 4rem;
+      color: var(--ruin-yellow);
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.8rem; }
+      .plans { grid-template-columns: 1fr; }
+      .section-title { font-size: 2.2rem; }
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Enhanced Background Elements -->
-    <canvas id="background-canvas"></canvas>
-    <div class="grid-overlay"></div>
+  <!-- Enhanced Background Elements -->
+  <div class="background"></div>
+  <div class="particles" id="particles-container"></div>
 
-    <header>
-        <div class="logo">RUINHOSTING</div>
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="#contact">Contact</a>
-        </div>
-    </header>
+  <header>
+    <a href="#home" class="logo">RuinHosting</a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#game-plans">Game Plans</a>
+      <a href="#discord">Discord Hosting</a>
+      <a href="#web">Web Hosting</a>
+      <a href="#why-us">Why Us</a>
+      <a href="#testimonials">Testimonials</a>
+    </div>
+    <button class="login-btn" id="client-area-btn">Client Area</button>
+  </header>
 
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <h1>RUINHOSTING</h1>
-            <p>Unleash Your Gaming Potential with Premium Server Hosting</p>
-            <button class="cta-button">GET STARTED</button>
-        </div>
-    </section>
+  <!-- Hero Section -->
+  <section id="home" class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">PREMIUM HOSTING SOLUTIONS</div>
+      <h1>Hosting That Does Not Break The Bank, AND DOESN'T SCAM YOU.</h1>
+      <p class="tagline">Premium web hosting, game servers, and Discord bot hosting at prices that will not empty your wallet BECAUSE ITS FREE FOR YOUR FIRST ONE</p>
+      <a href="#services" class="cta-button">Explore Our Services</a>
+    </div>
+  </section>
 
-    <section class="features" id="features">
-        <h2 class="section-title">Why Choose RuinHosting?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Lightning Fast</h3>
-                <p>SSD storage and premium hardware for maximum performance with 99.9% uptime guarantee.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <h3>Secure & Reliable</h3>
-                <p>24/7 monitoring and DDoS protection for your servers with military-grade encryption.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎮</div>
-                <h3>Game Ready</h3>
-                <p>Support for 100+ game servers with instant setup and one-click installation.</p>
-            </div>
-        </div>
-    </section>
+  <!-- Services Section -->
+  <section id="services">
+    <h2 class="section-title">Our <span style="color:var(--ruin-yellow)">Services</span></h2>
+    
+    <div class="services">
+      <div class="service-card">
+        <i class="fas fa-globe"></i>
+        <h3>Web Hosting</h3>
+        <p>starting at <strong>is FREE</strong></p>
+        <p>Perfect for blogs, portfolios, and small business websites</p>
+        <a href="#" class="btn get-started-btn">Learn More</a>
+      </div>
+      <div class="service-card">
+        <i class="fab fa-discord"></i>
+        <h3>Discord Bot Hosting</h3>
+        <p>starting at <strong>£free/for your first 2 bots</strong></p>
+        <p>Keep your Discord bots running 24/7 without any interruptions</p>
+        <a href="#" class="btn get-started-btn">Learn More</a>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-cube"></i>
+        <h3>Minecraft Servers</h3>
+        <p>starting at <strong>£2.50/month</strong></p>
+        <p>High-performance game servers for you and your friends</p>
+        <a href="#" class="btn get-started-btn">Learn More</a>
+      </div>
+    </div>
 
-    <section class="stats">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number">99.9%</div>
-                <div class="stat-label">UPTIME</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">10K+</div>
-                <div class="stat-label">ACTIVE SERVERS</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">SUPPORT</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">50ms</div>
-                <div class="stat-label">LOW PING</div>
-            </div>
-        </div>
-    </section>
+    <div class="locations">
+      🌐 Low-latency nodes in <strong>Australia</strong> , <strong>Central Europe</strong> & <strong>United Kingdom</strong> (<strong>north america coming soon</strong>)
+    </div>
+  </section>
+  
+  <!-- Game Hosting Section -->
+  <section id="games">
+    <h2 class="section-title">Games We <span style="color:var(--ruin-yellow)">Host</span></h2>
+    <div class="services">
+      <!-- Minecraft Java -->
+      <div class="service-card">
+        <i class="fas fa-cube"></i>
+        <h3>Minecraft Java</h3>
+        <p>Available Now</p>
+        <p>Fully customizable Java Edition servers with plugin support</p>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
+      
+      <!-- Minecraft Bedrock -->
+      <div class="service-card">
+        <i class="fas fa-cube"></i>
+        <h3>Minecraft Bedrock</h3>
+        <p>Coming Soon</p>
+        <p>Cross-platform Bedrock Edition servers for all devices</p>
+        <a href="#" class="btn get-started-btn">Notify Me</a>
+      </div>
+      
+      <!-- DayZ -->
+      <div class="service-card">
+        <i class="fas fa-skull-crossbones"></i>
+        <h3>DayZ</h3>
+        <p>Coming Soon</p>
+        <p>Survival servers for the ultimate post-apocalyptic experience</p>
+        <a href="#" class="btn get-started-btn">Notify Me</a>
+      </div>
+      
+      <!-- Rust -->
+      <div class="service-card">
+        <i class="fas fa-hammer"></i>
+        <h3>Rust</h3>
+        <p>Coming Soon</p>
+        <p>Survival servers where the only goal is to survive</p>
+        <a href="#" class="btn get-started-btn">Notify Me</a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Game Server Plans -->
+  <section id="game-plans">
+    <h2 class="section-title">Game <span style="color:var(--ruin-yellow)">Server</span> Plans</h2>
+    <div class="plans">
+      <!-- Free -->
+      <div class="plan">
+        <h3>Free Forever</h3>
+        <p>Ideal for testing and small projects</p>
+        <div class="price">£0.00</div>
+        <ul class="features">
+          <li>2 CPU Cores</li>
+          <li>3 GB RAM</li>
+          <li>15GB SSD Storage</li>
+          <li>Unlimited Player Slots</li>
+          <li class="check">Basic DDoS Protection</li>
+          <li class="check">Basic Priority Support</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
 
-    <section class="pricing" id="pricing">
-        <h2 class="section-title">Choose Your Plan</h2>
-        <div class="pricing-grid">
-            <div class="pricing-card">
-                <h3>Basic</h3>
-                <div class="price">£0<span>/month</span></div>
-                <ul class="pricing-features">
-                    <li>1 CPU Core</li>
-                    <li>1GB RAM</li>
-                    <li>10GB SSD</li>
-                    <li>Basic Support</li>
-                    <li>50GB Bandwidth</li>
-                </ul>
-                <button class="pricing-button">Get Started</button>
-            </div>
-            <div class="pricing-card popular">
-                <h3>Pro</h3>
-                <div class="price">£5<span>/month</span></div>
-                <ul class="pricing-features">
-                    <li>4 CPU Cores</li>
-                    <li>8GB RAM</li>
-                    <li>50GB SSD</li>
-                    <li>Priority Support</li>
-                    <li>500GB Bandwidth</li>
-                </ul>
-                <button class="pricing-button">Get Started</button>
-            </div>
-            <div class="pricing-card">
-                <h3>Ultra</h3>
-                <div class="price">£15<span>/month</span></div>
-                <ul class="pricing-features">
-                    <li>8 CPU Cores</li>
-                    <li>16GB RAM</li>
-                    <li>100GB SSD</li>
-                    <li>24/7 Support</li>
-                    <li>Unlimited Bandwidth</li>
-                </ul>
-                <button class="pricing-button">Get Started</button>
-            </div>
-        </div>
-    </section>
+      <!-- Starter -->
+      <div class="plan">
+        <h3>Starter</h3>
+        <p>Perfect for small gaming communities</p>
+        <div class="price">£2.50<span>
+          /month</span></div>
+        <ul class="features">
+          <li>4 CPU Cores</li>
+          <li>6 GB RAM</li>
+          <li>30 SSD Storage</li>
+          <li>Unlimited Player Slots</li>
+          <li class="check">DDoS Protection</li>
+          <li class="check">Priority Support</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
+      
+      <div class="plan">
+        <h3>pro</h3>
+        <p>Perfect for small gaming servers</p>
+        <div class="price">£4.50<span>
+          /month</span></div>
+        <ul class="features">
+          <li>6 CPU Cores</li>
+          <li>8 GB RAM</li>
+          <li>45 SSD Storage</li>
+          <li>Unlimited Player Slots</li>
+          <li class="check">DDoS Protection</li>
+          <li class="check">Priority Support</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
+      <div class="plan">
+        <h3>PREMIUM</h3>
+        <p>Perfect for gaming servers</p>
+        <div class="price">£6.50<span>
+          /month</span></div>
+        <ul class="features">
+          <li>10 CPU Cores</li>
+          <li>15 GB RAM</li>
+          <li>60 SSD Storage</li>
+          <li>Unlimited Player Slots</li>
+          <li class="check">DDoS Protection</li>
+          <li class="check">Priority Support</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
+    
+      <div class="plan popular">
+        <h3>Custom</h3>
+        <p>got a network? we got u</p>
+        <div class="price">Average/£10<span>
+          /month</span></div>
+        <ul class="features">
+          <li>10+ CPU Cores</li>
+          <li>16+ GB RAM</li>
+          <li>100GB+ SSD Storage</li>
+          <li>Unlimited Player Slots</li>
+          <li>Advanced DDoS Protection</li>
+          <li>Priority 24/7 Support</li>
+        </ul>
+        <a href="#" class="btn pro get-started-btn" id="pro-btn">Get Started</a>
+      </div>
+    </div>
+  </section>
 
-    <section class="testimonials" id="testimonials">
-        <h2 class="section-title">What Our Gamers Say</h2>
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <p class="testimonial-text">RuinHosting has completely transformed our gaming experience. The low latency and stability are unmatched!</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar">JD</div>
-                    <div class="author-name">John D.</div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <p class="testimonial-text">The support team is incredibly responsive. They solved our server issues within minutes!</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar">SR</div>
-                    <div class="author-name">Sarah R.</div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <p class="testimonial-text">Best hosting service I've used. The performance boost was immediately noticeable in our games.</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar">MT</div>
-                    <div class="author-name">Mike T.</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Discord Hosting -->
+  <section id="discord">
+    <h2 class="section-title">Discord <span style="color:var(--ruin-yellow)">Bot</span> Hosting</h2>
+    <div class="plans">
+      <!-- Basic -->
+      <div class="plan">
+        <h3>Basic</h3>
+        <div class="price">FREE for the first 2<span>
+          bots</span></div>
+        <ul class="features">
+          <li>1 CPU Core</li>
+          <li>1 GB RAM</li>
+          <li>4GB SSD Storage</li>
+          <li>24/7 Operation</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
 
-    <footer id="contact">
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>RuinHosting</h3>
-                <p>Premium game server hosting with unmatched performance and reliability.</p>
-            </div>
-            <div class="footer-column">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#testimonials">Testimonials</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Support</h3>
-                <ul class="footer-links">
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">Tutorials</a></li>
-                    <li><a href="#">Community</a></li>
-                    <li><a href="#">Status</a></li>
-                    <li><a href="#">FAQ</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Contact Us</h3>
-                <ul class="footer-links">
-                    <li>support@ruinhosting.com</li>
-                    <li>+44 123 456 7890</li>
-                    <li>London, UK</li>
-                </ul>
-            </div>
+      <!-- Starter -->
+      <div class="plan popular">
+        <h3>Starter</h3>
+        <div class="price">£2.50<span>/month</span></div>
+        <ul class="features">
+          <li>4 CPU Cores</li>
+          <li>4 GB RAM</li>
+          <li>30GB SSD Storage</li>
+          <li>Configuration Panel</li>
+          <li>24/7 Operation</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
+    </div>
+    
+    <div class="discord-section">
+      <i class="fab fa-discord discord-icon"></i>
+      <h3>Need a Custom Discord Bot Solution?</h3>
+      <p>We offer custom configurations for larger Discord communities with specific requirements.</p>
+      <a href="#" class="btn get-started-btn" style="margin-top: 1.5rem;">Contact Our Team</a>
+    </div>
+  </section>
+
+  <!-- Web Hosting -->
+  <section id="web">
+    <h2 class="section-title">Web <span style="color:var(--ruin-yellow)">Hosting</span></h2>
+    <div class="plans">
+      <!-- Free -->
+      <div class="plan popular">
+        <h3>Free</h3>
+        <div class="price">£0.00<span>/month</span></div>
+        <ul class="features">
+          <li>Free Forever</li>
+          <li>Full Access</li>
+          <li>Code Your Way</li>
+          <li>Configuration Panel</li>
+          <li>Instant Publishing</li>
+          <li>Your Data, Your Policy</li>
+          <li>24/7 Uptime</li>
+        </ul>
+        <a href="#" class="btn get-started-btn">Get Started</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <h2 class="section-title">What Our <span style="color:var(--ruin-yellow)">Clients</span> Say</h2>
+    <div class="testimonials">
+      <div class="testimonial">
+        <p class="testimonial-text">-</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">-</div>
+          <div>
+            <h4>-</h4>
+            <p>-</p>
+          </div>
         </div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-text">-</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">-</div>
+          <div>
+            <h4>-</h4>
+            <p>-</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-text">My Discord bot has been running smoothly for months without any downtime. The setup process was straightforward, and the control panel is intuitive to use.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">C</div>
+          <div>
+            <h4>Cosmic</h4>
+            <p>gorilatag mod Developer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section id="why-us">
+    <h2 class="section-title">Why Choose <span style="color:var(--ruin-yellow)">Ruin Hosting</span></h2>
+    <div class="reasons">
+      <div class="reason">
+        <i class="fas fa-bolt"></i>
+        <div>
+          <h3>Lightning Fast Performance</h3>
+          <p>Our NVMe storage ensures your applications and games load instantly</p>
+        </div>
+      </div>
+      <div class="reason">
+        <i class="fas fa-headset"></i>
+        <div>
+          <h3>24/7 Customer Support</h3>
+          <p>Our support team is always available to help with any issues you may encounter</p>
+        </div>
+      </div>
+      <div class="reason">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+          <h3>Advanced DDoS Protection</h3>
+          <p>We protect your servers from attacks so you can focus on what matters</p>
+        </div>
+      </div>
+      <div class="reason">
+        <i class="fas fa-rocket"></i>
+        <div>
+          <h3>Instant Setup</h3>
+          <p>Your server will be ready to use within minutes of placing your order</p>
+        </div>
+      </div>
+      <div class="reason">
+        <i class="fas fa-sliders-h"></i>
+        <div>
+          <h3>Intuitive Control Panel</h3>
+          <p>Manage all aspects of your server through our easy-to-use control panel</p>
+        </div>
+      </div>
+      <div class="reason">
+        <i class="fas fa-money-bill-wave"></i>
+        <div>
+          <h3>Competitive Pricing</h3>
+          <p>We offer premium hosting services at prices that are hard to beat</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <div id="contact" class="cta-section">
+    <h2 class="cta-title">Ready to Get Started?</h2>
+    <p>Join thousands of satisfied customers who have chosen Ruin Hosting for their hosting needs</p>
+    <a href="#" class="cta-button get-started-btn">Start Your Hosting Journey Today</a>
+  </div>
+
+  <footer>
+    <p>© 2025 Ruin Hosting — Premium hosting services with unbeatable value</p>
+    <p style="margin-top: 1rem;">* Only including free hosting.</p>
+  </footer>
+
+  <script>
+    // Discord server URL
+    const DISCORD_URL = 'https://discord.gg/chxgX5bsFN';
+    
+    // Create animated particles
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('particles-container');
+        const particleCount = 50;
         
-        <div class="social-links">
-            <a href="#" class="social-link">📘</a>
-            <a href="#" class="social-link">🐦</a>
-            <a href="#" class="social-link">🎮</a>
-            <a href="#" class="social-link">🔧</a>
-        </div>
-        
-        <div class="copyright">
-            <p>&copy; 2025 RuinHosting. All rights reserved.</p>
-        </div>
-    </footer>
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random size
+            const size = Math.random() * 20 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // Random position
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            
+            // Random animation delay
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            
+            // Random animation duration
+            particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            
+            container.appendChild(particle);
+        }
+    });
+    
+    // Redirect all "Get Started" buttons to Discord
+    document.querySelectorAll('.get-started-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.open(DISCORD_URL, '_blank');
+      });
+    });
+    
+    // Redirect client area button to Discord
+    document.getElementById('client-area-btn').addEventListener('click', () => {
+      window.open(DISCORD_URL, '_blank');
+    });
+    
+    // confetti on pro button click
+    const proBtn = document.getElementById('pro-btn');
+    if(proBtn){
+      proBtn.addEventListener('click', (e)=>{
+        confetti({ particleCount:150, spread:70, origin:{y:0.6} });
+      });
+    }
 
-    <script>
-        // Canvas particle background
-        document.addEventListener('DOMContentLoaded', function() {
-            const canvas = document.getElementById('background-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas dimensions
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            
-            // Particle system
-            const particles = [];
-            const particleCount = 100;
-            
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 3 + 1;
-                    this.speedX = Math.random() * 1 - 0.5;
-                    this.speedY = Math.random() * 1 - 0.5;
-                    this.color = Math.random() > 0.5 ? 'red' : 'yellow';
-                    this.opacity = Math.random() * 0.5 + 0.2;
-                }
-                
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    
-                    if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                    if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-                }
-                
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(${this.color === 'red' ? '255, 0, 0' : '255, 255, 0'}, ${this.opacity})`;
-                    ctx.fill();
-                }
-            }
-            
-            // Create particles
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-            
-            // Animation loop
-            function animate() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                    
-                    // Draw connections between close particles
-                    for (let j = i; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (distance < 100) {
-                            ctx.beginPath();
-                            ctx.strokeStyle = `rgba(255, ${particles[i].color === 'red' ? '0, 0' : '255, 0'}, ${0.2 * (1 - distance/100)})`;
-                            ctx.lineWidth = 0.5;
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-                
-                requestAnimationFrame(animate);
-            }
-            
-            animate();
-            
-            // Header scroll effect
-            window.addEventListener('scroll', function() {
-                const header = document.querySelector('header');
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            });
-            
-            // Add interactive effects
-            const hero = document.querySelector('.hero');
-            hero.addEventListener('mousemove', (e) => {
-                const x = (window.innerWidth / 2 - e.pageX) / 25;
-                const y = (window.innerHeight / 2 - e.pageY) / 25;
-                
-                // Move background elements
-                document.querySelector('.grid-overlay').style.transform = `translate(${x}px, ${y}px)`;
-            });
-            
-            // Add hover effect to feature cards
-            const featureCards = document.querySelectorAll('.feature-card');
-            featureCards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-10px)';
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0)';
-                });
-            });
-            
-            // Add hover effect to pricing cards
-            const pricingCards = document.querySelectorAll('.pricing-card');
-            pricingCards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-10px)';
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0)';
-                });
-            });
-            
-            // Add button click effect
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 100);
-                });
-            });
-            
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        window.scrollTo({
-                            top: target.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
+    // Smooth scrolling for all anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
