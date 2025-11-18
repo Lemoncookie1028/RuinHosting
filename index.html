@@ -18,68 +18,79 @@
             --yellow: #ffff00;
             --dark-red: #b30000;
             --dark-yellow: #e6e600;
+            --dark-gray: #111111;
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--black);
             color: var(--white);
             overflow-x: hidden;
             position: relative;
+            min-height: 100vh;
         }
 
-        /* Animated background elements */
-        .bg-element {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
+        /* Enhanced Background with Animated Grid */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 30px); }
+        }
+
+        /* Particle System */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
         }
 
-        .bg-element:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            background: var(--red);
-            top: 10%;
-            left: 5%;
-            animation: float 6s ease-in-out infinite;
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.3);
+            animation: float 15s infinite ease-in-out;
         }
 
-        .bg-element:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            background: var(--yellow);
-            top: 70%;
-            right: 5%;
-            animation: float 8s ease-in-out infinite reverse;
+        .particle:nth-child(2n) {
+            background: rgba(255, 255, 0, 0.3);
         }
 
-        .bg-element:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            background: var(--red);
-            top: 40%;
-            left: 50%;
-            animation: float 7s ease-in-out infinite;
+        .particle:nth-child(3n) {
+            background: rgba(255, 0, 0, 0.2);
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 100px) rotate(90deg); }
+            50% { transform: translate(200px, 0) rotate(180deg); }
+            75% { transform: translate(100px, -100px) rotate(270deg); }
         }
 
         /* Header Styles */
         header {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
             padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 100;
             border-bottom: 2px solid var(--red);
-        }
-
-        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -90,6 +101,24 @@
             font-weight: bold;
             color: var(--red);
             text-shadow: 0 0 10px var(--red);
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--yellow);
+            animation: line-grow 3s infinite alternate;
+        }
+
+        @keyframes line-grow {
+            from { width: 0; }
+            to { width: 100%; }
         }
 
         .nav-links {
@@ -103,6 +132,7 @@
             font-size: 1.1rem;
             transition: all 0.3s ease;
             position: relative;
+            padding: 0.5rem 0;
         }
 
         .nav-links a:hover {
@@ -114,7 +144,7 @@
             position: absolute;
             width: 0;
             height: 2px;
-            bottom: -5px;
+            bottom: 0;
             left: 0;
             background: var(--yellow);
             transition: width 0.3s ease;
@@ -133,11 +163,24 @@
             text-align: center;
             position: relative;
             padding: 2rem;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 70%);
+            z-index: -1;
         }
 
         .hero-content {
             max-width: 800px;
             z-index: 10;
+            position: relative;
         }
 
         .hero h1 {
@@ -146,6 +189,19 @@
             color: var(--white);
             text-shadow: 0 0 20px var(--red);
             animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .hero h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: var(--yellow);
+            border-radius: 2px;
         }
 
         @keyframes glow {
@@ -157,10 +213,13 @@
             font-size: 1.5rem;
             margin-bottom: 2rem;
             color: var(--yellow);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .cta-button {
-            background: var(--red);
+            background: linear-gradient(45deg, var(--red), var(--dark-red));
             color: var(--white);
             padding: 1rem 2rem;
             border: none;
@@ -171,18 +230,51 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 0, 0.4), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
         }
 
         .cta-button:hover {
-            background: var(--dark-red);
             transform: scale(1.05);
             box-shadow: 0 0 20px var(--red);
         }
 
         /* Features Section */
         .features {
-            padding: 4rem 2rem;
+            padding: 6rem 2rem;
             background: rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
         }
 
         .section-title {
@@ -191,6 +283,18 @@
             color: var(--yellow);
             margin-bottom: 3rem;
             text-shadow: 0 0 10px var(--yellow);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--red);
         }
 
         .features-grid {
@@ -202,18 +306,38 @@
         }
 
         .feature-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(20, 20, 20, 0.8);
             padding: 2rem;
             border-radius: 10px;
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid var(--red);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
         }
 
         .feature-card:hover {
             transform: translateY(-10px);
-            background: rgba(255, 0, 0, 0.1);
+            background: rgba(30, 10, 10, 0.9);
             box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+            border-color: var(--yellow);
         }
 
         .feature-icon {
@@ -236,8 +360,23 @@
         /* Stats Section */
         .stats {
             padding: 4rem 2rem;
-            background: var(--red);
+            background: linear-gradient(135deg, var(--red), var(--dark-red));
             text-align: center;
+            position: relative;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
         }
 
         .stats-grid {
@@ -256,6 +395,7 @@
             font-size: 3rem;
             font-weight: bold;
             color: var(--black);
+            text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
         }
 
         .stat-label {
@@ -264,30 +404,189 @@
             color: var(--black);
         }
 
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            position: relative;
+        }
+
+        .pricing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 0, 0.1) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--yellow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card.popular {
+            border: 2px solid var(--yellow);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .pricing-card.popular::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--yellow);
+            color: var(--black);
+            padding: 0.2rem 1rem;
+            border-radius: 0 10px 0 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pricing-card h3 {
+            color: var(--yellow);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: var(--yellow);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-button {
+            background: var(--yellow);
+            color: var(--black);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .pricing-button:hover {
+            background: var(--dark-yellow);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 0, 0.4);
+        }
+
         /* Footer */
         footer {
             background: var(--black);
-            padding: 2rem;
+            padding: 3rem 2rem 2rem;
             text-align: center;
             border-top: 2px solid var(--red);
+            position: relative;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            color: var(--yellow);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--yellow);
         }
 
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
         }
 
         .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.2);
             color: var(--white);
             font-size: 1.5rem;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .social-link:hover {
-            color: var(--yellow);
-            transform: scale(1.2);
+            background: var(--red);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .copyright {
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
         }
 
         /* Responsive Design */
@@ -303,109 +602,33 @@
             .nav-links {
                 display: none;
             }
-        }
-
-        /* Glitch effect for the logo */
-        .glitch {
-            position: relative;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .glitch::before {
-            left: 2px;
-            text-shadow: -2px 0 var(--red);
-            clip: rect(44px, 450px, 56px, 0);
-            animation: glitch-anim 5s infinite linear alternate-reverse;
-        }
-
-        .glitch::after {
-            left: -2px;
-            text-shadow: -2px 0 var(--yellow);
-            clip: rect(44px, 450px, 56px, 0);
-            animation: glitch-anim2 5s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim {
-            0% { clip: rect(42px, 9999px, 44px, 0); }
-            5% { clip: rect(12px, 9999px, 59px, 0); }
-            10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
-            25% { clip: rect(34px, 9999px, 55px, 0); }
-            30% { clip: rect(86px, 9999px, 73px, 0); }
-            35% { clip: rect(20px, 9999px, 20px, 0); }
-            40% { clip: rect(26px, 9999px, 60px, 0); }
-            45% { clip: rect(25px, 9999px, 66px, 0); }
-            50% { clip: rect(57px, 9999px, 98px, 0); }
-            55% { clip: rect(5px, 9999px, 46px, 0); }
-            60% { clip: rect(82px, 9999px, 31px, 0); }
-            65% { clip: rect(54px, 9999px, 27px, 0); }
-            70% { clip: rect(28px, 9999px, 99px, 0); }
-            75% { clip: rect(45px, 9999px, 69px, 0); }
-            80% { clip: rect(23px, 9999px, 85px, 0); }
-            85% { clip: rect(1px, 9999px, 83px, 0); }
-            90% { clip: rect(72px, 9999px, 11px, 0); }
-            95% { clip: rect(100px, 9999px, 100px, 0); }
-            100% { clip: rect(49px, 9999px, 92px, 0); }
-        }
-
-        @keyframes glitch-anim2 {
-            0% { clip: rect(65px, 9999px, 100px, 0); }
-            5% { clip: rect(52px, 9999px, 74px, 0); }
-            10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
-            25% { clip: rect(14px, 9999px, 79px, 0); }
-            30% { clip: rect(1px, 9999px, 66px, 0); }
-            35% { clip: rect(86px, 9999px, 30px, 0); }
-            40% { clip: rect(23px, 9999px, 98px, 0); }
-            45% { clip: rect(85px, 9999px, 72px, 0); }
-            50% { clip: rect(71px, 9999px, 75px, 0); }
-            55% { clip: rect(2px, 9999px, 48px, 0); }
-            60% { clip: rect(30px, 9999px, 16px, 0); }
-            65% { clip: rect(59px, 9999px, 50px, 0); }
-            70% { clip: rect(41px, 9999px, 62px, 0); }
-            75% { clip: rect(2px, 9999px, 82px, 0); }
-            80% { clip: rect(47px, 9999px, 73px, 0); }
-            85% { clip: rect(3px, 9999px, 27px, 0); }
-            90% { clip: rect(26px, 9999px, 55px, 0); }
-            95% { clip: rect(42px, 9999px, 97px, 0); }
-            100% { clip: rect(38px, 9999px, 49px, 0); }
+            
+            .pricing-card.popular {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Background elements -->
-    <div class="bg-element"></div>
-    <div class="bg-element"></div>
-    <div class="bg-element"></div>
+    <!-- Enhanced Background Elements -->
+    <div class="background"></div>
+    <div class="particles" id="particles-container"></div>
 
     <header>
-        <nav>
-            <div class="logo glitch" data-text="RUINHOSTING">RUINHOSTING</div>
-            <div class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#contact">Contact</a>
-            </div>
-        </nav>
+        <div class="logo">RUINHOSTING</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
+        </div>
     </header>
 
     <section class="hero" id="home">
         <div class="hero-content">
             <h1>RUINHOSTING</h1>
-            <p>Unleash Your Gaming Potential</p>
-            <button class="cta-button" onclick="scrollToFeatures()">GET STARTED</button>
+            <p>Unleash Your Gaming Potential with Premium Server Hosting</p>
+            <button class="cta-button">GET STARTED</button>
         </div>
     </section>
 
@@ -451,70 +674,167 @@
         </div>
     </section>
 
-    <footer>
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Choose Your Plan</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Basic</h3>
+                <div class="price">£0<span>/month</span></div>
+                <ul class="pricing-features">
+                    <li>1 CPU Core</li>
+                    <li>1GB RAM</li>
+                    <li>10GB SSD</li>
+                    <li>Basic Support</li>
+                    <li>50GB Bandwidth</li>
+                </ul>
+                <button class="pricing-button">Get Started</button>
+            </div>
+            <div class="pricing-card popular">
+                <h3>Pro</h3>
+                <div class="price">£5<span>/month</span></div>
+                <ul class="pricing-features">
+                    <li>4 CPU Cores</li>
+                    <li>8GB RAM</li>
+                    <li>50GB SSD</li>
+                    <li>Priority Support</li>
+                    <li>500GB Bandwidth</li>
+                </ul>
+                <button class="pricing-button">Get Started</button>
+            </div>
+            <div class="pricing-card">
+                <h3>Ultra</h3>
+                <div class="price">£15<span>/month</span></div>
+                <ul class="pricing-features">
+                    <li>8 CPU Cores</li>
+                    <li>16GB RAM</li>
+                    <li>100GB SSD</li>
+                    <li>24/7 Support</li>
+                    <li>Unlimited Bandwidth</li>
+                </ul>
+                <button class="pricing-button">Get Started</button>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>RuinHosting</h3>
+                <p>Premium game server hosting with unmatched performance and reliability.</p>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Tutorials</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li>support@ruinhosting.com</li>
+                    <li>+44 123 456 7890</li>
+                    <li>London, UK</li>
+                </ul>
+            </div>
+        </div>
+        
         <div class="social-links">
             <a href="#" class="social-link">📘</a>
             <a href="#" class="social-link">🐦</a>
             <a href="#" class="social-link">🎮</a>
             <a href="#" class="social-link">🔧</a>
         </div>
-        <p>&copy; 2025 RuinHosting. All rights reserved.</p>
+        
+        <div class="copyright">
+            <p>&copy; 2025 RuinHosting. All rights reserved.</p>
+        </div>
     </footer>
 
     <script>
-        // Add interactive effects
+        // Create animated particles
         document.addEventListener('DOMContentLoaded', function() {
-            // Add mouse move effect to hero section
+            const container = document.getElementById('particles-container');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 20 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                // Random animation duration
+                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                
+                container.appendChild(particle);
+            }
+            
+            // Add interactive effects
             const hero = document.querySelector('.hero');
             hero.addEventListener('mousemove', (e) => {
                 const x = (window.innerWidth / 2 - e.pageX) / 25;
                 const y = (window.innerHeight / 2 - e.pageY) / 25;
-                hero.style.backgroundPosition = `${x}px ${y}px`;
+                
+                // Move background elements
+                document.querySelector('.background').style.transform = `translate(${x}px, ${y}px)`;
             });
-
-            // Add scroll animation to feature cards
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = 1;
-                        entry.target.style.transform = 'translateY(0)';
-                    }
+            
+            // Add hover effect to feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px)';
                 });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.feature-card').forEach(card => {
-                card.style.opacity = 0;
-                card.style.transform = 'translateY(50px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(card);
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
             });
-
+            
+            // Add hover effect to pricing cards
+            const pricingCards = document.querySelectorAll('.pricing-card');
+            pricingCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+            
             // Add button click effect
-            const ctaButton = document.querySelector('.cta-button');
-            ctaButton.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 100);
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                });
             });
         });
-
-        function scrollToFeatures() {
-            document.querySelector('#features').scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-
-        // Add background animation
-        setInterval(() => {
-            const bgElements = document.querySelectorAll('.bg-element');
-            bgElements.forEach(el => {
-                const currentTop = parseInt(el.style.top || '0');
-                const currentLeft = parseInt(el.style.left || '0');
-                el.style.top = (currentTop + Math.random() * 2 - 1) + 'px';
-                el.style.left = (currentLeft + Math.random() * 2 - 1) + 'px';
-            });
-        }, 100);
     </script>
 </body>
 </html>
