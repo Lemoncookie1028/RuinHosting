@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ruin Hosting - Christmas Special</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <style>
@@ -25,276 +24,252 @@
     }
 
     body {
-      background: linear-gradient(135deg, var(--christmas-dark) 0%, var(--christmas-green) 100%);
+      background: var(--christmas-dark);
       color: var(--snow-white);
       overflow-x: hidden;
       position: relative;
       scroll-behavior: smooth;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 2px, transparent 2px),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 2px, transparent 2px),
-        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 2px, transparent 2px);
-      background-size: 100px 100px, 150px 150px, 200px 200px;
-      pointer-events: none;
-      z-index: -1;
+    /* COMPLETELY DIFFERENT LAYOUT */
+    .masonry-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: minmax(100px, auto);
+      gap: 20px;
+      padding: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
     }
 
-    .christmas-font {
-      font-family: 'Mountains of Christmas', cursive;
-    }
+    /* Grid items positioning */
+    .grid-item-1 { grid-column: 1 / 7; grid-row: 1 / 3; }
+    .grid-item-2 { grid-column: 7 / 13; grid-row: 1 / 2; }
+    .grid-item-3 { grid-column: 7 / 10; grid-row: 2 / 3; }
+    .grid-item-4 { grid-column: 10 / 13; grid-row: 2 / 3; }
+    .grid-item-5 { grid-column: 1 / 5; grid-row: 3 / 5; }
+    .grid-item-6 { grid-column: 5 / 9; grid-row: 3 / 4; }
+    .grid-item-7 { grid-column: 9 / 13; grid-row: 3 / 4; }
+    .grid-item-8 { grid-column: 5 / 13; grid-row: 4 / 6; }
+    .grid-item-9 { grid-column: 1 / 7; grid-row: 5 / 7; }
+    .grid-item-10 { grid-column: 7 / 13; grid-row: 6 / 7; }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem 5%;
-      background: rgba(10, 46, 26, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 3px solid var(--christmas-red);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
-
-    .logo {
-      font-size: 2.5rem;
-      font-weight: 900;
-      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-family: 'Mountains of Christmas', cursive;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-    }
-
-    .nav-links a {
-      color: var(--snow-white);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.5rem 1rem;
+    .grid-item {
+      background: linear-gradient(135deg, rgba(196, 30, 58, 0.1), rgba(22, 91, 51, 0.2));
       border-radius: 25px;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .nav-links a:hover {
-      background: var(--christmas-red);
-      transform: translateY(-2px);
-    }
-
-    .nav-links a::after {
-      content: '🎄';
-      position: absolute;
-      right: -10px;
-      top: -5px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .nav-links a:hover::after {
-      opacity: 1;
-    }
-
-    .login-btn {
-      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
-      color: var(--snow-white);
-      border: none;
-      padding: 0.75rem 2rem;
-      border-radius: 50px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(196, 30, 58, 0.4);
-      font-size: 1.1rem;
-    }
-
-    .login-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-    }
-
-    /* NEW LAYOUT - Sidebar + Main Content */
-    .layout-container {
-      display: flex;
-      min-height: calc(100vh - 80px);
-    }
-
-    .sidebar {
-      width: 300px;
-      background: rgba(10, 46, 26, 0.8);
-      padding: 2rem;
-      border-right: 3px solid var(--christmas-gold);
-      position: sticky;
-      top: 80px;
-      height: calc(100vh - 80px);
-      overflow-y: auto;
-    }
-
-    .sidebar-section {
-      margin-bottom: 2.5rem;
-    }
-
-    .sidebar-title {
-      font-size: 1.4rem;
-      color: var(--christmas-gold);
-      margin-bottom: 1rem;
-      font-family: 'Mountains of Christmas', cursive;
-      border-bottom: 2px solid var(--christmas-red);
-      padding-bottom: 0.5rem;
-    }
-
-    .sidebar-feature {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      padding: 0.75rem;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      transition: all 0.3s ease;
-    }
-
-    .sidebar-feature:hover {
-      background: rgba(255,255,255,0.1);
-      transform: translateX(5px);
-    }
-
-    .sidebar-feature i {
-      font-size: 1.5rem;
-      color: var(--christmas-gold);
-    }
-
-    .main-content {
-      flex: 1;
-      padding: 2rem;
-    }
-
-    /* Hero Section - NEW LAYOUT */
-    .hero-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: center;
-      padding: 4rem 0;
-      margin-bottom: 3rem;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
-      color: var(--snow-white);
-      padding: 0.75rem 2rem;
-      border-radius: 50px;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      font-size: 1.1rem;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(45deg, var(--christmas-gold), var(--christmas-red));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      font-family: 'Mountains of Christmas', cursive;
-      line-height: 1.2;
-    }
-
-    .tagline {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-      line-height: 1.6;
-    }
-
-    .cta-button {
-      display: inline-block;
-      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
-      color: var(--snow-white);
-      padding: 1.2rem 3rem;
-      border-radius: 50px;
-      font-weight: 700;
-      text-decoration: none;
-      font-size: 1.2rem;
-      transition: all 0.3s;
-      box-shadow: 0 8px 25px rgba(196, 30, 58, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-button:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(255, 215, 0, 0.5);
-    }
-
-    .hero-image {
-      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
-      border-radius: 20px;
-      height: 400px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-
-    .hero-image::before {
-      content: '🎄🎅🤶';
-      font-size: 8rem;
-      opacity: 0.3;
-    }
-
-    /* Services Grid - NEW LAYOUT */
-    .services-section {
-      margin: 4rem 0;
-    }
-
-    .section-title {
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-      color: var(--christmas-gold);
-      font-family: 'Mountains of Christmas', cursive;
-      text-align: center;
-      text-shadow: 0 3px 10px rgba(0,0,0,0.3);
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-    }
-
-    .service-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 2.5rem;
-      border-radius: 20px;
-      text-align: center;
-      border: 2px solid transparent;
+      padding: 30px;
+      border: 3px solid transparent;
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
     }
 
-    .service-card::before {
+    .grid-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--christmas-red), var(--christmas-gold));
+    }
+
+    .grid-item:hover {
+      transform: translateY(-10px);
+      border-color: var(--christmas-gold);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Floating Navigation */
+    .floating-nav {
+      position: fixed;
+      top: 50%;
+      right: 30px;
+      transform: translateY(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--christmas-gold);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-dot.active {
+      background: var(--christmas-red);
+      transform: scale(1.3);
+    }
+
+    .nav-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      background: var(--christmas-gold);
+      color: var(--christmas-dark);
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-dot:hover::after {
+      opacity: 1;
+    }
+
+    .nav-dot:nth-child(1)::after { content: 'Hero'; }
+    .nav-dot:nth-child(2)::after { content: 'Services'; }
+    .nav-dot:nth-child(3)::after { content: 'Pricing'; }
+    .nav-dot:nth-child(4)::after { content: 'Discord'; }
+    .nav-dot:nth-child(5)::after { content: 'Testimonials'; }
+
+    /* Diagonal Sections */
+    .diagonal-section {
+      transform: skewY(-3deg);
+      margin: 100px 0;
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .diagonal-content {
+      transform: skewY(3deg);
+    }
+
+    /* Circular Pricing */
+    .circular-pricing {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .price-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(var(--christmas-red) 0%, var(--christmas-gold) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    .price-circle::before {
+      content: '';
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--christmas-dark);
+    }
+
+    .price-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .price-circle:hover {
+      transform: rotate(15deg) scale(1.1);
+    }
+
+    /* Asymmetric Cards */
+    .asymmetric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .asymmetric-card {
+      background: linear-gradient(45deg, rgba(196, 30, 58, 0.15), rgba(255, 215, 0, 0.1));
+      padding: 40px;
+      border-radius: 40px 0 40px 0;
+      border: 2px solid var(--christmas-gold);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asymmetric-card:nth-child(even) {
+      border-radius: 0 40px 0 40px;
+      background: linear-gradient(45deg, rgba(22, 91, 51, 0.15), rgba(196, 30, 58, 0.1));
+    }
+
+    .asymmetric-card:hover {
+      transform: rotate(-2deg) scale(1.05);
+    }
+
+    /* Floating Elements */
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    /* Christmas Elements */
+    .christmas-ornament {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: var(--christmas-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--christmas-gold);
+      font-size: 24px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    .ornament-1 { top: 10%; left: 5%; animation: float 4s ease-in-out infinite; }
+    .ornament-2 { top: 20%; right: 10%; animation: float 5s ease-in-out infinite 0.5s; }
+    .ornament-3 { bottom: 15%; left: 15%; animation: float 6s ease-in-out infinite 1s; }
+
+    /* Typography */
+    .christmas-font {
+      font-family: 'Mountains of Christmas', cursive;
+    }
+
+    .gradient-text {
+      background: linear-gradient(45deg, var(--christmas-gold), var(--christmas-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Buttons */
+    .modern-btn {
+      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
+      color: var(--snow-white);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modern-btn::before {
       content: '';
       position: absolute;
       top: 0;
@@ -302,210 +277,19 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: 0.6s;
+      transition: 0.5s;
     }
 
-    .service-card:hover::before {
+    .modern-btn:hover::before {
       left: 100%;
     }
 
-    .service-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--christmas-gold);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-    }
-
-    .service-icon {
-      font-size: 3.5rem;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(45deg, var(--christmas-gold), var(--christmas-red));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .service-card h3 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      color: var(--christmas-gold);
-      font-family: 'Mountains of Christmas', cursive;
-    }
-
-    /* Pricing Cards - NEW LAYOUT */
-    .pricing-section {
-      margin: 4rem 0;
-    }
-
-    .pricing-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-
-    .pricing-card {
-      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-      backdrop-filter: blur(10px);
-      padding: 2.5rem;
-      border-radius: 20px;
-      border: 3px solid var(--christmas-green);
-      transition: all 0.4s ease;
-      position: relative;
-      overflow: hidden;
-      text-align: center;
-    }
-
-    .pricing-card.featured {
-      border-color: var(--christmas-gold);
-      transform: scale(1.05);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-
-    .pricing-card.featured::before {
-      content: '🎄 FEATURED 🎄';
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--christmas-gold);
-      color: var(--christmas-dark);
-      padding: 0.5rem 1.5rem;
-      border-radius: 25px;
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-
-    .pricing-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--christmas-red);
-    }
-
-    .pricing-card.featured:hover {
-      transform: scale(1.05) translateY(-10px);
-    }
-
-    .plan-name {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: var(--christmas-gold);
-      font-family: 'Mountains of Christmas', cursive;
-    }
-
-    .price {
-      font-size: 3rem;
-      font-weight: 800;
-      margin: 1.5rem 0;
-      background: linear-gradient(45deg, var(--christmas-gold), var(--christmas-red));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .features-list {
-      list-style: none;
-      margin: 2rem 0;
-      text-align: left;
-    }
-
-    .features-list li {
-      margin: 1rem 0;
-      padding-left: 2rem;
-      position: relative;
-    }
-
-    .features-list li::before {
-      content: '✅';
-      position: absolute;
-      left: 0;
-    }
-
-    .plan-btn {
-      display: inline-block;
-      width: 100%;
-      padding: 1rem 2rem;
-      background: linear-gradient(45deg, var(--christmas-green), var(--christmas-red));
-      color: var(--snow-white);
-      border: none;
-      border-radius: 50px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.3s;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-
-    .plan-btn:hover {
+    .modern-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(196, 30, 58, 0.4);
+      box-shadow: 0 10px 25px rgba(196, 30, 58, 0.4);
     }
 
-    /* Discord Special Section */
-    .discord-special {
-      background: linear-gradient(135deg, var(--christmas-red) 0%, var(--christmas-dark) 100%);
-      padding: 3rem;
-      border-radius: 20px;
-      margin: 4rem 0;
-      text-align: center;
-      border: 3px solid var(--christmas-gold);
-    }
-
-    .discord-special h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      color: var(--christmas-gold);
-      font-family: 'Mountains of Christmas', cursive;
-    }
-
-    /* Testimonials - NEW LAYOUT */
-    .testimonials-section {
-      margin: 4rem 0;
-    }
-
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-
-    .testimonial-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 2rem;
-      border-radius: 15px;
-      border-left: 5px solid var(--christmas-gold);
-    }
-
-    .testimonial-text {
-      font-style: italic;
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .author-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--snow-white);
-      font-weight: bold;
-    }
-
-    footer {
-      text-align: center;
-      padding: 3rem;
-      background: var(--christmas-dark);
-      border-top: 3px solid var(--christmas-red);
-      margin-top: 4rem;
-    }
-
+    /* Snow */
     .snowflake {
       position: fixed;
       top: -10px;
@@ -516,28 +300,31 @@
       z-index: 9999;
     }
 
-    @media (max-width: 1024px) {
-      .layout-container {
-        flex-direction: column;
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .masonry-grid {
+        grid-template-columns: repeat(6, 1fr);
       }
-      
-      .sidebar {
-        width: 100%;
-        position: static;
-        height: auto;
-      }
-      
-      .hero-section {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
+      .grid-item-1 { grid-column: 1 / 7; }
+      .grid-item-2 { grid-column: 1 / 4; }
+      .grid-item-3 { grid-column: 4 / 7; }
+      .grid-item-4 { grid-column: 1 / 7; grid-row: 3 / 4; }
+      .grid-item-5 { grid-column: 1 / 4; grid-row: 4 / 5; }
+      .grid-item-6 { grid-column: 4 / 7; grid-row: 4 / 5; }
+      .grid-item-7 { grid-column: 1 / 7; grid-row: 5 / 6; }
+      .grid-item-8 { grid-column: 1 / 7; grid-row: 6 / 7; }
+      .grid-item-9 { grid-column: 1 / 7; grid-row: 7 / 8; }
+      .grid-item-10 { grid-column: 1 / 7; grid-row: 8 / 9; }
     }
 
     @media (max-width: 768px) {
-      h1 { font-size: 2.5rem; }
-      .nav-links { display: none; }
-      .pricing-card.featured { transform: none; }
-      .pricing-card.featured:hover { transform: translateY(-10px); }
+      .masonry-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+      }
+      .grid-item { grid-column: 1 !important; }
+      .floating-nav { display: none; }
     }
   </style>
 </head>
@@ -546,246 +333,164 @@
   <!-- Snowflakes -->
   <div id="snowflakes"></div>
 
-  <header>
-    <a href="#home" class="logo">Ruin Hosting</a>
-    <div class="nav-links">
-      <a href="#services">Services</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#testimonials">Reviews</a>
-      <a href="#contact">Get Started</a>
-    </div>
-    <button class="login-btn">Client Area 🎅</button>
-  </header>
-
-  <div class="layout-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Why Choose Us</h3>
-        <div class="sidebar-feature">
-          <i class="fas fa-bolt"></i>
-          <span>Lightning Fast Performance</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-headset"></i>
-          <span>24/7 Customer Support</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-shield-alt"></i>
-          <span>Advanced DDoS Protection</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-rocket"></i>
-          <span>Instant Setup</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-sliders-h"></i>
-          <span>Easy Control Panel</span>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Server Locations</h3>
-        <div class="sidebar-feature">
-          <i class="fas fa-globe-americas"></i>
-          <span>Australia</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-globe-europe"></i>
-          <span>Central Europe</span>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Christmas Specials</h3>
-        <div class="sidebar-feature">
-          <i class="fas fa-gift"></i>
-          <span>Free Discord Bot Hosting</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-tree"></i>
-          <span>Festive Pricing</span>
-        </div>
-        <div class="sidebar-feature">
-          <i class="fas fa-snowflake"></i>
-          <span>Limited Time Offers</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Hero Section -->
-      <section id="home" class="hero-section">
-        <div>
-          <div class="hero-badge">CHRISTMAS SPECIAL 🎄</div>
-          <h1>Hosting Filled with Christmas Cheer!</h1>
-          <p class="tagline">This holiday season, get premium hosting with festive savings. Perfect for your projects while you enjoy the celebrations!</p>
-          <a href="#pricing" class="cta-button">Unwrap Your Hosting Deal</a>
-        </div>
-        <div class="hero-image">
-          <!-- Christmas graphic placeholder -->
-        </div>
-      </section>
-
-      <!-- Services -->
-      <section id="services" class="services-section">
-        <h2 class="section-title">Our Services</h2>
-        <div class="services-grid">
-          <div class="service-card">
-            <div class="service-icon">🎮</div>
-            <h3>Game Servers</h3>
-            <p>High-performance gaming servers to host your favorite games with friends and family</p>
-            <p class="price" style="font-size: 1.5rem; margin: 1rem 0;">From £2.37/month</p>
-            <button class="plan-btn">Learn More</button>
-          </div>
-          
-          <div class="service-card">
-            <div class="service-icon">🤖</div>
-            <h3>Discord Bots</h3>
-            <p>Keep your Discord community engaged with reliably hosted bots</p>
-            <p class="price" style="font-size: 1.5rem; margin: 1rem 0;">FREE Forever</p>
-            <button class="plan-btn">Learn More</button>
-          </div>
-          
-          <div class="service-card">
-            <div class="service-icon">🌐</div>
-            <h3>Web Hosting</h3>
-            <p>Perfect for portfolios, small businesses, and personal projects</p>
-            <p class="price" style="font-size: 1.5rem; margin: 1rem 0;">From £1.40/month</p>
-            <button class="plan-btn">Learn More</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Pricing -->
-      <section id="pricing" class="pricing-section">
-        <h2 class="section-title">Christmas Hosting Plans</h2>
-        <div class="pricing-cards">
-          <!-- Free Plan -->
-          <div class="pricing-card">
-            <h3 class="plan-name">Christmas Freebie</h3>
-            <p>Perfect for testing and small projects</p>
-            <div class="price">£0.00</div>
-            <ul class="features-list">
-              <li>2 CPU Cores</li>
-              <li>3 GB RAM</li>
-              <li>15GB SSD Storage</li>
-              <li>Unlimited Player Slots</li>
-              <li>Basic DDoS Protection</li>
-              <li>Basic Support</li>
-            </ul>
-            <button class="plan-btn">Get This Deal 🎁</button>
-          </div>
-
-          <!-- Starter Plan -->
-          <div class="pricing-card featured">
-            <h3 class="plan-name">Festive Starter</h3>
-            <p>Most popular for growing communities</p>
-            <div class="price">£3.49<span style="font-size: 1rem;">/month</span></div>
-            <ul class="features-list">
-              <li>3.5 CPU Cores</li>
-              <li>6 GB RAM</li>
-              <li>30GB SSD Storage</li>
-              <li>Unlimited Player Slots</li>
-              <li>Advanced DDoS Protection</li>
-              <li>Priority Support</li>
-            </ul>
-            <button class="plan-btn">Most Popular 🎄</button>
-          </div>
-
-          <!-- Custom Plan -->
-          <div class="pricing-card">
-            <h3 class="plan-name">Santa's Workshop</h3>
-            <p>Custom solutions for networks</p>
-            <div class="price">£10+<span style="font-size: 1rem;">/month</span></div>
-            <ul class="features-list">
-              <li>Unlimited Resources</li>
-              <li>Custom Configuration</li>
-              <li>Premium DDoS Protection</li>
-              <li>24/7 Priority Support</li>
-              <li>Dedicated Manager</li>
-              <li>Custom Solutions</li>
-            </ul>
-            <button class="plan-btn">Contact Santa 🎅</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Discord Special -->
-      <section class="discord-special">
-        <h2>Discord Bot Hosting - FREE! 🎄</h2>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Get our premium Discord bot hosting completely free this Christmas season!</p>
-        <div style="max-width: 500px; margin: 0 auto;">
-          <div class="pricing-card" style="background: rgba(255,255,255,0.15);">
-            <h3 class="plan-name">Christmas Special</h3>
-            <div class="price">£0.00<span style="font-size: 1rem;">/month</span></div>
-            <ul class="features-list">
-              <li>3 CPU Cores</li>
-              <li>4 GB RAM</li>
-              <li>30GB SSD Storage</li>
-              <li>Configuration Panel</li>
-              <li>24/7 Operation</li>
-              <li>Unlimited Bot Instances</li>
-              <li>Premium Support</li>
-            </ul>
-            <button class="plan-btn">Get Free Hosting 🎅</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Testimonials -->
-      <section id="testimonials" class="testimonials-section">
-        <h2 class="section-title">What Our Elves Say 🎄</h2>
-        <div class="testimonials-grid">
-          <div class="testimonial-card">
-            <p class="testimonial-text">"Ruin Hosting made setting up my Minecraft server so easy! The performance is fantastic and the Christmas deal was the perfect gift."</p>
-            <div class="testimonial-author">
-              <div class="author-avatar">MJ</div>
-              <div>
-                <h4>Michael Johnson</h4>
-                <p>Minecraft Server Owner</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="testimonial-card">
-            <p class="testimonial-text">"Free Discord bot hosting? It felt like Christmas came early! My community bot has been running flawlessly for months."</p>
-            <div class="testimonial-author">
-              <div class="author-avatar">SR</div>
-              <div>
-                <h4>Sarah Roberts</h4>
-                <p>Discord Community Manager</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="testimonial-card">
-            <p class="testimonial-text">"The support team is incredible - they helped me migrate my website in time for the holiday season. Truly a Christmas miracle!"</p>
-            <div class="testimonial-author">
-              <div class="author-avatar">TD</div>
-              <div>
-                <h4>Thomas Davis</h4>
-                <p>Small Business Owner</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Final CTA -->
-      <section id="contact" style="text-align: center; margin: 4rem 0;">
-        <h2 class="section-title">Ready for Your Christmas Hosting?</h2>
-        <p style="font-size: 1.3rem; max-width: 600px; margin: 0 auto 2rem; opacity: 0.9;">Don't let the Grinch steal your hosting dreams! Get started today with our special Christmas offers.</p>
-        <a href="#pricing" class="cta-button">Claim Your Christmas Deal 🎁</a>
-      </section>
-    </main>
+  <!-- Floating Navigation -->
+  <div class="floating-nav">
+    <div class="nav-dot active" data-section="hero"></div>
+    <div class="nav-dot" data-section="services"></div>
+    <div class="nav-dot" data-section="pricing"></div>
+    <div class="nav-dot" data-section="discord"></div>
+    <div class="nav-dot" data-section="testimonials"></div>
   </div>
 
-  <footer>
-    <p style="font-size: 1.1rem;">© 2024 Ruin Hosting - Making Your Holidays Hosting Bright! 🎄</p>
-    <p style="margin-top: 1rem; opacity: 0.8;">* Free hosting includes Discord bot hosting and basic web hosting</p>
-  </footer>
+  <!-- Christmas Ornaments -->
+  <div class="christmas-ornament ornament-1">🎄</div>
+  <div class="christmas-ornament ornament-2">🎁</div>
+  <div class="christmas-ornament ornament-3">⭐</div>
+
+  <!-- MASONRY GRID LAYOUT -->
+  <div class="masonry-grid">
+    
+    <!-- Hero Section -->
+    <div class="grid-item grid-item-1">
+      <h1 class="christmas-font gradient-text" style="font-size: 3.5rem; margin-bottom: 1rem;">Ruin Hosting</h1>
+      <div class="modern-btn" style="background: var(--christmas-red); margin-bottom: 2rem;">CHRISTMAS SPECIAL 🎅</div>
+      <p style="font-size: 1.4rem; line-height: 1.6; margin-bottom: 2rem;">
+        Premium hosting services wrapped in Christmas magic! Get the best deals this holiday season.
+      </p>
+      <button class="modern-btn">Unwrap Your Deal 🎁</button>
+    </div>
+
+    <!-- Service 1 -->
+    <div class="grid-item grid-item-2">
+      <div class="floating">
+        <h3 class="christmas-font gradient-text" style="font-size: 2rem;">Game Servers</h3>
+        <p style="margin: 1rem 0;">High-performance gaming experience</p>
+        <div class="price-circle">
+          <div class="price-content">
+            <div style="font-size: 1.2rem; font-weight: bold;">From</div>
+            <div style="font-size: 2rem; font-weight: 800;">£2.37</div>
+            <div style="font-size: 0.9rem;">/month</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service 2 -->
+    <div class="grid-item grid-item-3">
+      <h3 class="christmas-font gradient-text">Web Hosting</h3>
+      <p style="margin: 1rem 0;">Perfect for your online presence</p>
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 800; background: linear-gradient(45deg, var(--christmas-gold), var(--christmas-red)); -webkit-background-clip: text; background-clip: text; color: transparent;">
+          £1.40
+        </div>
+        <div style="font-size: 0.9rem;">/month</div>
+      </div>
+    </div>
+
+    <!-- Service 3 -->
+    <div class="grid-item grid-item-4">
+      <h3 class="christmas-font gradient-text">Discord Bots</h3>
+      <p style="margin: 1rem 0;">Keep your community engaged</p>
+      <div style="text-align: center;">
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--christmas-gold);">FREE</div>
+        <div style="font-size: 0.9rem;">Forever</div>
+      </div>
+    </div>
+
+    <!-- Pricing Card 1 -->
+    <div class="grid-item grid-item-5 asymmetric-card">
+      <h3 class="christmas-font" style="color: var(--christmas-gold); font-size: 1.8rem;">Christmas Freebie</h3>
+      <div style="font-size: 3rem; font-weight: 800; color: var(--christmas-gold); margin: 1rem 0;">£0.00</div>
+      <ul style="list-style: none; margin: 1.5rem 0;">
+        <li style="margin: 0.5rem 0;">✓ 2 CPU Cores</li>
+        <li style="margin: 0.5rem 0;">✓ 3 GB RAM</li>
+        <li style="margin: 0.5rem 0;">✓ 15GB SSD Storage</li>
+        <li style="margin: 0.5rem 0;">✓ Unlimited Player Slots</li>
+      </ul>
+      <button class="modern-btn" style="width: 100%;">Get Started</button>
+    </div>
+
+    <!-- Pricing Card 2 -->
+    <div class="grid-item grid-item-6 asymmetric-card">
+      <h3 class="christmas-font" style="color: var(--christmas-gold);">Festive Starter</h3>
+      <div style="font-size: 2rem; font-weight: 800; color: var(--christmas-red); margin: 1rem 0;">£3.49<span style="font-size: 1rem;">/month</span></div>
+      <ul style="list-style: none; margin: 1rem 0;">
+        <li style="margin: 0.5rem 0;">✓ 3.5 CPU Cores</li>
+        <li style="margin: 0.5rem 0;">✓ 6 GB RAM</li>
+        <li style="margin: 0.5rem 0;">✓ 30GB SSD</li>
+      </ul>
+    </div>
+
+    <!-- Discord Special -->
+    <div class="grid-item grid-item-7">
+      <h2 class="christmas-font gradient-text" style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">Discord Bot Hosting</h2>
+      <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">Completely FREE this Christmas! 🎄</p>
+      <div style="background: rgba(255,215,0,0.1); padding: 2rem; border-radius: 20px; text-align: center;">
+        <div style="font-size: 3rem; font-weight: 800; color: var(--christmas-gold);">£0.00</div>
+        <div style="font-size: 1rem; margin-bottom: 1.5rem;">/month forever</div>
+        <button class="modern-btn">Claim Free Hosting</button>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="grid-item grid-item-8">
+      <h2 class="christmas-font gradient-text" style="font-size: 2.5rem; margin-bottom: 2rem;">Why Choose Us</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+        <div style="text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+          <h4 style="color: var(--christmas-gold);">Lightning Fast</h4>
+          <p>NVMe storage for instant performance</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+          <h4 style="color: var(--christmas-gold);">DDoS Protection</h4>
+          <p>Advanced security for your servers</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🌐</div>
+          <h4 style="color: var(--christmas-gold);">Global Nodes</h4>
+          <p>Australia & Central Europe</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="grid-item grid-item-9">
+      <h2 class="christmas-font gradient-text" style="font-size: 2.5rem; margin-bottom: 2rem;">Happy Customers</h2>
+      <div class="asymmetric-grid">
+        <div class="asymmetric-card">
+          <p style="font-style: italic; margin-bottom: 1rem;">"Ruin Hosting made my Christmas perfect! The free Discord hosting was an amazing gift."</p>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--christmas-gold); display: flex; align-items: center; justify-content: center; color: var(--christmas-dark); font-weight: bold;">SR</div>
+            <div>
+              <h4 style="color: var(--christmas-gold);">Sarah Roberts</h4>
+              <p>Discord Community Manager</p>
+            </div>
+          </div>
+        </div>
+        <div class="asymmetric-card">
+          <p style="font-style: italic; margin-bottom: 1rem;">"The performance is incredible! My Minecraft server has never run better."</p>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--christmas-red); display: flex; align-items: center; justify-content: center; color: var(--snow-white); font-weight: bold;">MJ</div>
+            <div>
+              <h4 style="color: var(--christmas-gold);">Michael Johnson</h4>
+              <p>Minecraft Server Owner</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final CTA -->
+    <div class="grid-item grid-item-10">
+      <div style="text-align: center; padding: 3rem;">
+        <h2 class="christmas-font gradient-text" style="font-size: 3rem; margin-bottom: 1rem;">Ready to Get Started?</h2>
+        <p style="font-size: 1.3rem; margin-bottom: 2rem;">Join thousands of happy customers this Christmas season!</p>
+        <button class="modern-btn" style="font-size: 1.3rem; padding: 20px 40px;">Start Your Hosting Journey Today 🎅</button>
+      </div>
+    </div>
+
+  </div>
 
   <script>
     // Create snowflakes
@@ -793,14 +498,14 @@
       const snowflakeContainer = document.getElementById('snowflakes');
       const snowflakes = ['❄️', '⛄', '🎄', '🎅', '🤶', '🦌', '🎁'];
       
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 20; i++) {
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
         snowflake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
         snowflake.style.left = Math.random() * 100 + 'vw';
         snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
         snowflake.style.animationDelay = Math.random() * 5 + 's';
-        snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        snowflake.style.fontSize = (Math.random() * 15 + 10) + 'px';
         snowflakeContainer.appendChild(snowflake);
       }
     }
@@ -821,30 +526,25 @@
     `;
     document.head.appendChild(style);
 
+    // Navigation dots
+    const dots = document.querySelectorAll('.nav-dot');
+    dots.forEach(dot => {
+      dot.addEventListener('click', function() {
+        dots.forEach(d => d.classList.remove('active'));
+        this.classList.add('active');
+        // Add scroll to section logic here
+      });
+    });
+
     // Confetti on button clicks
-    document.querySelectorAll('.cta-button, .plan-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
+    document.querySelectorAll('.modern-btn').forEach(button => {
+      button.addEventListener('click', () => {
         confetti({
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 },
           colors: ['#c41e3a', '#165b33', '#ffd700', '#ffffff']
         });
-      });
-    });
-
-    // Smooth scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
       });
     });
 
