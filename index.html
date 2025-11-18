@@ -19,6 +19,7 @@
             --dark-red: #b30000;
             --dark-yellow: #e6e600;
             --dark-gray: #111111;
+            --light-gray: #222222;
         }
 
         body {
@@ -30,61 +31,35 @@
             min-height: 100vh;
         }
 
-        /* Enhanced Background with Animated Grid */
-        .background {
+        /* Enhanced Background with Canvas Particle System */
+        #background-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: 
-                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: grid-move 20s linear infinite;
         }
 
-        @keyframes grid-move {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(30px, 30px); }
-        }
-
-        /* Particle System */
-        .particles {
+        /* Grid Background */
+        .grid-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 0, 0, 0.3);
-            animation: float 15s infinite ease-in-out;
-        }
-
-        .particle:nth-child(2n) {
-            background: rgba(255, 255, 0, 0.3);
-        }
-
-        .particle:nth-child(3n) {
-            background: rgba(255, 0, 0, 0.2);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(100px, 100px) rotate(90deg); }
-            50% { transform: translate(200px, 0) rotate(180deg); }
-            75% { transform: translate(100px, -100px) rotate(270deg); }
+            background: 
+                linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.7;
+            pointer-events: none;
         }
 
         /* Header Styles */
         header {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             padding: 1rem 2rem;
             position: sticky;
@@ -94,6 +69,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 0.5rem 2rem;
         }
 
         .logo {
@@ -103,6 +84,7 @@
             text-shadow: 0 0 10px var(--red);
             position: relative;
             display: inline-block;
+            letter-spacing: 2px;
         }
 
         .logo::after {
@@ -133,6 +115,8 @@
             transition: all 0.3s ease;
             position: relative;
             padding: 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .nav-links a:hover {
@@ -156,7 +140,7 @@
 
         /* Hero Section */
         .hero {
-            min-height: 90vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -181,6 +165,12 @@
             max-width: 800px;
             z-index: 10;
             position: relative;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
         }
 
         .hero h1 {
@@ -190,6 +180,7 @@
             text-shadow: 0 0 20px var(--red);
             animation: glow 2s ease-in-out infinite alternate;
             position: relative;
+            margin-bottom: 1.5rem;
         }
 
         .hero h1::after {
@@ -216,12 +207,13 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.6;
         }
 
         .cta-button {
             background: linear-gradient(45deg, var(--red), var(--dark-red));
             color: var(--white);
-            padding: 1rem 2rem;
+            padding: 1rem 2.5rem;
             border: none;
             border-radius: 5px;
             font-size: 1.2rem;
@@ -233,6 +225,7 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+            border: 1px solid var(--yellow);
         }
 
         .cta-button::before {
@@ -253,28 +246,15 @@
 
         .cta-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 20px var(--red);
+            box-shadow: 0 0 25px var(--red);
+            background: linear-gradient(45deg, var(--dark-red), var(--red));
         }
 
         /* Features Section */
         .features {
             padding: 6rem 2rem;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             position: relative;
-        }
-
-        .features::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
         }
 
         .section-title {
@@ -300,13 +280,13 @@
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 2.5rem;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .feature-card {
-            background: rgba(20, 20, 20, 0.8);
+            background: rgba(30, 10, 10, 0.7);
             padding: 2rem;
             border-radius: 10px;
             text-align: center;
@@ -315,6 +295,7 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+            backdrop-filter: blur(5px);
         }
 
         .feature-card::before {
@@ -335,7 +316,7 @@
 
         .feature-card:hover {
             transform: translateY(-10px);
-            background: rgba(30, 10, 10, 0.9);
+            background: rgba(40, 10, 10, 0.8);
             box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
             border-color: var(--yellow);
         }
@@ -344,6 +325,7 @@
             font-size: 3rem;
             color: var(--yellow);
             margin-bottom: 1rem;
+            display: inline-block;
         }
 
         .feature-card h3 {
@@ -355,6 +337,7 @@
         .feature-card p {
             color: var(--white);
             opacity: 0.8;
+            line-height: 1.6;
         }
 
         /* Stats Section */
@@ -363,20 +346,6 @@
             background: linear-gradient(135deg, var(--red), var(--dark-red));
             text-align: center;
             position: relative;
-        }
-
-        .stats::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: -1;
         }
 
         .stats-grid {
@@ -402,6 +371,8 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* Pricing Section */
@@ -411,42 +382,31 @@
             position: relative;
         }
 
-        .pricing::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 0, 0.1) 0%, transparent 40%);
-            z-index: -1;
-        }
-
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 2.5rem;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .pricing-card {
             background: rgba(30, 30, 30, 0.9);
-            padding: 2rem;
+            padding: 2.5rem 2rem;
             border-radius: 10px;
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid var(--yellow);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
         .pricing-card.popular {
             border: 2px solid var(--yellow);
             transform: scale(1.05);
             z-index: 2;
+            box-shadow: 0 0 25px rgba(255, 255, 0, 0.3);
         }
 
         .pricing-card.popular::before {
@@ -485,8 +445,14 @@
         }
 
         .pricing-features li {
-            padding: 0.5rem 0;
+            padding: 0.7rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .pricing-features li:hover {
+            background: rgba(255, 0, 0, 0.1);
+            color: var(--yellow);
         }
 
         .pricing-features li:last-child {
@@ -505,6 +471,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: bold;
+            width: 100%;
         }
 
         .pricing-button:hover {
@@ -513,10 +480,74 @@
             box-shadow: 0 5px 15px rgba(255, 255, 0, 0.4);
         }
 
+        /* Testimonials Section */
+        .testimonials {
+            padding: 6rem 2rem;
+            background: rgba(0, 0, 0, 0.85);
+            position: relative;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: rgba(30, 10, 10, 0.7);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid var(--red);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 4rem;
+            color: var(--red);
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        .testimonial-text {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--red);
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .author-name {
+            color: var(--yellow);
+        }
+
         /* Footer */
         footer {
             background: var(--black);
-            padding: 3rem 2rem 2rem;
+            padding: 4rem 2rem 2rem;
             text-align: center;
             border-top: 2px solid var(--red);
             position: relative;
@@ -533,8 +564,20 @@
 
         .footer-column h3 {
             color: var(--yellow);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-size: 1.3rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--red);
         }
 
         .footer-links {
@@ -542,24 +585,41 @@
         }
 
         .footer-links li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .footer-links a {
             color: var(--white);
             text-decoration: none;
             transition: color 0.3s ease;
+            display: block;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .footer-links a::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: var(--red);
+            opacity: 0.5;
+            transition: all 0.3s ease;
         }
 
         .footer-links a:hover {
             color: var(--yellow);
+            padding-left: 20px;
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
         }
 
         .social-links {
             display: flex;
             justify-content: center;
             gap: 1.5rem;
-            margin: 1.5rem 0;
+            margin: 2rem 0;
         }
 
         .social-link {
@@ -574,16 +634,17 @@
             font-size: 1.5rem;
             transition: all 0.3s ease;
             text-decoration: none;
+            border: 1px solid var(--red);
         }
 
         .social-link:hover {
             background: var(--red);
-            transform: translateY(-5px);
+            transform: translateY(-5px) rotate(10deg);
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
         }
 
         .copyright {
-            padding-top: 1.5rem;
+            padding-top: 2rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.9rem;
@@ -606,13 +667,17 @@
             .pricing-card.popular {
                 transform: scale(1);
             }
+            
+            .section-title {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Enhanced Background Elements -->
-    <div class="background"></div>
-    <div class="particles" id="particles-container"></div>
+    <canvas id="background-canvas"></canvas>
+    <div class="grid-overlay"></div>
 
     <header>
         <div class="logo">RUINHOSTING</div>
@@ -620,6 +685,7 @@
             <a href="#home">Home</a>
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
+            <a href="#testimonials">Testimonials</a>
             <a href="#contact">Contact</a>
         </div>
     </header>
@@ -638,17 +704,17 @@
             <div class="feature-card">
                 <div class="feature-icon">⚡</div>
                 <h3>Lightning Fast</h3>
-                <p>SSD storage and premium hardware for maximum performance</p>
+                <p>SSD storage and premium hardware for maximum performance with 99.9% uptime guarantee.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🛡️</div>
                 <h3>Secure & Reliable</h3>
-                <p>24/7 monitoring and DDoS protection for your servers</p>
+                <p>24/7 monitoring and DDoS protection for your servers with military-grade encryption.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎮</div>
                 <h3>Game Ready</h3>
-                <p>Support for 100+ game servers with instant setup</p>
+                <p>Support for 100+ game servers with instant setup and one-click installation.</p>
             </div>
         </div>
     </section>
@@ -716,6 +782,33 @@
         </div>
     </section>
 
+    <section class="testimonials" id="testimonials">
+        <h2 class="section-title">What Our Gamers Say</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">RuinHosting has completely transformed our gaming experience. The low latency and stability are unmatched!</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">JD</div>
+                    <div class="author-name">John D.</div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">The support team is incredibly responsive. They solved our server issues within minutes!</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">SR</div>
+                    <div class="author-name">Sarah R.</div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">Best hosting service I've used. The performance boost was immediately noticeable in our games.</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">MT</div>
+                    <div class="author-name">Mike T.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer id="contact">
         <div class="footer-content">
             <div class="footer-column">
@@ -728,6 +821,7 @@
                     <li><a href="#home">Home</a></li>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
             </div>
@@ -738,6 +832,7 @@
                     <li><a href="#">Tutorials</a></li>
                     <li><a href="#">Community</a></li>
                     <li><a href="#">Status</a></li>
+                    <li><a href="#">FAQ</a></li>
                 </ul>
             </div>
             <div class="footer-column">
@@ -763,32 +858,96 @@
     </footer>
 
     <script>
-        // Create animated particles
+        // Canvas particle background
         document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('particles-container');
-            const particleCount = 50;
+            const canvas = document.getElementById('background-canvas');
+            const ctx = canvas.getContext('2d');
             
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Random size
-                const size = Math.random() * 20 + 5;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // Random position
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                
-                // Random animation delay
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                
-                // Random animation duration
-                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
-                
-                container.appendChild(particle);
+            // Set canvas dimensions
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Particle system
+            const particles = [];
+            const particleCount = 100;
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = Math.random() * 1 - 0.5;
+                    this.speedY = Math.random() * 1 - 0.5;
+                    this.color = Math.random() > 0.5 ? 'red' : 'yellow';
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                }
+                
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    
+                    if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                    if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${this.color === 'red' ? '255, 0, 0' : '255, 255, 0'}, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+            
+            // Create particles
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+            
+            // Animation loop
+            function animate() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    
+                    // Draw connections between close particles
+                    for (let j = i; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(255, ${particles[i].color === 'red' ? '0, 0' : '255, 0'}, ${0.2 * (1 - distance/100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
             
             // Add interactive effects
             const hero = document.querySelector('.hero');
@@ -797,7 +956,7 @@
                 const y = (window.innerHeight / 2 - e.pageY) / 25;
                 
                 // Move background elements
-                document.querySelector('.background').style.transform = `translate(${x}px, ${y}px)`;
+                document.querySelector('.grid-overlay').style.transform = `translate(${x}px, ${y}px)`;
             });
             
             // Add hover effect to feature cards
@@ -832,6 +991,20 @@
                     setTimeout(() => {
                         this.style.transform = 'scale(1)';
                     }, 100);
+                });
+            });
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
                 });
             });
         });
