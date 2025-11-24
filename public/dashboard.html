@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discord Bots Dashboard - Ruin Hosting</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ffd700;
+      --primary-dark: #ffb700;
+      --secondary: #ff6b00;
+      --dark: #000000;
+      --darker: #0a0a0a;
+      --light: #f8fafc;
+      --gray: #666666;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --online: #10b981;
+      --offline: #ef4444;
+      --starting: #f59e0b;
+      --card-bg: #ffffff;
+      --sidebar-bg: #1e293b;
+      --sidebar-hover: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      color: white;
+      padding: 1.5rem 0;
+      transition: all 0.3s ease;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .sidebar.collapsed {
+      width: 70px;
+    }
+
+    .sidebar-header {
+      padding: 0 1.5rem 1.5rem;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 1rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .logo i {
+      color: var(--secondary);
+    }
+
+    .logo-text {
+      transition: opacity 0.3s;
+    }
+
+    .sidebar.collapsed .logo-text {
+      opacity: 0;
+      width: 0;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 0 1rem;
+    }
+
+    .nav-links li {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: var(--sidebar-hover);
+      color: white;
+    }
+
+    .nav-links a i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-text {
+      transition: opacity 0.3s;
+    }
+
+    .sidebar.collapsed .nav-text {
+      opacity: 0;
+      width: 0;
+    }
+
+    .toggle-sidebar {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background: var(--sidebar-hover);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.expanded {
+      margin-left: 70px;
+    }
+
+    /* Header */
+    header {
+      background: var(--card-bg);
+      padding: 1.2rem 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left h1 {
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin-bottom: 0.2rem;
+    }
+
+    .header-left p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info {
+      color: var(--dark);
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .user-name {
+      font-weight: 600;
+    }
+
+    .user-role {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    .logout-btn {
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logout-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Dashboard */
+    .dashboard {
+      padding: 2rem;
+    }
+
+    .welcome-section {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+      border-left: 4px solid var(--primary);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-align: center;
+      border-left: 4px solid var(--primary);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 215, 0, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* Bot Cards */
+    .bots-section {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-header h2 {
+      color: var(--dark);
+      font-size: 1.8rem;
+    }
+
+    .add-bot-btn {
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 6px rgba(255, 215, 0, 0.2);
+    }
+
+    .add-bot-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 215, 0, 0.3);
+    }
+
+    .bots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .bot-card {
+      background: var(--card-bg);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .bot-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+
+    .bot-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary);
+    }
+
+    .bot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .bot-info h3 {
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .bot-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-online {
+      background: var(--online);
+    }
+
+    .status-offline {
+      background: var(--offline);
+    }
+
+    .status-starting {
+      background: var(--starting);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .bot-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--dark);
+    }
+
+    .btn-danger {
+      background: var(--error);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-info {
+      background: var(--info);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .bot-details {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .bot-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .bot-detail span:first-child {
+      color: var(--gray);
+      font-weight: 500;
+    }
+
+    .bot-detail span:last-child {
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--gray);
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      opacity: 0.7;
+    }
+
+    .empty-state h3 {
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-size: 1.5rem;
+    }
+
+    .empty-state p {
+      margin-bottom: 1.5rem;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Resource Usage */
+    .resources-section {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .resource-bars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .resource-bar {
+      margin-bottom: 1rem;
+    }
+
+    .resource-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .resource-label span:first-child {
+      color: var(--gray);
+    }
+
+    .resource-label span:last-child {
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    .bar-container {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+    }
+
+    .modal h2 {
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .toast {
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      border-left: 4px solid var(--success);
+      transform: translateX(100%);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-left-color: var(--success);
+    }
+
+    .toast.error {
+      border-left-color: var(--error);
+    }
+
+    .toast.warning {
+      border-left-color: var(--warning);
+    }
+
+    .toast.info {
+      border-left-color: var(--info);
+    }
+
+    .toast-icon {
+      font-size: 1.2rem;
+    }
+
+    .toast.success .toast-icon {
+      color: var(--success);
+    }
+
+    .toast.error .toast-icon {
+      color: var(--error);
+    }
+
+    .toast.warning .toast-icon {
+      color: var(--warning);
+    }
+
+    .toast.info .toast-icon {
+      color: var(--info);
+    }
+
+    /* File System Viewer */
+    .file-system {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .file-tree {
+      margin-top: 1rem;
+      font-family: monospace;
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .folder {
+      margin-left: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .folder-name {
+      font-weight: bold;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .file {
+      margin-left: 2rem;
+      color: var(--success);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 70px;
+      }
+      
+      .sidebar .logo-text,
+      .sidebar .nav-text {
+        opacity: 0;
+        width: 0;
+      }
+      
+      .main-content {
+        margin-left: 70px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .bots-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .bot-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .bot-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      
+      .quick-actions {
+        justify-content: center;
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard {
+        padding: 1rem;
+      }
+      
+      .welcome-section,
+      .bots-section,
+      .resources-section,
+      .file-system {
+        padding: 1.5rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .quick-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="logo">
+        <i class="fab fa-discord"></i>
+        <span class="logo-text">Ruin Hosting</span>
+      </a>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="#" class="active"><i class="fas fa-robot"></i> <span class="nav-text">Bots</span></a></li>
+      <li><a href="#"><i class="fas fa-server"></i> <span class="nav-text">Servers</span></a></li>
+      <li><a href="#"><i class="fas fa-chart-bar"></i> <span class="nav-text">Analytics</span></a></li>
+      <li><a href="#"><i class="fas fa-cog"></i> <span class="nav-text">Settings</span></a></li>
+      <li><a href="#"><i class="fas fa-question-circle"></i> <span class="nav-text">Help</span></a></li>
+    </ul>
+    
+    <button class="toggle-sidebar" id="toggle-sidebar">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main-content">
+    <!-- Header -->
+    <header>
+      <div class="header-left">
+        <h1>Discord Bot Dashboard</h1>
+        <p>Manage your Discord bots, monitor their status, and control their resources</p>
+      </div>
+      <div class="user-menu">
+        <div class="user-info">
+          <div class="user-name" id="user-greeting">Welcome, User</div>
+          <div class="user-role">Premium User</div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <h2>Bot Management Dashboard</h2>
+        <p>Monitor and control all your Discord bots in one place</p>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="stat-number" id="total-bots">0</div>
+            <div class="stat-label">Total Bots</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="stat-number" id="online-bots">0</div>
+            <div class="stat-label">Online Bots</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-stop-circle"></i>
+            </div>
+            <div class="stat-number" id="offline-bots">0</div>
+            <div class="stat-label">Offline Bots</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-number" id="uptime-percent">100%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File System Viewer -->
+      <div class="file-system">
+        <h2>Bot File System</h2>
+        <p>View the folder structure created for your bots</p>
+        <div class="file-tree" id="file-tree">
+          <!-- File tree will be generated here -->
+        </div>
+      </div>
+
+      <!-- Bots Section -->
+      <div class="bots-section">
+        <div class="section-header">
+          <h2>Your Discord Bots</h2>
+          <button class="add-bot-btn" id="add-bot-btn">
+            <i class="fas fa-plus"></i> Add New Bot
+          </button>
+        </div>
+
+        <div id="bots-container">
+          <!-- Bots will be dynamically added here -->
+          <div class="empty-state" id="empty-state">
+            <i class="fab fa-discord"></i>
+            <h3>No Bots Yet</h3>
+            <p>Get started by adding your first Discord bot to manage and monitor its performance.</p>
+            <button class="add-bot-btn" style="margin-top: 1rem;" id="empty-add-btn">
+              <i class="fas fa-plus"></i> Add Your First Bot
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resources Section -->
+      <div class="resources-section">
+        <h2>Resource Usage</h2>
+        <p>Monitor your bot resources and usage limits</p>
+        
+        <div class="resource-bars">
+          <div class="resource-bar">
+            <div class="resource-label">
+              <span>CPU Usage</span>
+              <span id="cpu-usage">0%</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill" id="cpu-bar" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="resource-bar">
+            <div class="resource-label">
+              <span>Memory Usage</span>
+              <span id="memory-usage">0 MB / 1024 MB</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill" id="memory-bar" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="resource-bar">
+            <div class="resource-label">
+              <span>Storage Usage</span>
+              <span id="storage-usage">0 GB / 10 GB</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill" id="storage-bar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button class="btn btn-primary" onclick="restartAllBots()">
+            <i class="fas fa-redo"></i> Restart All Bots
+          </button>
+          <button class="btn btn-success" onclick="startAllBots()">
+            <i class="fas fa-play"></i> Start All Bots
+          </button>
+          <button class="btn btn-danger" onclick="stopAllBots()">
+            <i class="fas fa-stop"></i> Stop All Bots
+          </button>
+          <button class="btn btn-info" onclick="showLogs()">
+            <i class="fas fa-file-alt"></i> View Logs
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Bot Modal -->
+  <div class="modal" id="add-bot-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="close-modal">&times;</button>
+      <h2>Add New Bot</h2>
+      <form id="add-bot-form">
+        <div class="form-group">
+          <label for="bot-name">Bot Name</label>
+          <input type="text" id="bot-name" placeholder="Enter bot name" required>
+        </div>
+        <div class="form-group">
+          <label for="bot-token">Bot Token</label>
+          <input type="password" id="bot-token" placeholder="Enter bot token" required>
+        </div>
+        <div class="form-group">
+          <label for="bot-description">Description (Optional)</label>
+          <input type="text" id="bot-description" placeholder="Enter bot description">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-danger" id="cancel-add">Cancel</button>
+          <button type="submit" class="btn btn-success">Add Bot</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // Enhanced authentication check
+    function checkAuth() {
+      const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+      const authToken = localStorage.getItem('ruinHostingAuthToken');
+      
+      if (!currentUser || !authToken) {
+        // Redirect to login if not authenticated
+        window.location.href = 'index.html';
+        return null;
+      }
+      
+      // Verify token is still valid
+      const tokenExpiry = localStorage.getItem('ruinHostingTokenExpiry');
+      if (tokenExpiry && Date.now() > parseInt(tokenExpiry)) {
+        // Token expired, logout user
+        localStorage.removeItem('ruinHostingCurrentUser');
+        localStorage.removeItem('ruinHostingAuthToken');
+        localStorage.removeItem('ruinHostingTokenExpiry');
+        window.location.href = 'index.html';
+        return null;
+      }
+      
+      return currentUser;
+    }
+
+    // Initialize dashboard
+    const currentUser = checkAuth();
+    
+    if (currentUser) {
+      document.getElementById('user-greeting').textContent = `Welcome, ${currentUser.username || 'User'}`;
+      updateDashboard();
+      updateFileSystem();
+      startResourceMonitoring();
+    }
+
+    // Enhanced logout function
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      // Clear all auth data
+      localStorage.removeItem('ruinHostingCurrentUser');
+      localStorage.removeItem('ruinHostingAuthToken');
+      localStorage.removeItem('ruinHostingTokenExpiry');
+      
+      showToast('Logged out successfully', 'success');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+    });
+
+    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const toggleSidebar = document.getElementById('toggle-sidebar');
+
+    toggleSidebar.addEventListener('click', function() {
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('expanded');
+      
+      const icon = toggleSidebar.querySelector('i');
+      if (sidebar.classList.contains('collapsed')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-left');
+      }
+    });
+
+    // Mobile sidebar toggle
+    if (window.innerWidth <= 768) {
+      sidebar.classList.add('collapsed');
+      mainContent.classList.add('expanded');
+    }
+
+    // Modal functionality
+    const addBotModal = document.getElementById('add-bot-modal');
+    const addBotBtn = document.getElementById('add-bot-btn');
+    const emptyAddBtn = document.getElementById('empty-add-btn');
+    const closeModal = document.getElementById('close-modal');
+    const cancelAdd = document.getElementById('cancel-add');
+    const addBotForm = document.getElementById('add-bot-form');
+
+    addBotBtn.addEventListener('click', () => addBotModal.classList.add('active'));
+    emptyAddBtn.addEventListener('click', () => addBotModal.classList.add('active'));
+    
+    closeModal.addEventListener('click', () => addBotModal.classList.remove('active'));
+    cancelAdd.addEventListener('click', () => addBotModal.classList.remove('active'));
+
+    // Add bot form submission
+    addBotForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const botName = document.getElementById('bot-name').value;
+      const botToken = document.getElementById('bot-token').value;
+      const botDescription = document.getElementById('bot-description').value;
+
+      // Create new bot
+      const newBot = {
+        id: Date.now().toString(),
+        name: botName,
+        token: botToken,
+        description: botDescription,
+        status: 'offline',
+        createdAt: new Date().toISOString(),
+        cpuUsage: 0,
+        memoryUsage: 0,
+        storageUsage: 0,
+        lastRestart: null,
+        folderPath: `/bots/${botName.toLowerCase().replace(/\s+/g, '_')}`,
+        logs: []
+      };
+
+      // Update user data
+      if (!currentUser.bots) currentUser.bots = [];
+      currentUser.bots.push(newBot);
+      
+      // Create bot folder and user file
+      createBotFolder(newBot);
+      
+      saveUserData();
+      updateDashboard();
+      updateFileSystem();
+      addBotModal.classList.remove('active');
+      addBotForm.reset();
+      
+      showToast(`Bot "${botName}" added successfully`, 'success');
+    });
+
+    // Create bot folder and user file (simulated)
+    function createBotFolder(bot) {
+      // In a real implementation, this would make an API call to your server
+      // For this demo, we'll simulate the process
+      
+      console.log(`Creating folder: ${bot.folderPath}`);
+      console.log(`Creating user file: ${bot.folderPath}/users.txt`);
+      console.log(`Adding user ID: ${currentUser.id} to users.txt`);
+      
+      // Store the folder structure in localStorage for simulation
+      const fileSystem = JSON.parse(localStorage.getItem('ruinHostingFileSystem')) || {};
+      
+      // Create bot folder
+      if (!fileSystem[bot.folderPath]) {
+        fileSystem[bot.folderPath] = {
+          type: 'folder',
+          created: new Date().toISOString(),
+          contents: {}
+        };
+      }
+      
+      // Create users file
+      const usersFilePath = `${bot.folderPath}/users.txt`;
+      fileSystem[usersFilePath] = {
+        type: 'file',
+        created: new Date().toISOString(),
+        content: `User ID: ${currentUser.id}\nBot Name: ${bot.name}\nCreated: ${new Date().toLocaleString()}\n\n`
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ruinHostingFileSystem', JSON.stringify(fileSystem));
+    }
+
+    // Update file system display
+    function updateFileSystem() {
+      const fileTree = document.getElementById('file-tree');
+      const fileSystem = JSON.parse(localStorage.getItem('ruinHostingFileSystem')) || {};
+      
+      if (Object.keys(fileSystem).length === 0) {
+        fileTree.innerHTML = '<p>No bot folders created yet.</p>';
+        return;
+      }
+      
+      let html = '';
+      
+      // Create tree structure
+      const tree = {};
+      
+      // Build tree from file system
+      Object.keys(fileSystem).forEach(path => {
+        const parts = path.split('/').filter(p => p);
+        let current = tree;
+        
+        parts.forEach((part, index) => {
+          if (!current[part]) {
+            current[part] = {};
+          }
+          current = current[part];
+        });
+      });
+      
+      // Render tree
+      function renderTree(node, depth = 0) {
+        Object.keys(node).forEach(key => {
+          const isFolder = Object.keys(node[key]).length > 0;
+          const indent = '  '.repeat(depth);
+          
+          if (isFolder) {
+            html += `<div class="folder">${indent}<span class="folder-name">📁 ${key}</span>`;
+            html += `<div class="folder-contents">`;
+            renderTree(node[key], depth + 1);
+            html += `</div></div>`;
+          } else {
+            const filePath = Object.keys(fileSystem).find(path => path.endsWith(key));
+            if (filePath && fileSystem[filePath].type === 'file') {
+              html += `<div class="file">${indent}📄 ${key}</div>`;
+            }
+          }
+        });
+      }
+      
+      renderTree(tree);
+      fileTree.innerHTML = html;
+    }
+
+    // Update dashboard with user data
+    function updateDashboard() {
+      if (!currentUser) return;
+      
+      const bots = currentUser.bots || [];
+      const totalBots = bots.length;
+      const onlineBots = bots.filter(bot => bot.status === 'online').length;
+      const offlineBots = bots.filter(bot => bot.status === 'offline').length;
+      
+      // Update stats
+      document.getElementById('total-bots').textContent = totalBots;
+      document.getElementById('online-bots').textContent = onlineBots;
+      document.getElementById('offline-bots').textContent = offlineBots;
+      
+      // Update bots list
+      updateBotsList();
+      
+      // Show/hide empty state
+      const emptyState = document.getElementById('empty-state');
+      emptyState.style.display = totalBots === 0 ? 'block' : 'none';
+    }
+
+    // Update bots list
+    function updateBotsList() {
+      const botsContainer = document.getElementById('bots-container');
+      const bots = currentUser.bots || [];
+      
+      if (bots.length === 0) {
+        botsContainer.innerHTML = `
+          <div class="empty-state" id="empty-state">
+            <i class="fab fa-discord"></i>
+            <h3>No Bots Yet</h3>
+            <p>Get started by adding your first Discord bot to manage and monitor its performance.</p>
+            <button class="add-bot-btn" style="margin-top: 1rem;" id="empty-add-btn">
+              <i class="fas fa-plus"></i> Add Your First Bot
+            </button>
+          </div>
+        `;
+        document.getElementById('empty-add-btn').addEventListener('click', () => addBotModal.classList.add('active'));
+        return;
+      }
+
+      botsContainer.innerHTML = `
+        <div class="bots-grid">
+          ${bots.map(bot => `
+            <div class="bot-card">
+              <div class="bot-header">
+                <div class="bot-info">
+                  <h3>${bot.name}</h3>
+                  <div class="bot-status">
+                    <div class="status-dot ${getStatusClass(bot.status)}"></div>
+                    <span>${bot.status.charAt(0).toUpperCase() + bot.status.slice(1)}</span>
+                  </div>
+                  ${bot.description ? `<p style="color: var(--gray); font-size: 0.8rem; margin-top: 0.3rem;">${bot.description}</p>` : ''}
+                </div>
+                <div class="bot-actions">
+                  ${bot.status === 'online' ? `
+                    <button class="btn btn-warning" onclick="restartBot('${bot.id}')">
+                      <i class="fas fa-redo"></i> Restart
+                    </button>
+                    <button class="btn btn-danger" onclick="stopBot('${bot.id}')">
+                      <i class="fas fa-stop"></i> Stop
+                    </button>
+                  ` : `
+                    <button class="btn btn-success" onclick="startBot('${bot.id}')">
+                      <i class="fas fa-play"></i> Start
+                    </button>
+                  `}
+                  <button class="btn btn-info" onclick="viewBotDetails('${bot.id}')">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                  <button class="btn btn-danger" onclick="deleteBot('${bot.id}')">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="bot-details">
+                <div class="bot-detail">
+                  <span>CPU Usage:</span>
+                  <span>${bot.cpuUsage}%</span>
+                </div>
+                <div class="bot-detail">
+                  <span>Memory:</span>
+                  <span>${bot.memoryUsage} MB</span>
+                </div>
+                <div class="bot-detail">
+                  <span>Folder:</span>
+                  <span>${bot.folderPath}</span>
+                </div>
+                <div class="bot-detail">
+                  <span>Created:</span>
+                  <span>${new Date(bot.createdAt).toLocaleDateString()}</span>
+                </div>
+                ${bot.lastRestart ? `
+                <div class="bot-detail">
+                  <span>Last Restart:</span>
+                  <span>${new Date(bot.lastRestart).toLocaleDateString()}</span>
+                </div>
+                ` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function getStatusClass(status) {
+      switch(status) {
+        case 'online': return 'status-online';
+        case 'offline': return 'status-offline';
+        case 'starting': return 'status-starting';
+        default: return 'status-offline';
+      }
+    }
+
+    // Bot management functions
+    function startBot(botId) {
+      const bot = currentUser.bots.find(b => b.id === botId);
+      if (bot) {
+        bot.status = 'starting';
+        saveUserData();
+        updateBotsList();
+        showToast(`Starting bot "${bot.name}"...`, 'info');
+        
+        // Simulate bot starting process
+        setTimeout(() => {
+          bot.status = 'online';
+          bot.cpuUsage = Math.floor(Math.random() * 30) + 10;
+          bot.memoryUsage = Math.floor(Math.random() * 200) + 50;
+          bot.logs.push({
+            timestamp: new Date().toISOString(),
+            message: 'Bot started successfully'
+          });
+          saveUserData();
+          updateDashboard();
+          showToast(`Bot "${bot.name}" is now online`, 'success');
+        }, 2000);
+      }
+    }
+
+    function stopBot(botId) {
+      const bot = currentUser.bots.find(b => b.id === botId);
+      if (bot) {
+        bot.status = 'offline';
+        bot.cpuUsage = 0;
+        bot.memoryUsage = 0;
+        bot.logs.push({
+          timestamp: new Date().toISOString(),
+          message: 'Bot stopped'
+        });
+        saveUserData();
+        updateDashboard();
+        showToast(`Bot "${bot.name}" stopped`, 'warning');
+      }
+    }
+
+    function restartBot(botId) {
+      const bot = currentUser.bots.find(b => b.id === botId);
+      if (bot) {
+        bot.status = 'starting';
+        bot.lastRestart = new Date().toISOString();
+        saveUserData();
+        updateBotsList();
+        showToast(`Restarting bot "${bot.name}"...`, 'info');
+        
+        // Simulate restart process
+        setTimeout(() => {
+          bot.status = 'online';
+          bot.cpuUsage = Math.floor(Math.random() * 30) + 10;
+          bot.memoryUsage = Math.floor(Math.random() * 200) + 50;
+          bot.logs.push({
+            timestamp: new Date().toISOString(),
+            message: 'Bot restarted successfully'
+          });
+          saveUserData();
+          updateDashboard();
+          showToast(`Bot "${bot.name}" restarted`, 'success');
+        }, 3000);
+      }
+    }
+
+    function deleteBot(botId) {
+      const bot = currentUser.bots.find(b => b.id === botId);
+      if (bot && confirm(`Are you sure you want to delete "${bot.name}"? This will also remove its folder and files.`)) {
+        // Remove bot folder from file system (simulated)
+        const fileSystem = JSON.parse(localStorage.getItem('ruinHostingFileSystem')) || {};
+        Object.keys(fileSystem).forEach(path => {
+          if (path.startsWith(bot.folderPath)) {
+            delete fileSystem[path];
+          }
+        });
+        localStorage.setItem('ruinHostingFileSystem', JSON.stringify(fileSystem));
+        
+        currentUser.bots = currentUser.bots.filter(b => b.id !== botId);
+        saveUserData();
+        updateDashboard();
+        updateFileSystem();
+        showToast(`Bot "${bot.name}" deleted`, 'warning');
+      }
+    }
+
+    function viewBotDetails(botId) {
+      const bot = currentUser.bots.find(b => b.id === botId);
+      if (bot) {
+        const fileSystem = JSON.parse(localStorage.getItem('ruinHostingFileSystem')) || {};
+        const usersFile = fileSystem[`${bot.folderPath}/users.txt`];
+        
+        if (usersFile) {
+          alert(`Bot Details:\n\nName: ${bot.name}\nStatus: ${bot.status}\nFolder: ${bot.folderPath}\n\nUsers File Content:\n${usersFile.content}`);
+        } else {
+          alert(`Bot Details:\n\nName: ${bot.name}\nStatus: ${bot.status}\nFolder: ${bot.folderPath}\n\nNo users file found.`);
+        }
+      }
+    }
+
+    // Bulk actions
+    function startAllBots() {
+      const offlineBots = currentUser.bots.filter(bot => bot.status === 'offline');
+      if (offlineBots.length === 0) {
+        showToast('All bots are already online', 'info');
+        return;
+      }
+      
+      offlineBots.forEach(bot => {
+        startBot(bot.id);
+      });
+      showToast(`Starting ${offlineBots.length} bot(s)...`, 'info');
+    }
+
+    function stopAllBots() {
+      const onlineBots = currentUser.bots.filter(bot => bot.status === 'online' || bot.status === 'starting');
+      if (onlineBots.length === 0) {
+        showToast('All bots are already offline', 'info');
+        return;
+      }
+      
+      onlineBots.forEach(bot => {
+        stopBot(bot.id);
+      });
+      showToast(`Stopping ${onlineBots.length} bot(s)...`, 'info');
+    }
+
+    function restartAllBots() {
+      const onlineBots = currentUser.bots.filter(bot => bot.status === 'online');
+      if (onlineBots.length === 0) {
+        showToast('No online bots to restart', 'info');
+        return;
+      }
+      
+      onlineBots.forEach(bot => {
+        restartBot(bot.id);
+      });
+      showToast(`Restarting ${onlineBots.length} bot(s)...`, 'info');
+    }
+
+    function showLogs() {
+      alert('Logs feature coming soon!');
+    }
+
+    // Resource monitoring
+    function startResourceMonitoring() {
+      setInterval(() => {
+        updateResourceUsage();
+      }, 5000);
+      updateResourceUsage();
+    }
+
+    function updateResourceUsage() {
+      const bots = currentUser.bots || [];
+      
+      // Calculate total resource usage
+      const totalCPU = bots.reduce((sum, bot) => sum + bot.cpuUsage, 0);
+      const totalMemory = bots.reduce((sum, bot) => sum + bot.memoryUsage, 0);
+      const totalStorage = bots.reduce((sum, bot) => sum + bot.storageUsage, 0);
+      
+      // Update resource bars
+      document.getElementById('cpu-usage').textContent = `${totalCPU}%`;
+      document.getElementById('cpu-bar').style.width = `${totalCPU}%`;
+      
+      document.getElementById('memory-usage').textContent = `${totalMemory} MB / 1024 MB`;
+      document.getElementById('memory-bar').style.width = `${(totalMemory / 1024) * 100}%`;
+      
+      document.getElementById('storage-usage').textContent = `${totalStorage} GB / 10 GB`;
+      document.getElementById('storage-bar').style.width = `${(totalStorage / 10) * 100}%`;
+    }
+
+    // Toast notification system
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+      };
+      
+      toast.innerHTML = `
+        <i class="toast-icon ${icons[type]}"></i>
+        <span>${message}</span>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // Show toast
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 100);
+      
+      // Hide toast after 3 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toastContainer.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
+    function saveUserData() {
+      const users = JSON.parse(localStorage.getItem('ruinHostingUsers')) || [];
+      const userIndex = users.findIndex(u => u.id === currentUser.id);
+      if (userIndex !== -1) {
+        users[userIndex] = currentUser;
+        localStorage.setItem('ruinHostingUsers', JSON.stringify(users));
+        localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(currentUser));
+      }
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth <= 768) {
+        sidebar.classList.add('collapsed');
+        mainContent.classList.add('expanded');
+      } else {
+        sidebar.classList.remove('collapsed');
+        mainContent.classList.remove('expanded');
+      }
+    });
+
+    // Auto-refresh auth token (simulated)
+    setInterval(() => {
+      const authToken = localStorage.getItem('ruinHostingAuthToken');
+      if (authToken) {
+        // Extend token expiry by 1 hour
+        const newExpiry = Date.now() + (60 * 60 * 1000);
+        localStorage.setItem('ruinHostingTokenExpiry', newExpiry.toString());
+      }
+    }, 30 * 60 * 1000); // Refresh every 30 minutes
+  </script>
+</body>
+</html>

@@ -104,6 +104,12 @@
       width: 100%;
     }
 
+    .header-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
     .login-btn {
       background: var(--primary);
       color: var(--dark);
@@ -119,6 +125,31 @@
       background: var(--primary-dark);
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(255, 183, 0, 0.3);
+    }
+
+    .logout-btn {
+      background: transparent;
+      color: var(--dark);
+      border: 2px solid var(--primary);
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logout-btn:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .user-welcome {
+      color: var(--dark);
+      font-weight: 500;
+      margin-right: 0.5rem;
     }
 
     /* Hero Section */
@@ -715,6 +746,70 @@
       display: none;
     }
 
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .toast {
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      border-left: 4px solid var(--success);
+      transform: translateX(100%);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-left-color: var(--success);
+    }
+
+    .toast.error {
+      border-left-color: #e53e3e;
+    }
+
+    .toast.warning {
+      border-left-color: var(--secondary);
+    }
+
+    .toast.info {
+      border-left-color: var(--primary);
+    }
+
+    .toast-icon {
+      font-size: 1.2rem;
+    }
+
+    .toast.success .toast-icon {
+      color: var(--success);
+    }
+
+    .toast.error .toast-icon {
+      color: #e53e3e;
+    }
+
+    .toast.warning .toast-icon {
+      color: var(--secondary);
+    }
+
+    .toast.info .toast-icon {
+      color: var(--primary);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .nav-links {
@@ -736,6 +831,15 @@
       .auth-container {
         padding: 2rem 1.5rem;
       }
+      
+      .header-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .user-welcome {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -755,7 +859,13 @@
           <a href="#discord">Discord</a>
           <a href="#testimonials">Testimonials</a>
         </nav>
-        <button class="login-btn" id="authButton">Client Area</button>
+        <div class="header-buttons">
+          <span class="user-welcome" id="user-welcome"></span>
+          <button class="logout-btn" id="logout-btn" style="display: none;">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </button>
+          <button class="login-btn" id="authButton">Client Area</button>
+        </div>
       </div>
     </div>
   </header>
@@ -805,6 +915,9 @@
     </div>
   </div>
 
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
@@ -829,7 +942,7 @@
           <h3>Web Hosting</h3>
           <p>Reliable hosting for websites, applications, and portfolios</p>
           <div class="price free">FREE</div>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Web Hosting')">Get Started</button>
         </div>
         
         <div class="service-card">
@@ -839,7 +952,7 @@
           <h3>Discord Bots</h3>
           <p>Keep your Discord community engaged with reliable bot hosting</p>
           <div class="price free">FREE for first 2 bots</div>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Discord Bots')">Get Started</button>
         </div>
         
         <div class="service-card">
@@ -849,7 +962,7 @@
           <h3>Game Servers</h3>
           <p>High-performance servers for Minecraft and other games</p>
           <div class="price">From £2.50/month</div>
-          <button class="cta-button" onclick="window.location.href='login.html'">View Plans</button>
+          <button class="cta-button" onclick="handleServiceClick('Game Servers')">View Plans</button>
         </div>
       </div>
       
@@ -874,7 +987,7 @@
           <h3>Minecraft Java</h3>
           <div class="status available">Available Now</div>
           <p>Fully customizable Java Edition servers with plugin support</p>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Minecraft Java')">Get Started</button>
         </div>
         
         <div class="game-card">
@@ -884,7 +997,7 @@
           <h3>Minecraft Bedrock</h3>
           <div class="status soon">Coming Soon</div>
           <p>Cross-platform Bedrock Edition servers for all devices</p>
-          <button class="cta-button" onclick="window.location.href='login.html'">Notify Me</button>
+          <button class="cta-button" onclick="handleServiceClick('Minecraft Bedrock')">Notify Me</button>
         </div>
         
         <div class="game-card">
@@ -894,7 +1007,7 @@
           <h3>DayZ</h3>
           <div class="status soon">Coming Soon</div>
           <p>Survival servers for the ultimate post-apocalyptic experience</p>
-          <button class="cta-button" onclick="window.location.href='login.html'">Notify Me</button>
+          <button class="cta-button" onclick="handleServiceClick('DayZ')">Notify Me</button>
         </div>
         
         <div class="game-card">
@@ -904,7 +1017,7 @@
           <h3>Rust</h3>
           <div class="status soon">Coming Soon</div>
           <p>Survival servers where the only goal is to survive</p>
-          <button class="cta-button" onclick="window.location.href='login.html'">Notify Me</button>
+          <button class="cta-button" onclick="handleServiceClick('Rust')">Notify Me</button>
         </div>
       </div>
     </div>
@@ -930,7 +1043,7 @@
             <li>Basic DDoS Protection</li>
             <li>Basic Support</li>
           </ul>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Free Plan')">Get Started</button>
         </div>
         
         <div class="pricing-card">
@@ -945,7 +1058,7 @@
             <li>DDoS Protection</li>
             <li>Priority Support</li>
           </ul>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Starter Plan')">Get Started</button>
         </div>
         
         <div class="pricing-card">
@@ -960,7 +1073,7 @@
             <li>DDoS Protection</li>
             <li>Priority Support</li>
           </ul>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Pro Plan')">Get Started</button>
         </div>
         
         <div class="pricing-card popular">
@@ -976,7 +1089,7 @@
             <li>Advanced DDoS Protection</li>
             <li>Priority 24/7 Support</li>
           </ul>
-          <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Custom Plan')">Get Started</button>
         </div>
       </div>
     </div>
@@ -995,7 +1108,7 @@
           <li>4GB SSD Storage</li>
           <li>24/7 Operation</li>
         </ul>
-        <button class="cta-button" onclick="window.location.href='login.html'" style="margin-top: 1.5rem;">Claim Free Hosting</button>
+        <button class="cta-button" onclick="handleServiceClick('Discord Bot Hosting')" style="margin-top: 1.5rem;">Claim Free Hosting</button>
       </div>
     </div>
   </section>
@@ -1160,6 +1273,8 @@
     const authModal = document.getElementById('authModal');
     const authButton = document.getElementById('authButton');
     const heroAuthButton = document.getElementById('heroAuthButton');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userWelcome = document.getElementById('user-welcome');
     const closeAuth = document.getElementById('closeAuth');
     const authTabs = document.querySelectorAll('.auth-tab');
     const authForms = document.querySelectorAll('.auth-form');
@@ -1170,14 +1285,60 @@
     const loginSuccess = document.getElementById('loginSuccess');
     const registerSuccess = document.getElementById('registerSuccess');
 
+    // Check authentication state on page load
+    function checkAuthState() {
+      const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+      const authToken = localStorage.getItem('ruinHostingAuthToken');
+      
+      if (currentUser && authToken) {
+        // User is logged in
+        updateUIForLoggedIn(currentUser);
+      } else {
+        // User is not logged in
+        updateUIForLoggedOut();
+      }
+    }
+
+    // Update UI when user is logged in
+    function updateUIForLoggedIn(user) {
+      userWelcome.textContent = `Welcome, ${user.username || user.email}`;
+      userWelcome.style.display = 'inline';
+      logoutBtn.style.display = 'flex';
+      authButton.textContent = 'Dashboard';
+      heroAuthButton.textContent = 'Go to Dashboard';
+    }
+
+    // Update UI when user is logged out
+    function updateUIForLoggedOut() {
+      userWelcome.textContent = '';
+      userWelcome.style.display = 'none';
+      logoutBtn.style.display = 'none';
+      authButton.textContent = 'Client Area';
+      heroAuthButton.textContent = 'Get Started - Client Area';
+    }
+
     // Show auth modal
     authButton.addEventListener('click', () => {
-      authModal.classList.add('active');
+      const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+      if (currentUser) {
+        // User is logged in, redirect to dashboard
+        window.location.href = 'dashboard.html';
+      } else {
+        // User is not logged in, show auth modal
+        authModal.classList.add('active');
+      }
     });
 
     heroAuthButton.addEventListener('click', (e) => {
       e.preventDefault();
-      authModal.classList.add('active');
+      const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+      if (currentUser) {
+        // User is logged in, redirect to dashboard
+        window.location.href = 'dashboard.html';
+      } else {
+        // User is not logged in, show auth modal
+        authModal.classList.add('active');
+      }
     });
 
     // Close auth modal
@@ -1241,12 +1402,25 @@
           const user = userCredential.user;
           showSuccess(loginSuccess, 'Successfully signed in!');
           
+          // Get user data
+          const userData = {
+            id: user.uid,
+            email: user.email,
+            username: user.displayName || user.email.split('@')[0]
+          };
+          
+          // Store user data and auth token
+          localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(userData));
+          localStorage.setItem('ruinHostingAuthToken', user.accessToken);
+          localStorage.setItem('ruinHostingTokenExpiry', (Date.now() + (60 * 60 * 1000)).toString());
+          
           // Update UI
-          updateUI(user);
+          updateUIForLoggedIn(userData);
           
           // Close modal after delay
           setTimeout(() => {
             authModal.classList.remove('active');
+            showToast('Successfully signed in!', 'success');
           }, 1500);
         })
         .catch((error) => {
@@ -1276,12 +1450,25 @@
           }).then(() => {
             showSuccess(registerSuccess, 'Account created successfully!');
             
+            // Get user data
+            const userData = {
+              id: user.uid,
+              email: user.email,
+              username: username
+            };
+            
+            // Store user data and auth token
+            localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(userData));
+            localStorage.setItem('ruinHostingAuthToken', user.accessToken);
+            localStorage.setItem('ruinHostingTokenExpiry', (Date.now() + (60 * 60 * 1000)).toString());
+            
             // Update UI
-            updateUI(user);
+            updateUIForLoggedIn(userData);
             
             // Close modal after delay
             setTimeout(() => {
               authModal.classList.remove('active');
+              showToast('Account created successfully!', 'success');
             }, 1500);
           });
         })
@@ -1292,42 +1479,72 @@
         });
     });
 
-    // Update UI based on authentication state
-    function updateUI(user) {
-      if (user) {
-        // User is signed in
-        authButton.textContent = `Welcome, ${user.displayName || user.email}`;
-        authButton.onclick = function() {
-          // Redirect to dashboard or show user menu
-          window.location.href = 'dashboard.html';
-        };
+    // Handle logout
+    logoutBtn.addEventListener('click', function() {
+      // Sign out from Firebase
+      auth.signOut().then(() => {
+        // Clear all auth data
+        localStorage.removeItem('ruinHostingCurrentUser');
+        localStorage.removeItem('ruinHostingAuthToken');
+        localStorage.removeItem('ruinHostingTokenExpiry');
         
-        // Update hero button
-        heroAuthButton.textContent = 'Go to Dashboard';
-        heroAuthButton.onclick = function(e) {
-          e.preventDefault();
-          window.location.href = 'dashboard.html';
-        };
+        // Update UI
+        updateUIForLoggedOut();
+        
+        // Show success message
+        showToast('Successfully signed out!', 'info');
+      }).catch((error) => {
+        console.error('Error signing out:', error);
+        showToast('Error signing out', 'error');
+      });
+    });
+
+    // Handle service clicks
+    function handleServiceClick(serviceName) {
+      const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+      if (currentUser) {
+        // User is logged in, redirect to dashboard
+        window.location.href = 'dashboard.html';
       } else {
-        // User is signed out
-        authButton.textContent = 'Client Area';
-        authButton.onclick = function() {
-          authModal.classList.add('active');
-        };
-        
-        // Update hero button
-        heroAuthButton.textContent = 'Get Started - Client Area';
-        heroAuthButton.onclick = function(e) {
-          e.preventDefault();
-          authModal.classList.add('active');
-        };
+        // User is not logged in, show auth modal
+        authModal.classList.add('active');
+        showToast(`Please sign in to access ${serviceName}`, 'info');
       }
     }
 
-    // Check auth state on page load
-    auth.onAuthStateChanged((user) => {
-      updateUI(user);
-    });
+    // Toast notification system
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+      };
+      
+      toast.innerHTML = `
+        <i class="toast-icon ${icons[type]}"></i>
+        <span>${message}</span>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // Show toast
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 100);
+      
+      // Hide toast after 3 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toastContainer.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
 
     // Close modal when clicking outside
     window.addEventListener('click', (e) => {
@@ -1336,6 +1553,9 @@
         clearErrors();
       }
     });
+
+    // Check auth state on page load
+    document.addEventListener('DOMContentLoaded', checkAuthState);
   </script>
 </body>
 </html>
