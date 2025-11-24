@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <style>
     :root {
       --primary: #ffd700;
@@ -579,6 +582,139 @@
       font-weight: 600;
     }
 
+    /* Auth Modal */
+    .auth-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .auth-modal.active {
+      display: flex;
+    }
+
+    .auth-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      background: none;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--gray);
+      transition: all 0.3s;
+    }
+
+    .auth-tab.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+    }
+
+    .auth-form h2 {
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .auth-submit {
+      width: 100%;
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 1rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+    }
+
+    .auth-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .auth-error {
+      color: #e53e3e;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .auth-success {
+      color: var(--success);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .nav-links {
@@ -595,6 +731,10 @@
       
       .discord-card {
         padding: 2.5rem 1.5rem;
+      }
+      
+      .auth-container {
+        padding: 2rem 1.5rem;
       }
     }
   </style>
@@ -615,17 +755,62 @@
           <a href="#discord">Discord</a>
           <a href="#testimonials">Testimonials</a>
         </nav>
-        <button class="login-btn" onclick="window.location.href='login.html'">Client Area</button>
+        <button class="login-btn" id="authButton">Client Area</button>
       </div>
     </div>
   </header>
+
+  <!-- Auth Modal -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-container">
+      <button class="auth-close" id="closeAuth">&times;</button>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Sign In</button>
+        <button class="auth-tab" data-tab="register">Sign Up</button>
+      </div>
+      
+      <form class="auth-form active" id="loginForm">
+        <h2>Sign In to Your Account</h2>
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <div class="auth-error" id="loginError"></div>
+        <div class="auth-success" id="loginSuccess"></div>
+        <button type="submit" class="auth-submit">Sign In</button>
+      </form>
+      
+      <form class="auth-form" id="registerForm">
+        <h2>Create an Account</h2>
+        <div class="form-group">
+          <label for="registerUsername">Username</label>
+          <input type="text" id="registerUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" required>
+        </div>
+        <div class="auth-error" id="registerError"></div>
+        <div class="auth-success" id="registerSuccess"></div>
+        <button type="submit" class="auth-submit">Create Account</button>
+      </form>
+    </div>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
       <h1>Hosting That Does Not Break The Bank</h1>
       <p>Premium web hosting, game servers, and Discord bot hosting at prices that will not empty your wallet</p>
-      <a href="login.html" class="cta-button">Get Started - Client Area</a>
+      <a href="#" class="cta-button" id="heroAuthButton">Get Started - Client Area</a>
     </div>
   </section>
 
@@ -956,17 +1141,199 @@
   </footer>
 
   <script>
-    // Check if user is logged in and update button text
-    window.addEventListener('load', function() {
-      const currentUser = localStorage.getItem('ruinHostingCurrentUser');
-      const loginBtn = document.querySelector('.login-btn');
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoiyRh6aylOL7EUbJUuH_tf9l3buyW96o",
+      authDomain: "ruinhostingservers.firebaseapp.com",
+      projectId: "ruinhostingservers",
+      storageBucket: "ruinhostingservers.firebasestorage.app",
+      messagingSenderId: "1002853469200",
+      appId: "1:1002853469200:web:28f6f7a037088d73d38e95",
+      measurementId: "G-S9L2GXSX1X"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // DOM Elements
+    const authModal = document.getElementById('authModal');
+    const authButton = document.getElementById('authButton');
+    const heroAuthButton = document.getElementById('heroAuthButton');
+    const closeAuth = document.getElementById('closeAuth');
+    const authTabs = document.querySelectorAll('.auth-tab');
+    const authForms = document.querySelectorAll('.auth-form');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginError = document.getElementById('loginError');
+    const registerError = document.getElementById('registerError');
+    const loginSuccess = document.getElementById('loginSuccess');
+    const registerSuccess = document.getElementById('registerSuccess');
+
+    // Show auth modal
+    authButton.addEventListener('click', () => {
+      authModal.classList.add('active');
+    });
+
+    heroAuthButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      authModal.classList.add('active');
+    });
+
+    // Close auth modal
+    closeAuth.addEventListener('click', () => {
+      authModal.classList.remove('active');
+      clearErrors();
+    });
+
+    // Switch between login and register tabs
+    authTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.getAttribute('data-tab');
+        
+        // Update active tab
+        authTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Show corresponding form
+        authForms.forEach(form => {
+          form.classList.remove('active');
+          if (form.id === `${tabName}Form`) {
+            form.classList.add('active');
+          }
+        });
+        
+        clearErrors();
+      });
+    });
+
+    // Clear error messages
+    function clearErrors() {
+      loginError.style.display = 'none';
+      registerError.style.display = 'none';
+      loginSuccess.style.display = 'none';
+      registerSuccess.style.display = 'none';
+    }
+
+    // Show error message
+    function showError(element, message) {
+      element.textContent = message;
+      element.style.display = 'block';
+    }
+
+    // Show success message
+    function showSuccess(element, message) {
+      element.textContent = message;
+      element.style.display = 'block';
+    }
+
+    // Handle login
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearErrors();
       
-      if (currentUser) {
-        const user = JSON.parse(currentUser);
-        loginBtn.textContent = `Welcome, ${user.username}`;
-        loginBtn.onclick = function() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          showSuccess(loginSuccess, 'Successfully signed in!');
+          
+          // Update UI
+          updateUI(user);
+          
+          // Close modal after delay
+          setTimeout(() => {
+            authModal.classList.remove('active');
+          }, 1500);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          showError(loginError, errorMessage);
+        });
+    });
+
+    // Handle registration
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearErrors();
+      
+      const username = document.getElementById('registerUsername').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          
+          // Update user profile with username
+          user.updateProfile({
+            displayName: username
+          }).then(() => {
+            showSuccess(registerSuccess, 'Account created successfully!');
+            
+            // Update UI
+            updateUI(user);
+            
+            // Close modal after delay
+            setTimeout(() => {
+              authModal.classList.remove('active');
+            }, 1500);
+          });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          showError(registerError, errorMessage);
+        });
+    });
+
+    // Update UI based on authentication state
+    function updateUI(user) {
+      if (user) {
+        // User is signed in
+        authButton.textContent = `Welcome, ${user.displayName || user.email}`;
+        authButton.onclick = function() {
+          // Redirect to dashboard or show user menu
           window.location.href = 'dashboard.html';
         };
+        
+        // Update hero button
+        heroAuthButton.textContent = 'Go to Dashboard';
+        heroAuthButton.onclick = function(e) {
+          e.preventDefault();
+          window.location.href = 'dashboard.html';
+        };
+      } else {
+        // User is signed out
+        authButton.textContent = 'Client Area';
+        authButton.onclick = function() {
+          authModal.classList.add('active');
+        };
+        
+        // Update hero button
+        heroAuthButton.textContent = 'Get Started - Client Area';
+        heroAuthButton.onclick = function(e) {
+          e.preventDefault();
+          authModal.classList.add('active');
+        };
+      }
+    }
+
+    // Check auth state on page load
+    auth.onAuthStateChanged((user) => {
+      updateUI(user);
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === authModal) {
+        authModal.classList.remove('active');
+        clearErrors();
       }
     });
   </script>
