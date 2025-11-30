@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0e1121;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .console-box {
+      background: white;
+      flex: 1;
+      margin: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 4px;
+    }
+
+    .console-text {
+      font-size: 40px;
+      text-align: center;
+      margin-top: 40px;
+      color: black;
+    }
+
+    .console-commands {
+      text-align: center;
+      padding: 10px;
+      font-size: 24px;
+      border-top: 2px solid black;
+      background: #f5f5f5;
+    }
+
+    .sidebar {
+      width: 230px;
+      margin: 30px 30px 30px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .logo {
+      background: none;
+      color: yellow;
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .logo span {
+      color: red;
+    }
+
+    .btn {
+      width: 100%;
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px; /* Reduced for readability on smaller screens */
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid black;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .start   { background: #00ff66; }
+    .stop    { background: #ff5c33; }
+    .restart { background: #ffb732; }
+    .files   { background: #93d6ff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">Dash<span>Bot</span></div>
+      <button class="btn start">▶️ Start</button>
+      <button class="btn stop">⏹️ Stop</button>
+      <button class="btn restart">🔄 Restart</button>
+      <button class="btn files">📁 Files</button>
+    </div>
+
+    <!-- Console -->
+    <div class="console-box">
+      <div class="console-text">Welcome to the Dashboard</div>
+      <div class="console-commands">🟢 System idle — ready for commands</div>
+    </div>
+  </div>
+</body>
+</html>
