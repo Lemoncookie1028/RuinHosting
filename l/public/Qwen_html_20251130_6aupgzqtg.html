@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minecraft Bedrock Server Dashboard</title>
+  <style>
+    :root { --bg: #0f0f1b; --card-bg: #1a1a2e; --text: #e6e6ff; --text-secondary: #a0a0c0; --accent: #4a90e2; --border: #2d2d44; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 2rem; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header p { color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem; }
+    section { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border); }
+    h2 { font-size: 1.4rem; margin-bottom: 1rem; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 1.25rem; }
+    .server-list { text-align: center; padding: 2.5rem 1rem; }
+    .server-list h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+    .server-list p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 1.25rem; }
+    .btn { display: inline-block; padding: 0.65rem 1.5rem; background: var(--accent); color: #0f0f1b; font-weight: 600; text-decoration: none; border-radius: 6px; }
+    .btn:hover { opacity: 0.9; }
+    .bars { display: flex; flex-direction: column; gap: 1rem; }
+    .bar-row { display: flex; flex-direction: column; }
+    .bar-header { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .bar-track { height: 8px; background: #2d2d44; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+    .file-tree { font-family: monospace; font-size: 0.95rem; background: #121220; padding: 1rem; border-radius: 8px; white-space: pre; overflow-x: auto; color: #c5c5e0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧱 Minecraft Bedrock Server Dashboard</h1>
+      <p>Control your cross-platform Bedrock server (Windows, Linux, Docker) — ideal for mobile & console players.</p>
+    </header>
+
+    <section>
+      <h2>Server Management Dashboard</h2>
+      <p class="subtitle">Monitor player count, world version, LAN status, and automatic updates.</p>
+    </section>
+
+    <section>
+      <h2>Server File System</h2>
+      <p class="subtitle">Manage worlds, behavior/resource packs, and server configuration.</p>
+      <div class="file-tree">
+/bedrock-server/
+├── bedrock_server
+├── server.properties
+├── permissions.json
+├── whitelist.json
+├── worlds/
+│   └── Bedrock Level/
+│       ├── db/
+│       ├── level.dat
+│       └──levelname.txt
+├── resource_packs/
+├── behavior_packs/
+└── logs/
+    └── server.log
+      </div>
+    </section>
+
+    <section>
+      <h2>Your Bedrock Servers</h2>
+      <div class="server-list">
+        <h3>🥷 No Servers Yet</h3>
+        <p>Deploy a Bedrock Edition server (v1.20+) for cross-play with Xbox, Switch, and mobile.</p>
+        <a href="#" class="btn">➕ Create Bedrock Server</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Resource Usage</h2>
+      <p class="subtitle">Current performance metrics for Bedrock instances.</p>
+      <div class="bars">
+        <div class="bar-row">
+          <div class="bar-header"><span>CPU</span><span>22%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:22%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Memory</span><span>0.9 / 2.0 GB</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:45%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>World Size</span><span>412 MB / 5 GB</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:8%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Players Online</span><span>3 / 20</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:15%; background:#4ade80"></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

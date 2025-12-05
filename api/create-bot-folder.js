@@ -1,53 +1,29 @@
-const fs = require('fs').promises;
-const path = require('path');
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Only POST allowed" });
+  }
 
-module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  const { botName } = req.body;
+
+  if (!botName) {
+    return res.status(400).json({ error: "Missing botName" });
   }
 
   try {
-    const { userId, botName, botId, username } = req.body;
-    
-    // For Vercel, we'll use /tmp directory which is writable
-    const BASE_DIR = path.join('/tmp', 'ruin-hosting-bots');
-    
-    // Create bot folder path
-    const botFolderPath = path.join(BASE_DIR, botName.toLowerCase().replace(/\s+/g, '_'));
-    
-    // Create bot folder
-    await fs.mkdir(botFolderPath, { recursive: true });
-    
-    // Create users.txt file
-    const usersFilePath = path.join(botFolderPath, 'users.txt');
-    const userContent = `User ID: ${userId}\nUsername: ${username}\nBot Name: ${botName}\nBot ID: ${botId}\nCreated: ${new Date().toLocaleString()}\n\n`;
-    
-    await fs.writeFile(usersFilePath, userContent);
-    
-    // Create bot configuration file
-    const configFilePath = path.join(botFolderPath, 'config.json');
-    const configContent = {
-      botId: botId,
-      botName: botName,
-      owner: userId,
-      createdAt: new Date().toISOString(),
-      status: 'offline'
-    };
-    
-    await fs.writeFile(configFilePath, JSON.stringify(configContent, null, 2));
-    
-    res.json({
-      success: true,
-      message: 'Bot folder created successfully',
-      folderPath: botFolderPath
+    // FORWARD TO YOUR HOME PC
+    const forward = await fetch("http://127.0.0.1:8080/create-bot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ botName })
     });
-    
-  } catch (error) {
-    console.error('Error creating bot folder:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create bot folder',
-      error: error.message
+
+    const data = await forward.json();
+    return res.status(200).json(data);
+
+  } catch (err) {
+    return res.status(500).json({
+      error: "Could not reach your PC server. Is it running?",
+      details: err.toString()
     });
   }
-};
+}

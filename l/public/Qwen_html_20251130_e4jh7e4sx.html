@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Hosting Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f0f1b;
+      --card-bg: #1a1a2e;
+      --text: #e6e6ff;
+      --text-secondary: #a0a0c0;
+      --accent: #818cf8; /* Soft indigo — web-friendly */
+      --border: #2d2d44;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    section {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .no-items {
+      text-align: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .no-items p {
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.65rem 1.5rem;
+      background: var(--accent);
+      color: #0f0f1b;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .file-tree {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.95rem;
+      white-space: pre;
+      color: #c5c5e0;
+      background: #121220;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .bars {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: #2d2d44;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌐 Web Hosting Dashboard</h1>
+      <p class="subtitle">Manage your websites, monitor uptime, and control resources — all in one place.</p>
+    </header>
+
+    <section>
+      <h2>Site Management Dashboard</h2>
+      <p class="subtitle">Monitor and control all your hosted websites, domains, and databases in one place.</p>
+    </section>
+
+    <section>
+      <h2>Website File System</h2>
+      <p class="subtitle">View the folder structure created for your websites.</p>
+      <div class="file-tree">
+/public_html/
+├── index.html
+├── assets/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── main.js
+│   └── images/
+│       ├── logo.png
+│       └── banner.jpg
+├── blog/
+│   └── index.html
+├── .htaccess
+├── robots.txt
+└── wp-config.php
+      </div>
+    </section>
+
+    <section>
+      <h2>Your Websites</h2>
+      <div class="no-items">
+        <h3>🥷 No Websites Yet</h3>
+        <p>Get started by adding your first website to manage and monitor its performance.</p>
+        <a href="#" class="btn">➕ Deploy New Site</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Resource Usage</h2>
+      <p class="subtitle">Monitor your website resources and usage limits.</p>
+      <div class="bars">
+        <div class="bar-row">
+          <div class="bar-header"><span>Storage</span><span>1.4 / 10 GB</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Bandwidth</span><span>27 / 100 GB</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:27%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Databases</span><span>1 / 5</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:20%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Domains</span><span>0 / 3</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

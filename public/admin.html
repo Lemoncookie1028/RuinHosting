@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuinHosting Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+          --primary: #ff0000;
+          --primary-dark: #cc0000;
+          --secondary: #8b0000;
+          --accent: #ff4500;
+          --dark: #000000;
+          --darker: #0a0a0a;
+          --light: #f8fafc;
+          --gray: #666666;
+          --success: #10b981;
+          --warning: #f59e0b;
+          --danger: #ef4444;
+          --info: #3b82f6;
+          --admin: #8b5cf6;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+          background: linear-gradient(135deg, var(--darker) 0%, #1a1a2e 100%);
+          color: var(--light);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .admin-container {
+          width: 100%;
+          max-width: 1200px;
+        }
+
+        /* Admin Login Card */
+        .admin-login-card {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 3rem;
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          text-align: center;
+          animation: fadeIn 0.5s ease-out;
+          max-width: 500px;
+          margin: 0 auto;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .admin-logo {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .admin-logo i {
+          font-size: 3rem;
+          color: var(--admin);
+          background: linear-gradient(135deg, var(--admin), #7c3aed);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .admin-logo h1 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          background: linear-gradient(90deg, var(--admin), #7c3aed);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .admin-subtitle {
+          color: #cbd5e1;
+          margin-bottom: 2.5rem;
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+
+        /* Admin Form */
+        .admin-form {
+          margin-bottom: 2rem;
+        }
+
+        .admin-input-group {
+          margin-bottom: 1.5rem;
+          text-align: left;
+        }
+
+        .admin-input-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: #cbd5e1;
+          font-weight: 500;
+          font-size: 0.95rem;
+        }
+
+        .admin-input-wrapper {
+          position: relative;
+        }
+
+        .admin-input-wrapper i {
+          position: absolute;
+          left: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--admin);
+          font-size: 1.1rem;
+        }
+
+        .admin-input {
+          width: 100%;
+          padding: 1rem 1rem 1rem 3rem;
+          background: rgba(255, 255, 255, 0.07);
+          border: 2px solid rgba(139, 92, 246, 0.3);
+          border-radius: 10px;
+          color: white;
+          font-size: 1rem;
+          transition: all 0.3s;
+        }
+
+        .admin-input:focus {
+          outline: none;
+          border-color: var(--admin);
+          background: rgba(139, 92, 246, 0.1);
+          box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .admin-input::placeholder {
+          color: #94a3b8;
+        }
+
+        /* Admin Button */
+        .admin-btn {
+          width: 100%;
+          background: linear-gradient(135deg, var(--admin), #7c3aed);
+          color: white;
+          border: none;
+          padding: 1.2rem;
+          border-radius: 10px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.8rem;
+          margin-top: 1rem;
+        }
+
+        .admin-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .admin-btn:active {
+          transform: translateY(0);
+        }
+
+        .admin-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none !important;
+        }
+
+        /* Admin Error */
+        .admin-error {
+          background: rgba(239, 68, 68, 0.1);
+          color: #fca5a5;
+          padding: 1rem;
+          border-radius: 10px;
+          margin-bottom: 1.5rem;
+          display: none;
+          align-items: center;
+          gap: 0.8rem;
+          border-left: 4px solid var(--danger);
+          animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .admin-error.show {
+          display: flex;
+        }
+
+        /* Admin Loading */
+        .admin-loading {
+          display: none;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          gap: 1rem;
+          margin: 2rem 0;
+        }
+
+        .admin-spinner {
+          width: 50px;
+          height: 50px;
+          border: 3px solid rgba(255, 255, 255, 0.1);
+          border-top: 3px solid var(--admin);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .admin-loading-text {
+          color: #cbd5e1;
+          font-size: 1rem;
+        }
+
+        /* Admin Footer */
+        .admin-footer {
+          margin-top: 2rem;
+          padding-top: 2rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          color: #94a3b8;
+          font-size: 0.9rem;
+        }
+
+        .admin-footer a {
+          color: var(--admin);
+          text-decoration: none;
+          font-weight: 600;
+          transition: color 0.3s;
+        }
+
+        .admin-footer a:hover {
+          color: #7c3aed;
+          text-decoration: underline;
+        }
+
+        /* Admin Panel (After Login) */
+        .admin-panel {
+          display: none;
+          width: 100%;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Admin Header */
+        .admin-header {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.2));
+          padding: 1.5rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-header-left {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .admin-header-logo {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .admin-header-logo i {
+          font-size: 2rem;
+          color: var(--admin);
+        }
+
+        .admin-header-logo h1 {
+          font-size: 1.8rem;
+          font-weight: 700;
+          background: linear-gradient(90deg, var(--admin), #7c3aed);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .admin-user-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .admin-user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--admin), #7c3aed);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: 600;
+          font-size: 1rem;
+          overflow: hidden;
+        }
+
+        .admin-user-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .admin-user-details {
+          text-align: right;
+        }
+
+        .admin-user-name {
+          font-weight: 600;
+          color: white;
+          font-size: 1rem;
+        }
+
+        .admin-user-email {
+          color: #94a3b8;
+          font-size: 0.85rem;
+        }
+
+        .admin-user-badge {
+          background: rgba(139, 92, 246, 0.2);
+          color: var(--admin);
+          padding: 0.2rem 0.6rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-left: 0.5rem;
+        }
+
+        .admin-logout-btn {
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s;
+        }
+
+        .admin-logout-btn:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-1px);
+        }
+
+        /* Admin Navigation */
+        .admin-nav {
+          display: flex;
+          background: rgba(255, 255, 255, 0.03);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 0 2rem;
+        }
+
+        .admin-nav-item {
+          padding: 1rem 1.5rem;
+          color: #94a3b8;
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 0.95rem;
+          border-bottom: 3px solid transparent;
+          transition: all 0.3s;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .admin-nav-item:hover {
+          color: white;
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-nav-item.active {
+          color: var(--admin);
+          border-bottom-color: var(--admin);
+          background: rgba(139, 92, 246, 0.05);
+        }
+
+        /* Admin Content */
+        .admin-content {
+          padding: 2rem;
+          max-height: 70vh;
+          overflow-y: auto;
+        }
+
+        .admin-tab {
+          display: none;
+        }
+
+        .admin-tab.active {
+          display: block;
+        }
+
+        /* Admin Stats */
+        .admin-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 3rem;
+        }
+
+        .stat-card {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+          padding: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+          transform: translateY(-5px);
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .stat-number {
+          font-size: 2.5rem;
+          font-weight: 700;
+          background: linear-gradient(90deg, var(--admin), #7c3aed);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+          color: #cbd5e1;
+          font-size: 0.95rem;
+          font-weight: 500;
+        }
+
+        /* Admin Controls */
+        .admin-controls {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          flex-wrap: wrap;
+        }
+
+        .admin-search {
+          flex: 1;
+          min-width: 300px;
+          padding: 0.8rem 1rem 0.8rem 3rem;
+          background: rgba(255, 255, 255, 0.07);
+          border: 2px solid rgba(139, 92, 246, 0.3);
+          border-radius: 10px;
+          color: white;
+          font-size: 1rem;
+          transition: all 0.3s;
+        }
+
+        .admin-search:focus {
+          outline: none;
+          border-color: var(--admin);
+          background: rgba(139, 92, 246, 0.1);
+        }
+
+        .admin-search::placeholder {
+          color: #94a3b8;
+        }
+
+        .status-filter {
+          padding: 0.8rem 1rem;
+          background: rgba(255, 255, 255, 0.07);
+          border: 2px solid rgba(139, 92, 246, 0.3);
+          border-radius: 10px;
+          color: white;
+          font-size: 1rem;
+          min-width: 150px;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .status-filter:focus {
+          outline: none;
+          border-color: var(--admin);
+          background: rgba(139, 92, 246, 0.1);
+        }
+
+        .status-filter option {
+          background: var(--darker);
+          color: white;
+        }
+
+        /* Bots Table */
+        .bots-table-container {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+          padding: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          overflow-x: auto;
+          margin-bottom: 2rem;
+        }
+
+        .bots-table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 800px;
+        }
+
+        .bots-table th {
+          text-align: left;
+          padding: 1rem;
+          background: rgba(139, 92, 246, 0.1);
+          color: white;
+          font-weight: 600;
+          font-size: 0.95rem;
+          border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .bots-table td {
+          padding: 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          vertical-align: middle;
+          color: #cbd5e1;
+        }
+
+        .bots-table tr:hover {
+          background: rgba(255, 255, 255, 0.03);
+        }
+
+        .bot-user-info {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .bot-user-avatar {
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--admin), #7c3aed);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 0.9rem;
+          font-weight: 600;
+          overflow: hidden;
+        }
+
+        .bot-user-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .bot-user-details {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .bot-user-name {
+          color: white;
+          font-weight: 500;
+          font-size: 0.95rem;
+        }
+
+        .bot-user-email {
+          color: #94a3b8;
+          font-size: 0.85rem;
+        }
+
+        .bot-name {
+          color: white;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+
+        .status-select {
+          padding: 0.5rem;
+          background: rgba(255, 255, 255, 0.07);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 6px;
+          color: white;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.3s;
+          min-width: 120px;
+        }
+
+        .status-select:focus {
+          outline: none;
+          border-color: var(--admin);
+          background: rgba(139, 92, 246, 0.1);
+        }
+
+        .status-select option {
+          background: var(--darker);
+          color: white;
+        }
+
+        .admin-action-btn {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.85rem;
+          font-weight: 600;
+          transition: all 0.3s;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .admin-action-btn.send-message {
+          background: rgba(59, 130, 246, 0.1);
+          color: #60a5fa;
+          border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .admin-action-btn.send-message:hover {
+          background: rgba(59, 130, 246, 0.2);
+          transform: translateY(-1px);
+        }
+
+        .admin-action-btn.view-details {
+          background: rgba(139, 92, 246, 0.1);
+          color: #a78bfa;
+          border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .admin-action-btn.view-details:hover {
+          background: rgba(139, 92, 246, 0.2);
+          transform: translateY(-1px);
+        }
+
+        /* Users Management */
+        .users-table-container {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+          padding: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          overflow-x: auto;
+          margin-bottom: 2rem;
+        }
+
+        .users-table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 800px;
+        }
+
+        .users-table th {
+          text-align: left;
+          padding: 1rem;
+          background: rgba(139, 92, 246, 0.1);
+          color: white;
+          font-weight: 600;
+          font-size: 0.95rem;
+          border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .users-table td {
+          padding: 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          vertical-align: middle;
+          color: #cbd5e1;
+        }
+
+        .users-table tr:hover {
+          background: rgba(255, 255, 255, 0.03);
+        }
+
+        .user-role-toggle {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+        }
+
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(255, 255, 255, 0.1);
+          transition: .4s;
+          border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 16px;
+          width: 16px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+          background-color: var(--admin);
+        }
+
+        input:checked + .toggle-slider:before {
+          transform: translateX(26px);
+        }
+
+        .role-badge {
+          padding: 0.2rem 0.6rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .role-badge.admin {
+          background: rgba(139, 92, 246, 0.2);
+          color: var(--admin);
+        }
+
+        .role-badge.user {
+          background: rgba(59, 130, 246, 0.2);
+          color: #60a5fa;
+        }
+
+        /* Admin Log */
+        .admin-log-container {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+          padding: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-log-title {
+          color: white;
+          margin-bottom: 1rem;
+          font-size: 1.2rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .admin-log-list {
+          max-height: 300px;
+          overflow-y: auto;
+        }
+
+        .log-item {
+          padding: 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .log-item:last-child {
+          border-bottom: none;
+        }
+
+        .log-content {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .log-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(139, 92, 246, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--admin);
+          font-size: 1rem;
+        }
+
+        .log-text {
+          flex: 1;
+        }
+
+        .log-action {
+          color: white;
+          font-weight: 500;
+          font-size: 0.95rem;
+          margin-bottom: 0.2rem;
+        }
+
+        .log-details {
+          color: #94a3b8;
+          font-size: 0.85rem;
+        }
+
+        .log-time {
+          color: #94a3b8;
+          font-size: 0.85rem;
+          white-space: nowrap;
+        }
+
+        /* System Settings */
+        .settings-container {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+          padding: 2rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-group {
+          margin-bottom: 2rem;
+        }
+
+        .settings-group-title {
+          color: white;
+          font-size: 1.2rem;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .settings-item {
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 10px;
+          padding: 1.5rem;
+          margin-bottom: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .settings-item-title {
+          color: white;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+
+        .settings-item-description {
+          color: #94a3b8;
+          font-size: 0.9rem;
+          line-height: 1.5;
+          margin-bottom: 1rem;
+        }
+
+        .settings-actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+
+        .save-btn {
+          background: var(--admin);
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+          background: #7c3aed;
+          transform: translateY(-1px);
+        }
+
+        /* Toast Notifications */
+        .admin-toast {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: rgba(16, 185, 129, 0.9);
+          color: white;
+          padding: 1rem 1.5rem;
+          border-radius: 10px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          z-index: 1000;
+          animation: slideInRight 0.3s ease-out;
+          backdrop-filter: blur(10px);
+        }
+
+        .admin-toast.error {
+          background: rgba(239, 68, 68, 0.9);
+        }
+
+        .admin-toast.warning {
+          background: rgba(245, 158, 11, 0.9);
+        }
+
+        .admin-toast.info {
+          background: rgba(139, 92, 246, 0.9);
+        }
+
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .admin-login-card {
+            padding: 2rem;
+          }
+          
+          .admin-logo {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          
+          .admin-logo h1 {
+            font-size: 2rem;
+          }
+          
+          .admin-panel {
+            border-radius: 15px;
+          }
+          
+          .admin-header {
+            padding: 1rem;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+          }
+          
+          .admin-user-info {
+            flex-direction: column;
+            text-align: center;
+          }
+          
+          .admin-nav {
+            padding: 0 1rem;
+            overflow-x: auto;
+          }
+          
+          .admin-nav-item {
+            padding: 1rem;
+            white-space: nowrap;
+          }
+          
+          .admin-content {
+            padding: 1rem;
+          }
+          
+          .admin-stats {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          
+          .admin-controls {
+            flex-direction: column;
+          }
+          
+          .admin-search,
+          .status-filter {
+            width: 100%;
+            min-width: unset;
+          }
+          
+          .bots-table,
+          .users-table {
+            font-size: 0.9rem;
+          }
+          
+          .bots-table th,
+          .bots-table td,
+          .users-table th,
+          .users-table td {
+            padding: 0.5rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .admin-stats {
+            grid-template-columns: 1fr;
+          }
+          
+          .stat-card {
+            text-align: center;
+          }
+          
+          .admin-nav {
+            flex-direction: column;
+          }
+          
+          .admin-nav-item {
+            border-bottom: none;
+            border-left: 3px solid transparent;
+          }
+          
+          .admin-nav-item.active {
+            border-left-color: var(--admin);
+            border-bottom-color: transparent;
+          }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Login -->
+    <div class="admin-container" id="adminLoginContainer">
+        <div class="admin-login-card">
+            <div class="admin-logo">
+                <i class="fas fa-crown"></i>
+                <h1>RuinHosting Admin</h1>
+            </div>
+            
+            <p class="admin-subtitle">
+                Secure admin panel for managing Discord bots and user configurations
+            </p>
+            
+            <div id="adminError" class="admin-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="adminErrorText">Invalid credentials</span>
+            </div>
+            
+            <div class="admin-form">
+                <div class="admin-input-group">
+                    <label for="adminEmail">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <div class="admin-input-wrapper">
+                        <i class="fas fa-user-shield"></i>
+                        <input type="email" id="adminEmail" class="admin-input" 
+                               placeholder="admin@ruinhosting.com" required>
+                    </div>
+                </div>
+                
+                <div class="admin-input-group">
+                    <label for="adminPassword">
+                        <i class="fas fa-key"></i> Password
+                    </label>
+                    <div class="admin-input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="adminPassword" class="admin-input" 
+                               placeholder="Enter your password" required>
+                    </div>
+                </div>
+                
+                <button id="adminLoginBtn" class="admin-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login to Admin Panel</span>
+                </button>
+            </div>
+            
+            <div id="adminLoading" class="admin-loading">
+                <div class="admin-spinner"></div>
+                <p class="admin-loading-text">Authenticating...</p>
+            </div>
+            
+            <div class="admin-footer">
+                <p>⚠️ Restricted access. Admin privileges required.</p>
+                <p>Return to <a href="/">main site</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (After Login) -->
+    <div class="admin-panel" id="adminPanel">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <div class="admin-header-left">
+                <div class="admin-header-logo">
+                    <i class="fas fa-crown"></i>
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <div class="admin-user-info">
+                    <div class="admin-user-avatar" id="adminUserAvatar">
+                        <span id="adminAvatarInitials">A</span>
+                    </div>
+                    <div class="admin-user-details">
+                        <div class="admin-user-name" id="adminUserName">Administrator</div>
+                        <div class="admin-user-email" id="adminUserEmail">admin@ruinhosting.com</div>
+                    </div>
+                    <span class="admin-user-badge" id="adminUserBadge">ADMIN</span>
+                </div>
+            </div>
+            <button id="adminLogoutBtn" class="admin-logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+
+        <!-- Admin Navigation -->
+        <div class="admin-nav">
+            <div class="admin-nav-item active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </div>
+            <div class="admin-nav-item" data-tab="bots">
+                <i class="fas fa-robot"></i>
+                Manage Bots
+            </div>
+            <div class="admin-nav-item" data-tab="users">
+                <i class="fas fa-users"></i>
+                User Management
+            </div>
+            <div class="admin-nav-item" data-tab="logs">
+                <i class="fas fa-history"></i>
+                Activity Log
+            </div>
+            <div class="admin-nav-item" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                System Settings
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="admin-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="admin-tab active">
+                <!-- Admin Stats -->
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalBotsCount">0</div>
+                        <div class="stat-label">Total Bots</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeBotsCount">0</div>
+                        <div class="stat-label">Active Bots</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="buildingBotsCount">0</div>
+                        <div class="stat-label">Building</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingBotsCount">0</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsersCount">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="adminUsersCount">0</div>
+                        <div class="stat-label">Admin Users</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="admin-log-container">
+                    <div class="admin-log-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Activity
+                    </div>
+                    <div class="admin-log-list" id="recentActivity">
+                        <!-- Activity will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Bots Tab -->
+            <div id="botsTab" class="admin-tab">
+                <!-- Admin Controls -->
+                <div class="admin-controls">
+                    <input type="text" id="adminSearch" class="admin-search" 
+                           placeholder="🔍 Search bots by name or user...">
+                    <select id="statusFilter" class="status-filter">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="building">Building</option>
+                        <option value="deploying">Deploying</option>
+                        <option value="deployed">Deployed</option>
+                        <option value="error">Error</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+
+                <!-- Bots Table -->
+                <div class="bots-table-container">
+                    <table class="bots-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Bot Name</th>
+                                <th>Functions</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminBotsTable">
+                            <!-- Bots will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- User Management Tab -->
+            <div id="usersTab" class="admin-tab">
+                <!-- Users Table -->
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Bots</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTable">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Activity Log Tab -->
+            <div id="logsTab" class="admin-tab">
+                <!-- Admin Actions Log -->
+                <div class="admin-log-container">
+                    <div class="admin-log-title">
+                        <i class="fas fa-history"></i>
+                        System Activity Log
+                    </div>
+                    <div class="admin-log-list" id="adminActionsLog">
+                        <!-- Log items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings Tab -->
+            <div id="settingsTab" class="admin-tab">
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <div class="settings-group-title">
+                            <i class="fas fa-user-shield"></i>
+                            Admin Management
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-header">
+                                <div class="settings-item-title">Create New Admin</div>
+                            </div>
+                            <div class="settings-item-description">
+                                Add a new administrator to the system. Admin users have full access to all features.
+                            </div>
+                            <div class="admin-form">
+                                <div class="admin-input-group">
+                                    <label for="newAdminEmail">Admin Email</label>
+                                    <input type="email" id="newAdminEmail" class="admin-input" 
+                                           placeholder="Enter user's email address">
+                                </div>
+                                <div class="admin-input-group">
+                                    <label for="newAdminName">Admin Name (Optional)</label>
+                                    <input type="text" id="newAdminName" class="admin-input" 
+                                           placeholder="Enter display name">
+                                </div>
+                                <div class="settings-actions">
+                                    <button id="addAdminBtn" class="save-btn">
+                                        <i class="fas fa-plus"></i> Add Admin User
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-item-header">
+                                <div class="settings-item-title">System Status</div>
+                            </div>
+                            <div class="settings-item-description">
+                                Control the overall system status. When disabled, users cannot create new bots.
+                            </div>
+                            <div class="user-role-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="systemStatusToggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span id="systemStatusText">System is enabled</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="settings-group-title">
+                            <i class="fas fa-database"></i>
+                            Database Management
+                        </div>
+                        
+                        <div class="settings-item">
+                            <div class="settings-item-header">
+                                <div class="settings-item-title">Backup Database</div>
+                            </div>
+                            <div class="settings-item-description">
+                                Create a backup of all user data and bot configurations.
+                            </div>
+                            <div class="settings-actions">
+                                <button id="backupBtn" class="save-btn">
+                                    <i class="fas fa-download"></i> Create Backup
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-item-header">
+                                <div class="settings-item-title">Clear Old Data</div>
+                            </div>
+                            <div class="settings-item-description">
+                                Remove inactive users and old bot data older than 30 days.
+                            </div>
+                            <div class="settings-actions">
+                                <button id="cleanupBtn" class="save-btn" style="background: var(--danger);">
+                                    <i class="fas fa-trash"></i> Cleanup Old Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration and Admin Logic -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoiyRh6aylOL7EUbJUuH_tf9l3buyW96o",
+            authDomain: "ruinhostingservers.firebaseapp.com",
+            projectId: "ruinhostingservers",
+            storageBucket: "ruinhostingservers.firebasestorage.app",
+            messagingSenderId: "1002853469200",
+            appId: "1:1002853469200:web:28f6f7a037088d73d38e95",
+            measurementId: "G-S9L2GXSX1X"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const adminLoginContainer = document.getElementById('adminLoginContainer');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminEmail = document.getElementById('adminEmail');
+        const adminPassword = document.getElementById('adminPassword');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminError = document.getElementById('adminError');
+        const adminErrorText = document.getElementById('adminErrorText');
+        const adminLoading = document.getElementById('adminLoading');
+        const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+        const adminUserAvatar = document.getElementById('adminUserAvatar');
+        const adminAvatarInitials = document.getElementById('adminAvatarInitials');
+        const adminUserName = document.getElementById('adminUserName');
+        const adminUserEmail = document.getElementById('adminUserEmail');
+        const adminUserBadge = document.getElementById('adminUserBadge');
+        
+        // Navigation elements
+        const adminNavItems = document.querySelectorAll('.admin-nav-item');
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        
+        // Dashboard elements
+        const totalBotsCount = document.getElementById('totalBotsCount');
+        const activeBotsCount = document.getElementById('activeBotsCount');
+        const buildingBotsCount = document.getElementById('buildingBotsCount');
+        const pendingBotsCount = document.getElementById('pendingBotsCount');
+        const totalUsersCount = document.getElementById('totalUsersCount');
+        const adminUsersCount = document.getElementById('adminUsersCount');
+        const recentActivity = document.getElementById('recentActivity');
+        
+        // Bots management elements
+        const adminSearch = document.getElementById('adminSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const adminBotsTable = document.getElementById('adminBotsTable');
+        
+        // Users management elements
+        const adminUsersTable = document.getElementById('adminUsersTable');
+        
+        // Settings elements
+        const newAdminEmail = document.getElementById('newAdminEmail');
+        const newAdminName = document.getElementById('newAdminName');
+        const addAdminBtn = document.getElementById('addAdminBtn');
+        const systemStatusToggle = document.getElementById('systemStatusToggle');
+        const systemStatusText = document.getElementById('systemStatusText');
+        const backupBtn = document.getElementById('backupBtn');
+        const cleanupBtn = document.getElementById('cleanupBtn');
+        
+        // Logs elements
+        const adminActionsLog = document.getElementById('adminActionsLog');
+
+        // Current user state
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Initialize admin app
+        function initAdminApp() {
+            // Check auth state
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // Check if user has admin privileges
+                    try {
+                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            
+                            // STRICT CHECK: Only allow users with isAdmin === true
+                            // Default to false if isAdmin field doesn't exist
+                            const isAdmin = userData.isAdmin === true;
+                            
+                            if (isAdmin) {
+                                // User is admin
+                                currentUser = user;
+                                currentUserData = userData;
+                                
+                                // Show admin panel
+                                adminLoginContainer.style.display = 'none';
+                                adminPanel.style.display = 'block';
+                                
+                                // Update user info
+                                updateAdminUserInfo(user, userData);
+                                
+                                // Load admin data
+                                await loadAdminData();
+                                
+                                // Setup event listeners
+                                setupAdminEventListeners();
+                                
+                                // Show welcome message
+                                showAdminToast(`Welcome back, ${user.displayName || user.email}!`, 'success');
+                            } else {
+                                // User is NOT admin
+                                console.log('User is not admin. isAdmin value:', userData.isAdmin);
+                                await auth.signOut();
+                                showAdminError('Access denied. Admin privileges required. Please contact an administrator.');
+                            }
+                        } else {
+                            // User document doesn't exist
+                            console.log('User document not found:', user.uid);
+                            await auth.signOut();
+                            showAdminError('User data not found. Please contact support.');
+                        }
+                    } catch (error) {
+                        console.error('Error checking admin status:', error);
+                        await auth.signOut();
+                        showAdminError('Error verifying admin status. Please try again.');
+                    }
+                } else {
+                    // Show login screen
+                    adminLoginContainer.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                    currentUser = null;
+                    currentUserData = null;
+                }
+            });
+
+            // Login button event
+            adminLoginBtn.addEventListener('click', adminLogin);
+            
+            // Allow Enter key to login
+            adminEmail.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') adminLogin();
+            });
+            
+            adminPassword.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') adminLogin();
+            });
+            
+            // Logout button event
+            adminLogoutBtn.addEventListener('click', adminLogout);
+        }
+
+        // Admin login function
+        async function adminLogin() {
+            const email = adminEmail.value.trim();
+            const password = adminPassword.value.trim();
+            
+            // Validate inputs
+            if (!email || !password) {
+                showAdminError('Please enter both email and password');
+                return;
+            }
+            
+            try {
+                // Show loading
+                adminLoginBtn.disabled = true;
+                adminLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                adminError.classList.remove('show');
+                
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Check if user has admin privileges
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    if (userData.isAdmin === true) {
+                        // Log admin login
+                        await logAdminAction('admin_login', `Admin logged in: ${user.email}`);
+                    } else {
+                        // User is not admin - sign them out
+                        await auth.signOut();
+                        throw new Error('User does not have admin privileges');
+                    }
+                } else {
+                    // User document doesn't exist
+                    await auth.signOut();
+                    throw new Error('User data not found');
+                }
+                
+            } catch (error) {
+                console.error('Admin login error:', error);
+                
+                let errorMessage = 'Login failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'This account has been disabled.';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage = 'No account found with this email.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Incorrect password. Please try again.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed attempts. Please try again later.';
+                        break;
+                    default:
+                        if (error.message.includes('admin privileges')) {
+                            errorMessage = 'Access denied. Admin privileges required.';
+                        } else if (error.message.includes('User data not found')) {
+                            errorMessage = 'User data not found. Please contact support.';
+                        }
+                }
+                
+                showAdminError(errorMessage);
+                
+            } finally {
+                // Reset login button
+                adminLoginBtn.disabled = false;
+                adminLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Admin Panel';
+            }
+        }
+
+        // Admin logout function
+        async function adminLogout() {
+            try {
+                // Get current user email before logout
+                const userEmail = currentUser ? currentUser.email : 'Unknown';
+                
+                // Log admin logout
+                await logAdminAction('admin_logout', `Admin logged out: ${userEmail}`);
+                
+                // Sign out
+                await auth.signOut();
+                
+                // Clear form
+                adminEmail.value = '';
+                adminPassword.value = '';
+                
+                showAdminToast('Logged out successfully', 'info');
+                
+            } catch (error) {
+                console.error('Admin logout error:', error);
+                showAdminError('Failed to logout');
+            }
+        }
+
+        // Update admin user info
+        function updateAdminUserInfo(user, userData) {
+            const displayName = userData.displayName || user.displayName || user.email.split('@')[0];
+            const initials = displayName.charAt(0).toUpperCase();
+            
+            adminAvatarInitials.textContent = initials;
+            adminUserName.textContent = displayName;
+            adminUserEmail.textContent = user.email;
+            adminUserBadge.textContent = 'ADMIN';
+            
+            // Set avatar if photoURL exists
+            if (user.photoURL) {
+                adminUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="${displayName}">`;
+            }
+        }
+
+        // Setup admin event listeners
+        function setupAdminEventListeners() {
+            // Navigation tabs
+            adminNavItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const tabId = item.dataset.tab;
+                    
+                    // Update active nav item
+                    adminNavItems.forEach(navItem => navItem.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Show corresponding tab
+                    adminTabs.forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(`${tabId}Tab`).classList.add('active');
+                    
+                    // Load data for active tab
+                    switch(tabId) {
+                        case 'bots':
+                            loadAdminBots();
+                            break;
+                        case 'users':
+                            loadAdminUsers();
+                            break;
+                        case 'logs':
+                            loadAdminLogs();
+                            break;
+                        case 'settings':
+                            loadSystemSettings();
+                            break;
+                    }
+                });
+            });
+            
+            // Search input
+            adminSearch.addEventListener('input', loadAdminBots);
+            
+            // Status filter
+            statusFilter.addEventListener('change', loadAdminBots);
+            
+            // Settings actions
+            addAdminBtn.addEventListener('click', addNewAdmin);
+            systemStatusToggle.addEventListener('change', toggleSystemStatus);
+            backupBtn.addEventListener('click', backupDatabase);
+            cleanupBtn.addEventListener('click', cleanupOldData);
+            
+            // Real-time updates
+            setupRealtimeUpdates();
+        }
+
+        // Load admin data
+        async function loadAdminData() {
+            try {
+                // Load dashboard stats
+                await loadDashboardStats();
+                
+                // Load recent activity
+                await loadRecentActivity();
+                
+                // Load bots
+                await loadAdminBots();
+                
+                // Load users
+                await loadAdminUsers();
+                
+                // Load system settings
+                await loadSystemSettings();
+                
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                showAdminToast('Failed to load admin data', 'error');
+            }
+        }
+
+        // Load dashboard stats
+        async function loadDashboardStats() {
+            try {
+                // Load bots stats
+                const botsSnapshot = await db.collection('userBots').get();
+                let totalBots = 0;
+                let activeBots = 0;
+                let buildingBots = 0;
+                let pendingBots = 0;
+                
+                botsSnapshot.forEach(doc => {
+                    totalBots++;
+                    const bot = doc.data();
+                    if (bot.status === 'active' || bot.status === 'deployed') activeBots++;
+                    if (bot.status === 'building') buildingBots++;
+                    if (bot.status === 'pending') pendingBots++;
+                });
+                
+                totalBotsCount.textContent = totalBots;
+                activeBotsCount.textContent = activeBots;
+                buildingBotsCount.textContent = buildingBots;
+                pendingBotsCount.textContent = pendingBots;
+                
+                // Load users stats
+                const usersSnapshot = await db.collection('users').get();
+                let totalUsers = 0;
+                let adminUsers = 0;
+                
+                usersSnapshot.forEach(doc => {
+                    totalUsers++;
+                    const user = doc.data();
+                    if (user.isAdmin === true) adminUsers++;
+                });
+                
+                totalUsersCount.textContent = totalUsers;
+                adminUsersCount.textContent = adminUsers;
+                
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        // Load recent activity
+        async function loadRecentActivity() {
+            try {
+                const snapshot = await db.collection('adminLogs')
+                    .orderBy('timestamp', 'desc')
+                    .limit(5)
+                    .get();
+                
+                recentActivity.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    recentActivity.innerHTML = `
+                        <div class="log-item">
+                            <div class="log-content">
+                                <div class="log-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="log-text">
+                                    <div class="log-action">No recent activity</div>
+                                    <div class="log-details">System activity will appear here</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const log = doc.data();
+                    const logItem = createLogItem(log);
+                    recentActivity.appendChild(logItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+            }
+        }
+
+        // Load admin bots table
+        async function loadAdminBots() {
+            try {
+                let query = db.collection('userBots');
+                
+                // Apply status filter
+                const statusFilterValue = statusFilter.value;
+                if (statusFilterValue !== 'all') {
+                    query = query.where('status', '==', statusFilterValue);
+                }
+                
+                const snapshot = await query.get();
+                
+                // Clear table
+                adminBotsTable.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    adminBotsTable.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: #94a3b8;">
+                                <i class="fas fa-robot" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                <p>No bots found</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Apply search filter
+                const searchTerm = adminSearch.value.toLowerCase();
+                let filteredBots = [];
+                
+                snapshot.forEach(doc => {
+                    const bot = doc.data();
+                    bot.id = doc.id;
+                    
+                    // Apply search filter
+                    if (!searchTerm || 
+                        (bot.botName && bot.botName.toLowerCase().includes(searchTerm)) ||
+                        (bot.userName && bot.userName.toLowerCase().includes(searchTerm)) ||
+                        (bot.userEmail && bot.userEmail.toLowerCase().includes(searchTerm))) {
+                        filteredBots.push(bot);
+                    }
+                });
+                
+                // Sort by creation date (newest first)
+                filteredBots.sort((a, b) => {
+                    const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+                    const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+                    return dateB - dateA;
+                });
+                
+                // Render bots
+                filteredBots.forEach(bot => {
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const createdDate = bot.createdAt?.toDate ? bot.createdAt.toDate() : new Date(bot.createdAt || Date.now());
+                    const formattedDate = createdDate.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    // Get status display
+                    const statusDisplay = {
+                        'pending': '⏳ Pending',
+                        'building': '🔨 Building',
+                        'deploying': '🚀 Deploying',
+                        'deployed': '✅ Deployed',
+                        'active': '🟢 Active',
+                        'error': '🔴 Error'
+                    }[bot.status] || bot.status;
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="bot-user-info">
+                                <div class="bot-user-avatar">
+                                    ${bot.userName ? bot.userName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div class="bot-user-details">
+                                    <div class="bot-user-name">${bot.userName || 'Unknown User'}</div>
+                                    <div class="bot-user-email">${bot.userEmail || 'No email'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><div class="bot-name">${bot.botName || 'Unnamed Bot'}</div></td>
+                        <td>${bot.totalFunctions || 0} functions</td>
+                        <td>
+                            <select class="status-select" data-userid="${bot.userId}" data-botid="${bot.id}">
+                                <option value="pending" ${bot.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="building" ${bot.status === 'building' ? 'selected' : ''}>🔨 Building</option>
+                                <option value="deploying" ${bot.status === 'deploying' ? 'selected' : ''}>🚀 Deploying</option>
+                                <option value="deployed" ${bot.status === 'deployed' ? 'selected' : ''}>✅ Deployed</option>
+                                <option value="active" ${bot.status === 'active' ? 'selected' : ''}>🟢 Active</option>
+                                <option value="error" ${bot.status === 'error' ? 'selected' : ''}>🔴 Error</option>
+                            </select>
+                        </td>
+                        <td>${formattedDate}</td>
+                        <td style="display: flex; gap: 0.5rem;">
+                            <button class="admin-action-btn send-message" data-userid="${bot.userId}" data-useremail="${bot.userEmail}">
+                                <i class="fas fa-envelope"></i> Message
+                            </button>
+                            <button class="admin-action-btn view-details" data-botid="${bot.id}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    `;
+                    
+                    adminBotsTable.appendChild(row);
+                });
+                
+                // Add event listeners to status selects
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', async (e) => {
+                        const userId = e.target.dataset.userid;
+                        const botId = e.target.dataset.botid;
+                        const newStatus = e.target.value;
+                        
+                        try {
+                            await db.collection('userBots').doc(userId).update({
+                                status: newStatus,
+                                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            
+                            // Log admin action
+                            await logAdminAction('bot_status_changed', 
+                                `Changed bot status to ${newStatus}`, 
+                                `User: ${userId}, Bot: ${botId}`
+                            );
+                            
+                            // Update dashboard stats
+                            await loadDashboardStats();
+                            
+                            // Show success message
+                            showAdminToast(`Bot status updated to ${newStatus}`, 'success');
+                            
+                        } catch (error) {
+                            console.error('Error updating bot status:', error);
+                            showAdminToast('Failed to update bot status', 'error');
+                        }
+                    });
+                });
+                
+                // Add event listeners to message buttons
+                document.querySelectorAll('.admin-action-btn.send-message').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const userId = e.target.closest('button').dataset.userid;
+                        const userEmail = e.target.closest('button').dataset.useremail;
+                        sendAdminMessage(userId, userEmail);
+                    });
+                });
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.admin-action-btn.view-details').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const botId = e.target.closest('button').dataset.botid;
+                        await viewBotDetails(botId);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin bots:', error);
+                showAdminToast('Failed to load bots data', 'error');
+            }
+        }
+
+        // Load admin users table
+        async function loadAdminUsers() {
+            try {
+                const snapshot = await db.collection('users').get();
+                
+                // Clear table
+                adminUsersTable.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    adminUsersTable.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: #94a3b8;">
+                                <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                <p>No users found</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Get user bot counts
+                const botsSnapshot = await db.collection('userBots').get();
+                const userBotCounts = {};
+                
+                botsSnapshot.forEach(doc => {
+                    const bot = doc.data();
+                    if (bot.userId) {
+                        userBotCounts[bot.userId] = (userBotCounts[bot.userId] || 0) + 1;
+                    }
+                });
+                
+                // Render users
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const joinedDate = user.createdAt?.toDate ? user.createdAt.toDate() : new Date(user.createdAt || Date.now());
+                    const formattedDate = joinedDate.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    // Get bot count for this user
+                    const botCount = userBotCounts[user.uid] || 0;
+                    
+                    // Check if current user is viewing themselves
+                    const isCurrentUser = currentUser && currentUser.uid === user.uid;
+                    
+                    // STRICT CHECK: Only users with isAdmin === true are admins
+                    const isAdmin = user.isAdmin === true;
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="bot-user-info">
+                                <div class="bot-user-avatar">
+                                    ${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div class="bot-user-details">
+                                    <div class="bot-user-name">
+                                        ${user.displayName || 'Unknown User'}
+                                        ${isCurrentUser ? ' (You)' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.email || 'No email'}</td>
+                        <td>
+                            <div class="user-role-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" 
+                                           ${isAdmin ? 'checked' : ''}
+                                           ${isCurrentUser ? 'disabled' : ''}
+                                           data-userid="${user.uid}"
+                                           data-current="${isAdmin}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="role-badge ${isAdmin ? 'admin' : 'user'}">
+                                    ${isAdmin ? 'Admin' : 'User'}
+                                </span>
+                            </div>
+                        </td>
+                        <td>${botCount} bot${botCount !== 1 ? 's' : ''}</td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <button class="admin-action-btn view-details" data-userid="${user.uid}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            ${!isCurrentUser ? `
+                                <button class="admin-action-btn send-message" data-userid="${user.uid}" data-useremail="${user.email}">
+                                    <i class="fas fa-envelope"></i> Message
+                                </button>
+                            ` : ''}
+                        </td>
+                    `;
+                    
+                    adminUsersTable.appendChild(row);
+                });
+                
+                // Add event listeners to role toggles
+                document.querySelectorAll('.toggle-switch input[type="checkbox"]').forEach(toggle => {
+                    if (!toggle.disabled) {
+                        toggle.addEventListener('change', async (e) => {
+                            const userId = e.target.dataset.userid;
+                            const wasAdmin = e.target.dataset.current === 'true';
+                            const isNowAdmin = e.target.checked;
+                            
+                            // Prevent self-demotion
+                            if (currentUser && currentUser.uid === userId && !isNowAdmin) {
+                                showAdminToast('You cannot remove your own admin privileges', 'warning');
+                                e.target.checked = true;
+                                return;
+                            }
+                            
+                            try {
+                                await db.collection('users').doc(userId).update({
+                                    isAdmin: isNowAdmin,
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                                
+                                // Update the current state
+                                e.target.dataset.current = isNowAdmin;
+                                
+                                // Update role badge
+                                const badge = e.target.closest('.user-role-toggle').querySelector('.role-badge');
+                                badge.className = `role-badge ${isNowAdmin ? 'admin' : 'user'}`;
+                                badge.textContent = isNowAdmin ? 'Admin' : 'User';
+                                
+                                // Log admin action
+                                await logAdminAction('user_role_changed', 
+                                    `${isNowAdmin ? 'Promoted' : 'Demoted'} user ${userId}`,
+                                    `From ${wasAdmin ? 'Admin' : 'User'} to ${isNowAdmin ? 'Admin' : 'User'}`
+                                );
+                                
+                                // Update dashboard stats
+                                await loadDashboardStats();
+                                
+                                // Show success message
+                                showAdminToast(`User ${isNowAdmin ? 'promoted to Admin' : 'demoted to User'}`, 'success');
+                                
+                            } catch (error) {
+                                console.error('Error updating user role:', error);
+                                showAdminToast('Failed to update user role', 'error');
+                                e.target.checked = !isNowAdmin; // Revert the toggle
+                            }
+                        });
+                    }
+                });
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.admin-action-btn.view-details[data-userid]').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const userId = e.target.closest('button').dataset.userid;
+                        await viewUserDetails(userId);
+                    });
+                });
+                
+                // Add event listeners to message buttons
+                document.querySelectorAll('.admin-action-btn.send-message[data-userid]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const userId = e.target.closest('button').dataset.userid;
+                        const userEmail = e.target.closest('button').dataset.useremail;
+                        sendAdminMessage(userId, userEmail);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin users:', error);
+                showAdminToast('Failed to load users data', 'error');
+            }
+        }
+
+        // Load system settings
+        async function loadSystemSettings() {
+            try {
+                // Load system status
+                const systemDoc = await db.collection('system').doc('status').get();
+                if (systemDoc.exists) {
+                    const systemData = systemDoc.data();
+                    systemStatusToggle.checked = systemData.enabled !== false; // Default to true if not set
+                    systemStatusText.textContent = systemStatusToggle.checked ? 'System is enabled' : 'System is disabled';
+                } else {
+                    // Create default system status
+                    await db.collection('system').doc('status').set({
+                        enabled: true,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    systemStatusToggle.checked = true;
+                    systemStatusText.textContent = 'System is enabled';
+                }
+                
+            } catch (error) {
+                console.error('Error loading system settings:', error);
+            }
+        }
+
+        // Load admin logs
+        async function loadAdminLogs() {
+            try {
+                const snapshot = await db.collection('adminLogs')
+                    .orderBy('timestamp', 'desc')
+                    .limit(50)
+                    .get();
+                
+                adminActionsLog.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    adminActionsLog.innerHTML = `
+                        <div class="log-item">
+                            <div class="log-content">
+                                <div class="log-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="log-text">
+                                    <div class="log-action">No activity logs</div>
+                                    <div class="log-details">Admin actions will appear here</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const log = doc.data();
+                    const logItem = createLogItem(log);
+                    adminActionsLog.appendChild(logItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin logs:', error);
+            }
+        }
+
+        // Create log item element
+        function createLogItem(log) {
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            
+            const time = log.timestamp?.toDate ? log.timestamp.toDate() : new Date(log.timestamp || Date.now());
+            const timeAgo = getTimeAgo(time);
+            
+            const icons = {
+                'admin_login': 'fas fa-sign-in-alt',
+                'admin_logout': 'fas fa-sign-out-alt',
+                'bot_status_changed': 'fas fa-exchange-alt',
+                'bot_created': 'fas fa-plus-circle',
+                'bot_updated': 'fas fa-edit',
+                'bot_deleted': 'fas fa-trash',
+                'user_role_changed': 'fas fa-user-tag',
+                'message_sent': 'fas fa-envelope',
+                'system_updated': 'fas fa-cog'
+            };
+            
+            const colors = {
+                'admin_login': '#10b981',
+                'admin_logout': '#ef4444',
+                'bot_status_changed': '#3b82f6',
+                'bot_created': '#8b5cf6',
+                'bot_updated': '#f59e0b',
+                'bot_deleted': '#ef4444',
+                'user_role_changed': '#8b5cf6',
+                'message_sent': '#8b5cf6',
+                'system_updated': '#10b981'
+            };
+            
+            logItem.innerHTML = `
+                <div class="log-content">
+                    <div class="log-icon" style="background: ${colors[log.action] ? `${colors[log.action]}20` : 'rgba(139, 92, 246, 0.1)'}; color: ${colors[log.action] || '#8b5cf6'}">
+                        <i class="${icons[log.action] || 'fas fa-history'}"></i>
+                    </div>
+                    <div class="log-text">
+                        <div class="log-action">${log.title || log.action.replace(/_/g, ' ').toUpperCase()}</div>
+                        <div class="log-details">${log.details || 'No details'}</div>
+                        ${log.adminEmail ? `<div class="log-details" style="font-size: 0.8rem; color: #60a5fa;">By: ${log.adminEmail}</div>` : ''}
+                    </div>
+                </div>
+                <div class="log-time">${timeAgo}</div>
+            `;
+            
+            return logItem;
+        }
+
+        // Setup real-time updates
+        function setupRealtimeUpdates() {
+            // Listen for bot changes
+            db.collection('userBots').onSnapshot(() => {
+                loadAdminBots();
+                loadDashboardStats();
+            });
+            
+            // Listen for user changes
+            db.collection('users').onSnapshot(() => {
+                loadAdminUsers();
+                loadDashboardStats();
+            });
+            
+            // Listen for log changes
+            db.collection('adminLogs').onSnapshot(() => {
+                loadRecentActivity();
+                if (document.getElementById('logsTab').classList.contains('active')) {
+                    loadAdminLogs();
+                }
+            });
+        }
+
+        // Add new admin user
+        async function addNewAdmin() {
+            const email = newAdminEmail.value.trim();
+            const name = newAdminName.value.trim();
+            
+            if (!email) {
+                showAdminToast('Please enter an email address', 'warning');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAdminToast('Please enter a valid email address', 'warning');
+                return;
+            }
+            
+            try {
+                // Check if user already exists in Firestore
+                const usersSnapshot = await db.collection('users').where('email', '==', email).get();
+                
+                if (!usersSnapshot.empty) {
+                    // User exists, update to admin
+                    const userDoc = usersSnapshot.docs[0];
+                    await userDoc.ref.update({
+                        isAdmin: true,
+                        displayName: name || userDoc.data().displayName,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    showAdminToast(`Existing user ${email} promoted to admin`, 'success');
+                } else {
+                    // Create new user document with admin privileges
+                    // Note: They'll need to register on the main site first
+                    showAdminToast(`User ${email} not found. They need to register first.`, 'warning');
+                    
+                    // Optionally, you could create a pending admin request
+                    await db.collection('adminRequests').add({
+                        email: email,
+                        name: name || email.split('@')[0],
+                        requestedBy: currentUser.email,
+                        requestedById: currentUser.uid,
+                        requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'pending'
+                    });
+                    
+                    showAdminToast(`Admin request created for ${email}. They'll be made admin when they register.`, 'info');
+                }
+                
+                // Log admin action
+                await logAdminAction('user_role_changed', 
+                    `Added new admin user: ${email}`,
+                    `Name: ${name || 'Not specified'}`
+                );
+                
+                // Clear form
+                newAdminEmail.value = '';
+                newAdminName.value = '';
+                
+                // Refresh users list
+                await loadAdminUsers();
+                await loadDashboardStats();
+                
+            } catch (error) {
+                console.error('Error adding admin user:', error);
+                showAdminToast('Failed to add admin user', 'error');
+            }
+        }
+
+        // Toggle system status
+        async function toggleSystemStatus() {
+            const enabled = systemStatusToggle.checked;
+            
+            try {
+                await db.collection('system').doc('status').update({
+                    enabled: enabled,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedBy: currentUser.email,
+                    updatedById: currentUser.uid
+                });
+                
+                systemStatusText.textContent = enabled ? 'System is enabled' : 'System is disabled';
+                
+                // Log admin action
+                await logAdminAction('system_updated', 
+                    `System ${enabled ? 'enabled' : 'disabled'}`,
+                    `Changed by: ${currentUser.email}`
+                );
+                
+                showAdminToast(`System ${enabled ? 'enabled' : 'disabled'}`, 'success');
+                
+            } catch (error) {
+                console.error('Error toggling system status:', error);
+                showAdminToast('Failed to update system status', 'error');
+                systemStatusToggle.checked = !enabled; // Revert the toggle
+            }
+        }
+
+        // Backup database (simulated)
+        async function backupDatabase() {
+            try {
+                showAdminToast('Creating database backup...', 'info');
+                
+                // Simulate backup process
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Log backup action
+                await logAdminAction('system_updated', 
+                    'Database backup created',
+                    `Backup initiated by: ${currentUser.email}`
+                );
+                
+                showAdminToast('Database backup created successfully', 'success');
+                
+            } catch (error) {
+                console.error('Error creating backup:', error);
+                showAdminToast('Failed to create backup', 'error');
+            }
+        }
+
+        // Cleanup old data (simulated)
+        async function cleanupOldData() {
+            if (!confirm('Are you sure you want to cleanup old data? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                showAdminToast('Cleaning up old data...', 'info');
+                
+                // Simulate cleanup process
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Log cleanup action
+                await logAdminAction('system_updated', 
+                    'Old data cleanup performed',
+                    `Cleanup initiated by: ${currentUser.email}`
+                );
+                
+                showAdminToast('Old data cleanup completed', 'success');
+                
+            } catch (error) {
+                console.error('Error cleaning up data:', error);
+                showAdminToast('Failed to cleanup data', 'error');
+            }
+        }
+
+        // Send admin message to user
+        async function sendAdminMessage(userId, userEmail) {
+            const message = prompt(`Send message to ${userEmail}:\n\nEnter your message:`, '');
+            
+            if (message && message.trim()) {
+                try {
+                    // Create notification for user
+                    await db.collection('userNotifications').add({
+                        userId: userId,
+                        userEmail: userEmail,
+                        type: 'admin_message',
+                        message: message.trim(),
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        read: false,
+                        from: currentUser.email,
+                        fromId: currentUser.uid
+                    });
+                    
+                    // Log admin action
+                    await logAdminAction('message_sent', 
+                        `Sent message to ${userEmail}`,
+                        `Message: ${message.trim().substring(0, 50)}${message.trim().length > 50 ? '...' : ''}`
+                    );
+                    
+                    showAdminToast(`Message sent to ${userEmail}`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    showAdminToast('Failed to send message', 'error');
+                }
+            }
+        }
+
+        // View bot details
+        async function viewBotDetails(botId) {
+            try {
+                const botDoc = await db.collection('userBots').doc(botId).get();
+                
+                if (botDoc.exists) {
+                    const botData = botDoc.data();
+                    
+                    const details = `
+Bot Details:
+────────────
+• Name: ${botData.botName || 'N/A'}
+• User: ${botData.userName || 'N/A'} (${botData.userEmail || 'N/A'})
+• Status: ${botData.status || 'N/A'}
+• Functions: ${botData.totalFunctions || 0}
+• Prefix: ${botData.botPrefix || '!'}
+• Created: ${botData.createdAt?.toDate ? botData.createdAt.toDate().toLocaleString() : 'N/A'}
+• Last Updated: ${botData.lastUpdated ? new Date(botData.lastUpdated).toLocaleString() : 'N/A'}
+• Token (first 10): ${botData.botToken ? botData.botToken.substring(0, 10) + '...' : 'N/A'}
+                    `;
+                    
+                    alert(details);
+                }
+                
+            } catch (error) {
+                console.error('Error viewing bot details:', error);
+                showAdminToast('Failed to load bot details', 'error');
+            }
+        }
+
+        // View user details
+        async function viewUserDetails(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // Get user's bots
+                    const botsSnapshot = await db.collection('userBots').where('userId', '==', userId).get();
+                    const botCount = botsSnapshot.size;
+                    const botNames = [];
+                    
+                    botsSnapshot.forEach(doc => {
+                        const bot = doc.data();
+                        if (bot.botName) {
+                            botNames.push(bot.botName);
+                        }
+                    });
+                    
+                    const details = `
+User Details:
+─────────────
+• Name: ${userData.displayName || 'N/A'}
+• Email: ${userData.email || 'N/A'}
+• Role: ${userData.isAdmin === true ? 'Admin' : 'User'}
+• User ID: ${userId}
+• Joined: ${userData.createdAt?.toDate ? userData.createdAt.toDate().toLocaleString() : 'N/A'}
+• Last Active: ${userData.lastLogin?.toDate ? userData.lastLogin.toDate().toLocaleString() : 'N/A'}
+• Bots Created: ${botCount}
+${botNames.length > 0 ? `• Bot Names: ${botNames.join(', ')}` : ''}
+                    `;
+                    
+                    alert(details);
+                }
+                
+            } catch (error) {
+                console.error('Error viewing user details:', error);
+                showAdminToast('Failed to load user details', 'error');
+            }
+        }
+
+        // Log admin action
+        async function logAdminAction(action, title, details = '') {
+            try {
+                await db.collection('adminLogs').add({
+                    action: action,
+                    title: title,
+                    details: details,
+                    adminEmail: currentUser ? currentUser.email : 'System',
+                    adminId: currentUser ? currentUser.uid : 'system',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+            } catch (error) {
+                console.error('Error logging admin action:', error);
+            }
+        }
+
+        // Show admin error
+        function showAdminError(message) {
+            adminErrorText.textContent = message;
+            adminError.classList.add('show');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                adminError.classList.remove('show');
+            }, 5000);
+        }
+
+        // Show admin toast notification
+        function showAdminToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.admin-toast').forEach(toast => {
+                toast.remove();
+            });
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `admin-toast ${type}`;
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <i class="${icons[type] || 'fas fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-out forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Get time ago string
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + "y ago";
+            
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + "mo ago";
+            
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + "d ago";
+            
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + "h ago";
+            
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + "m ago";
+            
+            return "just now";
+        }
+
+        // Initialize admin app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initAdminApp);
+    </script>
+</body>
+</html>

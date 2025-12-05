@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rust Server Dashboard</title>
+  <style>
+    :root { --bg: #0f0f1b; --card-bg: #1a1a2e; --text: #e6e6ff; --text-secondary: #a0a0c0; --accent: #f6ad55; --border: #2d2d44; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 2rem; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header p { color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem; }
+    section { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border); }
+    h2 { font-size: 1.4rem; margin-bottom: 1rem; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 1.25rem; }
+    .server-list { text-align: center; padding: 2.5rem 1rem; }
+    .server-list h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+    .server-list p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 1.25rem; }
+    .btn { display: inline-block; padding: 0.65rem 1.5rem; background: var(--accent); color: #0f0f1b; font-weight: 600; text-decoration: none; border-radius: 6px; }
+    .btn:hover { opacity: 0.9; }
+    .bars { display: flex; flex-direction: column; gap: 1rem; }
+    .bar-row { display: flex; flex-direction: column; }
+    .bar-header { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .bar-track { height: 8px; background: #2d2d44; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+    .file-tree { font-family: monospace; font-size: 0.95rem; background: #121220; padding: 1rem; border-radius: 8px; white-space: pre; overflow-x: auto; color: #c5c5e0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚔️ Rust Server Dashboard</h1>
+      <p>Deploy and manage your Rust survival server — Oxide, uMod, wipe schedules, and map control.</p>
+    </header>
+
+    <section>
+      <h2>Server Management Dashboard</h2>
+      <p class="subtitle">Track uptime, player list, map seed, wipe timer, and plugin status.</p>
+    </section>
+
+    <section>
+      <h2>Server File System</h2>
+      <p class="subtitle">Manage Oxide plugins, world saves, configs, and custom maps.</p>
+      <div class="file-tree">
+/rust-server/
+├── RustDedicated.exe
+├── server.cfg
+├── oxide/
+│   ├── config/
+│   │   ├── AutoCodeLock.json
+│   │   └── BetterChat.json
+│   ├── plugins/
+│   │   ├── AutoCodeLock.cs
+│   │   └── Kits.cs
+│   └── data/
+├── save/
+│   ├── rust-server.db
+│   └── Procedural Map 4219125523/
+│       ├── sav/
+│       └── map.png
+├── uMod/
+├── logs/
+│   └── oxide.log
+└── start.bat
+      </div>
+    </section>
+
+    <section>
+      <h2>Your Rust Servers</h2>
+      <div class="server-list">
+        <h3>🥷 No Servers Yet</h3>
+        <p>Launch a Rust server (latest stable) with Oxide modding and custom map generation.</p>
+        <a href="#" class="btn">➕ Create Rust Server</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Resource Usage</h2>
+      <p class="subtitle">Performance metrics for your Rust instance.</p>
+      <div class="bars">
+        <div class="bar-row">
+          <div class="bar-header"><span>CPU</span><span>76%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:76%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Memory</span><span>7.1 / 12 GB</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:59%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>World Size</span><span>3.8 / 20 GB</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:19%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-header"><span>Players Online</span><span>32 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:32%; background:#f6ad55"></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

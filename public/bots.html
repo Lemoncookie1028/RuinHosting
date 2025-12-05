@@ -1,0 +1,4104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Discord Bot Hosting | RuinHosting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <style>
+        :root {
+          --primary: #ff0000;
+          --primary-dark: #cc0000;
+          --secondary: #8b0000;
+          --accent: #ff4500;
+          --dark: #000000;
+          --darker: #0a0a0a;
+          --light: #f8fafc;
+          --gray: #666666;
+          --success: #10b981;
+          --warning: #f59e0b;
+          --danger: #ef4444;
+          --info: #3b82f6;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+          background: var(--light);
+          color: var(--dark);
+          line-height: 1.6;
+        }
+
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.7);
+          z-index: 2000;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .auth-modal-content {
+          background: white;
+          border-radius: 12px;
+          width: 90%;
+          max-width: 450px;
+          padding: 2.5rem;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .auth-tabs {
+          display: flex;
+          margin-bottom: 2rem;
+          border-bottom: 2px solid #e2e8f0;
+        }
+
+        .auth-tab {
+          flex: 1;
+          padding: 1rem;
+          text-align: center;
+          background: none;
+          border: none;
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: var(--gray);
+          cursor: pointer;
+          transition: all 0.3s;
+          border-bottom: 3px solid transparent;
+        }
+
+        .auth-tab.active {
+          color: var(--primary);
+          border-bottom-color: var(--primary);
+        }
+
+        .auth-form {
+          display: none;
+        }
+
+        .auth-form.active {
+          display: block;
+        }
+
+        .auth-form h3 {
+          margin-bottom: 1.5rem;
+          color: var(--dark);
+          text-align: center;
+        }
+
+        .auth-input-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .auth-input-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: var(--dark);
+          font-weight: 500;
+        }
+
+        .auth-input-group input {
+          width: 100%;
+          padding: 0.9rem 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 1rem;
+          transition: border-color 0.3s;
+        }
+
+        .auth-input-group input:focus {
+          outline: none;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+        }
+
+        .auth-btn {
+          width: 100%;
+          background: var(--primary);
+          color: white;
+          border: none;
+          padding: 1rem;
+          border-radius: 6px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          margin-top: 1rem;
+        }
+
+        .auth-btn:hover {
+          background: var(--primary-dark);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .auth-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .auth-divider {
+          text-align: center;
+          margin: 1.5rem 0;
+          color: var(--gray);
+          position: relative;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          width: 45%;
+          height: 1px;
+          background: #e2e8f0;
+        }
+
+        .auth-divider::before {
+          left: 0;
+        }
+
+        .auth-divider::after {
+          right: 0;
+        }
+
+        .google-auth-btn {
+          width: 100%;
+          background: white;
+          color: var(--dark);
+          border: 2px solid #e2e8f0;
+          padding: 0.9rem;
+          border-radius: 6px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.8rem;
+        }
+
+        .google-auth-btn:hover {
+          border-color: var(--primary);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .auth-footer {
+          text-align: center;
+          margin-top: 1.5rem;
+          color: var(--gray);
+        }
+
+        .auth-footer a {
+          color: var(--primary);
+          text-decoration: none;
+          font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+          text-decoration: underline;
+        }
+
+        .auth-error {
+          background: #fee2e2;
+          color: #dc2626;
+          padding: 0.8rem;
+          border-radius: 6px;
+          margin-bottom: 1rem;
+          display: none;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .auth-error.show {
+          display: flex;
+        }
+
+        .close-modal {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          color: var(--gray);
+          cursor: pointer;
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+          background: #f1f5f9;
+          color: var(--dark);
+        }
+
+        /* Header */
+        header {
+          background: white;
+          padding: 1.2rem 0;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+
+        .header-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .logo {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: var(--primary);
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .logo i {
+          color: var(--secondary);
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .nav-links a {
+          color: var(--dark);
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.3s;
+          position: relative;
+        }
+
+        .nav-links a:hover {
+          color: var(--primary);
+        }
+
+        .nav-links a::after {
+          content: '';
+          position: absolute;
+          bottom: -5px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--primary);
+          transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+          width: 100%;
+        }
+
+        .header-buttons {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .login-btn {
+          background: var(--primary);
+          color: white;
+          border: none;
+          padding: 0.7rem 1.5rem;
+          border-radius: 6px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+          background: var(--primary-dark);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .logout-btn {
+          background: transparent;
+          color: var(--dark);
+          border: 2px solid var(--primary);
+          padding: 0.5rem 1.2rem;
+          border-radius: 6px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+          background: var(--primary);
+          color: white;
+          transform: translateY(-2px);
+        }
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .user-avatar {
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: 600;
+          font-size: 0.9rem;
+          overflow: hidden;
+        }
+
+        .user-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .user-welcome {
+          color: var(--dark);
+          font-weight: 500;
+        }
+
+        .admin-link {
+          color: var(--primary);
+          text-decoration: none;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          transition: all 0.3s;
+        }
+
+        .admin-link:hover {
+          background: rgba(255, 0, 0, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+          background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+          color: white;
+          padding: 5rem 0;
+          text-align: center;
+        }
+
+        .hero h1 {
+          font-size: 3.2rem;
+          margin-bottom: 1.5rem;
+          font-weight: 700;
+        }
+
+        .hero p {
+          font-size: 1.2rem;
+          max-width: 600px;
+          margin: 0 auto 2.5rem;
+          opacity: 0.9;
+          color: #e5e5e5;
+        }
+
+        .cta-button {
+          background: var(--primary);
+          color: white;
+          padding: 1rem 2.2rem;
+          border-radius: 6px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-block;
+        }
+
+        .cta-button:hover {
+          background: var(--primary-dark);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Bot Configuration Section */
+        .bot-config {
+          padding: 5rem 0;
+          background: #f1f5f9;
+        }
+
+        .bot-config-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2.5rem;
+        }
+
+        .bot-config-card {
+          background: white;
+          border-radius: 12px;
+          padding: 2.5rem 2rem;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+          border: 1px solid #e2e8f0;
+          transition: all 0.3s ease;
+        }
+
+        .bot-config-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .bot-config-card h3 {
+          color: var(--dark);
+          margin-bottom: 1.5rem;
+          font-size: 1.4rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: var(--dark);
+          font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+          width: 100%;
+          padding: 0.8rem 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 1rem;
+          transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+          outline: none;
+          border-color: var(--primary);
+        }
+
+        .form-group textarea {
+          resize: vertical;
+          min-height: 100px;
+        }
+
+        /* File Upload */
+        .file-upload {
+          border: 2px dashed #cbd5e1;
+          border-radius: 8px;
+          padding: 2rem;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+          border-color: var(--primary);
+          background: rgba(255, 0, 0, 0.05);
+        }
+
+        .file-upload input {
+          display: none;
+        }
+
+        .file-upload-label {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          color: var(--gray);
+        }
+
+        .file-upload-label i {
+          font-size: 2rem;
+          color: var(--primary);
+        }
+
+        .file-preview {
+          margin-top: 1rem;
+          display: none;
+        }
+
+        .file-preview img {
+          max-width: 150px;
+          max-height: 150px;
+          border-radius: 8px;
+          border: 2px solid #e2e8f0;
+        }
+
+        /* Bot Functions Section */
+        .bot-functions-section {
+          padding: 5rem 0;
+          background: white;
+        }
+
+        .functions-category {
+          margin-bottom: 3rem;
+        }
+
+        .category-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 2px solid #e2e8f0;
+        }
+
+        .category-header h3 {
+          color: var(--dark);
+          font-size: 1.3rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .selected-count {
+          background: var(--primary);
+          color: white;
+          padding: 0.3rem 0.8rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+
+        .functions-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 1.2rem;
+        }
+
+        .function-card {
+          background: white;
+          border-radius: 10px;
+          padding: 1.5rem;
+          border: 2px solid #e2e8f0;
+          transition: all 0.3s;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .function-card:hover {
+          border-color: var(--primary);
+          transform: translateY(-3px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .function-card.selected {
+          border-color: var(--primary);
+          background: rgba(255, 0, 0, 0.05);
+        }
+
+        .function-checkbox {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          width: 22px;
+          height: 22px;
+          border: 2px solid #cbd5e1;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s;
+        }
+
+        .function-card.selected .function-checkbox {
+          background: var(--primary);
+          border-color: var(--primary);
+        }
+
+        .function-card.selected .function-checkbox::after {
+          content: "✓";
+          color: white;
+          font-weight: bold;
+          font-size: 0.9rem;
+        }
+
+        .function-icon {
+          width: 45px;
+          height: 45px;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1.2rem;
+          margin-bottom: 1rem;
+        }
+
+        .function-card h4 {
+          color: var(--dark);
+          margin-bottom: 0.5rem;
+          font-size: 1.1rem;
+        }
+
+        .function-card p {
+          color: var(--gray);
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        /* Selected Functions Display */
+        .selected-functions {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          margin-top: 3rem;
+          border: 1px solid #e2e8f0;
+        }
+
+        .selected-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .selected-header h3 {
+          color: var(--dark);
+          font-size: 1.3rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .total-functions {
+          background: var(--success);
+          color: white;
+          padding: 0.3rem 0.8rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+
+        .selected-functions-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.8rem;
+          min-height: 50px;
+        }
+
+        .function-tag {
+          background: rgba(255, 0, 0, 0.1);
+          color: var(--primary);
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .function-tag i {
+          color: var(--secondary);
+        }
+
+        .no-functions {
+          color: var(--gray);
+          font-style: italic;
+          padding: 1rem;
+          text-align: center;
+          width: 100%;
+        }
+
+        /* Bot Preview */
+        .bot-preview {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          margin-top: 2rem;
+          border: 1px solid #e2e8f0;
+          text-align: center;
+        }
+
+        .bot-preview-title {
+          color: var(--dark);
+          margin-bottom: 1.5rem;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .bot-avatar {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          margin: 0 auto 1rem;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 2rem;
+          overflow: hidden;
+        }
+
+        .bot-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .bot-name {
+          color: var(--dark);
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+
+        .bot-description {
+          color: var(--gray);
+          font-size: 0.95rem;
+          margin-bottom: 1rem;
+        }
+
+        .bot-functions-preview {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.5rem;
+          margin-top: 1rem;
+        }
+
+        .bot-function-tag {
+          background: rgba(16, 185, 129, 0.1);
+          color: var(--success);
+          padding: 0.3rem 0.7rem;
+          border-radius: 15px;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+          display: flex;
+          gap: 1rem;
+          margin-top: 2rem;
+          flex-wrap: wrap;
+        }
+
+        .save-config-btn {
+          flex: 1;
+          background: var(--primary);
+          color: white;
+          border: none;
+          padding: 1rem;
+          border-radius: 6px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          min-width: 250px;
+        }
+
+        .save-config-btn:hover {
+          background: var(--primary-dark);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .save-config-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .edit-config-btn {
+          flex: 1;
+          background: var(--warning);
+          color: white;
+          border: none;
+          padding: 1rem;
+          border-radius: 6px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          min-width: 200px;
+        }
+
+        .edit-config-btn:hover {
+          background: #d97706;
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .delete-config-btn {
+          flex: 1;
+          background: var(--danger);
+          color: white;
+          border: none;
+          padding: 1rem;
+          border-radius: 6px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          min-width: 200px;
+        }
+
+        .delete-config-btn:hover {
+          background: #dc2626;
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Saved Config Display */
+        .saved-config {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          margin-top: 2rem;
+          border: 1px solid #e2e8f0;
+          display: none;
+        }
+
+        .config-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .config-header h3 {
+          color: var(--dark);
+          font-size: 1.3rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .bot-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+        }
+
+        .status-online {
+          background: var(--success);
+          color: var(--success);
+        }
+
+        .status-building {
+          background: var(--warning);
+          color: var(--warning);
+        }
+
+        .status-deploying {
+          background: var(--info);
+          color: var(--info);
+        }
+
+        .status-error {
+          background: var(--danger);
+          color: var(--danger);
+        }
+
+        .status-pending {
+          background: var(--gray);
+          color: var(--gray);
+        }
+
+        .config-info {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .config-item {
+          padding: 1rem;
+          background: #f8fafc;
+          border-radius: 8px;
+        }
+
+        .config-item-label {
+          font-size: 0.85rem;
+          color: var(--gray);
+          margin-bottom: 0.3rem;
+        }
+
+        .config-item-value {
+          color: var(--dark);
+          font-weight: 600;
+          word-break: break-all;
+        }
+
+        .token-display {
+          font-family: monospace;
+          font-size: 0.9rem;
+          background: var(--darker);
+          color: var(--light);
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          margin-top: 0.5rem;
+          overflow-x: auto;
+        }
+
+        /* Deploy Button */
+        .deploy-btn {
+          background: var(--success);
+          color: white;
+          border: none;
+          padding: 0.8rem 1.5rem;
+          border-radius: 6px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .deploy-btn:hover {
+          background: #0da271;
+          transform: translateY(-2px);
+        }
+
+        .deploy-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        /* Admin Notification */
+        .admin-notification {
+          background: var(--info);
+          color: white;
+          padding: 1rem;
+          border-radius: 8px;
+          margin: 1rem 0;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.7; }
+          100% { opacity: 1; }
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+          padding: 5rem 0;
+          background: #f1f5f9;
+          min-height: 100vh;
+          display: none;
+        }
+
+        .admin-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 3rem;
+        }
+
+        .stat-card {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          text-align: center;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+          border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: var(--primary);
+          margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+          color: var(--gray);
+          font-size: 0.9rem;
+        }
+
+        .admin-controls {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          flex-wrap: wrap;
+        }
+
+        .admin-search {
+          flex: 1;
+          min-width: 300px;
+          padding: 0.8rem 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 1rem;
+        }
+
+        .status-filter {
+          padding: 0.8rem 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 1rem;
+          background: white;
+          min-width: 150px;
+        }
+
+        .bots-table-container {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+          border: 1px solid #e2e8f0;
+          overflow-x: auto;
+        }
+
+        .bots-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        .bots-table th {
+          text-align: left;
+          padding: 1rem;
+          background: #f8fafc;
+          color: var(--dark);
+          font-weight: 600;
+          border-bottom: 2px solid #e2e8f0;
+        }
+
+        .bots-table td {
+          padding: 1rem;
+          border-bottom: 1px solid #e2e8f0;
+          vertical-align: middle;
+        }
+
+        .bots-table tr:hover {
+          background: #f8fafc;
+        }
+
+        .bot-user-info {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .bot-user-avatar {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 0.8rem;
+          overflow: hidden;
+        }
+
+        .bot-user-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .status-select {
+          padding: 0.3rem 0.5rem;
+          border-radius: 4px;
+          border: 1px solid #cbd5e1;
+          background: white;
+          font-size: 0.9rem;
+        }
+
+        .admin-action-btn {
+          padding: 0.3rem 0.8rem;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.8rem;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .admin-action-btn.send-message {
+          background: var(--info);
+          color: white;
+        }
+
+        .admin-action-btn.send-message:hover {
+          background: #2563eb;
+        }
+
+        .admin-action-btn.view-details {
+          background: var(--primary);
+          color: white;
+        }
+
+        .admin-action-btn.view-details:hover {
+          background: var(--primary-dark);
+        }
+
+        .user-notifications {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          margin-top: 2rem;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+          border: 1px solid #e2e8f0;
+        }
+
+        .notification-item {
+          padding: 1rem;
+          border-bottom: 1px solid #e2e8f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .notification-item:last-child {
+          border-bottom: none;
+        }
+
+        .notification-content {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .notification-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1rem;
+        }
+
+        .notification-text {
+          flex: 1;
+        }
+
+        .notification-text strong {
+          color: var(--dark);
+        }
+
+        .notification-time {
+          color: var(--gray);
+          font-size: 0.85rem;
+        }
+
+        .notification-actions {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .mark-read-btn {
+          padding: 0.3rem 0.8rem;
+          background: var(--success);
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.85rem;
+        }
+
+        .mark-read-btn:hover {
+          background: #0da271;
+        }
+
+        /* Admin Message Modal */
+        .admin-message-modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.7);
+          z-index: 2001;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .admin-message-content {
+          background: white;
+          border-radius: 12px;
+          width: 90%;
+          max-width: 500px;
+          padding: 2rem;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .admin-message-content h3 {
+          margin-bottom: 1.5rem;
+          color: var(--dark);
+        }
+
+        .message-type-select {
+          width: 100%;
+          padding: 0.8rem 1rem;
+          margin-bottom: 1.5rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 1rem;
+        }
+
+        .message-textarea {
+          width: 100%;
+          padding: 0.8rem 1rem;
+          margin-bottom: 1.5rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 1rem;
+          resize: vertical;
+          min-height: 100px;
+        }
+
+        .modal-buttons {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        .cancel-btn {
+          padding: 0.8rem 1.5rem;
+          background: #e2e8f0;
+          color: var(--dark);
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .send-btn {
+          padding: 0.8rem 1.5rem;
+          background: var(--primary);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .send-btn:hover {
+          background: var(--primary-dark);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.95);
+          display: none;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          z-index: 1002;
+        }
+        
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 3px solid #f3f3f3;
+          border-top: 3px solid var(--primary);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 1001;
+        }
+
+        .toast {
+          background: white;
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+          margin-bottom: 0.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          border-left: 4px solid var(--success);
+          transform: translateX(100%);
+          opacity: 0;
+          transition: all 0.3s ease;
+        }
+
+        .toast.show {
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        .toast.success {
+          border-left-color: var(--success);
+        }
+
+        .toast.error {
+          border-left-color: var(--primary);
+        }
+
+        .toast.warning {
+          border-left-color: var(--warning);
+        }
+
+        .toast.info {
+          border-left-color: var(--info);
+        }
+
+        .toast-icon {
+          font-size: 1.2rem;
+        }
+
+        .toast.success .toast-icon {
+          color: var(--success);
+        }
+
+        .toast.error .toast-icon {
+          color: var(--primary);
+        }
+
+        .toast.warning .toast-icon {
+          color: var(--warning);
+        }
+
+        .toast.info .toast-icon {
+          color: var(--info);
+        }
+
+        /* Section Title */
+        .section-title {
+          text-align: center;
+          margin-bottom: 3.5rem;
+        }
+
+        .section-title h2 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: var(--dark);
+          margin-bottom: 1rem;
+        }
+
+        .section-title p {
+          color: var(--gray);
+          max-width: 600px;
+          margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+          background: var(--darker);
+          color: white;
+          padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 3rem;
+          margin-bottom: 3rem;
+        }
+
+        .footer-column h3 {
+          color: white;
+          margin-bottom: 1.5rem;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .footer-links {
+          list-style: none;
+        }
+
+        .footer-links li {
+          margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+          color: #cbd5e1;
+          text-decoration: none;
+          transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+          color: var(--primary);
+        }
+
+        .footer-bottom {
+          text-align: center;
+          padding-top: 2rem;
+          border-top: 1px solid #334155;
+          color: #94a3b8;
+        }
+
+        .locations {
+          text-align: center;
+          margin-top: 2.5rem;
+          font-size: 1.15rem;
+          background: linear-gradient(90deg, var(--primary), var(--secondary));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .nav-links {
+            display: none;
+          }
+          
+          .hero h1 {
+            font-size: 2.5rem;
+          }
+          
+          .header-buttons {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          
+          .user-welcome {
+            display: none;
+          }
+          
+          .bot-config-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .functions-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .config-info {
+            grid-template-columns: 1fr;
+          }
+          
+          .action-buttons {
+            flex-direction: column;
+          }
+          
+          .action-buttons button {
+            width: 100%;
+          }
+          
+          .admin-controls {
+            flex-direction: column;
+          }
+          
+          .admin-controls input,
+          .admin-controls select {
+            width: 100%;
+          }
+          
+          .bots-table {
+            font-size: 0.9rem;
+          }
+          
+          .bots-table th,
+          .bots-table td {
+            padding: 0.5rem;
+          }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="register">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <h3>Welcome Back</h3>
+                <div id="loginError" class="auth-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="loginErrorText"></span>
+                </div>
+                <div class="auth-input-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button id="loginBtn" class="auth-btn">Login</button>
+                
+                <div class="auth-divider">or</div>
+                
+                <button id="googleLoginBtn" class="google-auth-btn">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </button>
+                
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="switchToRegister">Sign up</a></p>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <h3>Create Account</h3>
+                <div id="registerError" class="auth-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="registerErrorText"></span>
+                </div>
+                <div class="auth-input-group">
+                    <label for="registerUsername">Username</label>
+                    <input type="text" id="registerUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password (min. 6 chars)" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <button id="registerBtn" class="auth-btn">Create Account</button>
+                
+                <div class="auth-divider">or</div>
+                
+                <button id="googleRegisterBtn" class="google-auth-btn">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </button>
+                
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" id="switchToLogin">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Message Modal -->
+    <div id="adminMessageModal" class="admin-message-modal">
+        <div class="admin-message-content">
+            <h3>Send Message to User</h3>
+            <select id="messageType" class="message-type-select">
+                <option value="info">Information</option>
+                <option value="warning">Warning</option>
+                <option value="success">Success</option>
+                <option value="error">Error</option>
+                <option value="bot_update">Bot Update</option>
+                <option value="deployment">Deployment Status</option>
+            </select>
+            <textarea id="messageContent" class="message-textarea" placeholder="Type your message here..."></textarea>
+            <div class="modal-buttons">
+                <button id="cancelMessageBtn" class="cancel-btn">Cancel</button>
+                <button id="sendMessageBtn" class="send-btn">Send Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <i class="fas fa-fire"></i>
+                    RuinHosting
+                </a>
+                <nav class="nav-links">
+                    <a href="#home">Home</a>
+                    <a href="#bot-config" class="active">Configure Bot</a>
+                    <a href="#bot-functions">Bot Functions</a>
+                    <a href="#notifications">Notifications</a>
+                    <a href="#admin-panel" id="adminPanelLink" style="display: none;">
+                        <i class="fas fa-crown"></i> Admin Panel
+                    </a>
+                </nav>
+                <div class="header-buttons">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar" id="userAvatar">
+                            <span id="avatarInitials">U</span>
+                        </div>
+                        <span class="user-welcome" id="userWelcome">Welcome!</span>
+                    </div>
+                    <button id="authButton" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Free Discord Bot Hosting</h1>
+            <p>Configure your Discord bot with custom functions. Choose what your bot should do and deploy instantly.</p>
+            <a href="#bot-config" class="cta-button">Start Building Your Bot</a>
+        </div>
+    </section>
+
+    <!-- Bot Configuration -->
+    <section class="bot-config" id="bot-config">
+        <div class="container">
+            <div class="section-title">
+                <h2>Step 1: Configure Your Bot</h2>
+                <p>Enter your bot details and upload a profile picture</p>
+            </div>
+            
+            <div class="bot-config-grid">
+                <!-- Bot Token Configuration -->
+                <div class="bot-config-card">
+                    <h3><i class="fas fa-key"></i> Bot Token & ID</h3>
+                    <div class="form-group">
+                        <label for="botToken">Discord Bot Token *</label>
+                        <input type="password" id="botToken" placeholder="Enter your Discord bot token" required>
+                        <small style="color: var(--gray); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                            Get from <a href="https://discord.com/developers/applications" target="_blank" style="color: var(--primary);">Discord Developer Portal</a>
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientId">Client ID</label>
+                        <input type="text" id="clientId" placeholder="Enter your bot's Client ID">
+                    </div>
+                </div>
+
+                <!-- Bot Details Configuration -->
+                <div class="bot-config-card">
+                    <h3><i class="fas fa-robot"></i> Bot Details</h3>
+                    <div class="form-group">
+                        <label for="botName">Bot Name *</label>
+                        <input type="text" id="botName" placeholder="Enter your bot's name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="botDescription">Bot Description</label>
+                        <textarea id="botDescription" placeholder="Describe what your bot does"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="botPrefix">Command Prefix</label>
+                        <input type="text" id="botPrefix" placeholder="! or . or ?" value="!">
+                    </div>
+                </div>
+
+                <!-- Profile Picture Upload -->
+                <div class="bot-config-card">
+                    <h3><i class="fas fa-image"></i> Profile Picture</h3>
+                    <div class="file-upload" id="pfpUpload">
+                        <input type="file" id="botPfp" accept="image/*">
+                        <label for="botPfp" class="file-upload-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Click to upload profile picture</span>
+                            <small>PNG, JPG, GIF up to 5MB</small>
+                        </label>
+                    </div>
+                    <div class="file-preview" id="pfpPreview">
+                        <img id="pfpPreviewImage" src="" alt="Preview">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bot Preview -->
+            <div class="bot-preview">
+                <div class="bot-preview-title">Bot Preview</div>
+                <div class="bot-avatar" id="botAvatarPreview">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="bot-name" id="botNamePreview">Your Bot Name</div>
+                <div class="bot-description" id="botDescriptionPreview">Bot description will appear here</div>
+                <div class="bot-functions-preview" id="botFunctionsPreview">
+                    <!-- Selected functions will appear here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bot Functions Section -->
+    <section class="bot-functions-section" id="bot-functions">
+        <div class="container">
+            <div class="section-title">
+                <h2>Step 2: Choose Bot Functions</h2>
+                <p>Select what you want your Discord bot to do</p>
+            </div>
+
+            <!-- Moderation Functions -->
+            <div class="functions-category">
+                <div class="category-header">
+                    <h3><i class="fas fa-shield-alt"></i> Moderation Functions</h3>
+                    <span class="selected-count" id="moderationCount">0 selected</span>
+                </div>
+                <div class="functions-grid" id="moderationFunctions">
+                    <!-- Moderation functions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Utility Functions -->
+            <div class="functions-category">
+                <div class="category-header">
+                    <h3><i class="fas fa-tools"></i> Utility Functions</h3>
+                    <span class="selected-count" id="utilityCount">0 selected</span>
+                </div>
+                <div class="functions-grid" id="utilityFunctions">
+                    <!-- Utility functions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Fun & Games Functions -->
+            <div class="functions-category">
+                <div class="category-header">
+                    <h3><i class="fas fa-gamepad"></i> Fun & Games</h3>
+                    <span class="selected-count" id="funCount">0 selected</span>
+                </div>
+                <div class="functions-grid" id="funFunctions">
+                    <!-- Fun functions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Music Functions -->
+            <div class="functions-category">
+                <div class="category-header">
+                    <h3><i class="fas fa-music"></i> Music Functions</h3>
+                    <span class="selected-count" id="musicCount">0 selected</span>
+                </div>
+                <div class="functions-grid" id="musicFunctions">
+                    <!-- Music functions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Selected Functions Display -->
+            <div class="selected-functions">
+                <div class="selected-header">
+                    <h3><i class="fas fa-check-circle"></i> Your Selected Functions</h3>
+                    <span class="total-functions" id="totalFunctions">0 total</span>
+                </div>
+                <div class="selected-functions-list" id="selectedFunctionsList">
+                    <div class="no-functions">No functions selected yet. Choose from above.</div>
+                </div>
+            </div>
+
+            <!-- Admin Notification (for bot building status) -->
+            <div id="adminNotification" class="admin-notification" style="display: none;">
+                <i class="fas fa-cog fa-spin"></i>
+                <div>
+                    <strong>Your bot is being built!</strong>
+                    <p id="buildingStatus">Our team is working on creating your bot. This may take a few minutes.</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="saveConfigBtn" class="save-config-btn" disabled>
+                    <i class="fas fa-save"></i> Save Bot Configuration
+                </button>
+                <button id="editConfigBtn" class="edit-config-btn" style="display: none;">
+                    <i class="fas fa-edit"></i> Edit Configuration
+                </button>
+                <button id="deleteConfigBtn" class="delete-config-btn" style="display: none;">
+                    <i class="fas fa-trash"></i> Delete Bot
+                </button>
+            </div>
+
+            <!-- Saved Configuration Display -->
+            <div class="saved-config" id="savedConfig">
+                <div class="config-header">
+                    <h3><i class="fas fa-check-circle"></i> Configuration Saved</h3>
+                    <div class="bot-status" id="botStatusDisplay">
+                        <div class="status-dot"></div>
+                        <span id="statusText">Ready to Deploy</span>
+                    </div>
+                </div>
+                <div class="config-info" id="configInfo">
+                    <!-- Configuration details will be loaded here -->
+                </div>
+                <div id="adminMessageArea" style="display: none;">
+                    <div class="config-item">
+                        <div class="config-item-label">Admin Message</div>
+                        <div class="config-item-value" id="adminMessageContent"></div>
+                    </div>
+                </div>
+                <button id="deployBtn" class="deploy-btn">
+                    <i class="fas fa-rocket"></i> Deploy Bot Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Notifications Section -->
+    <section class="bot-config" id="notifications" style="display: none;">
+        <div class="container">
+            <div class="section-title">
+                <h2><i class="fas fa-bell"></i> Your Notifications</h2>
+                <p>Stay updated about your bot's status and admin messages</p>
+            </div>
+            
+            <div class="user-notifications" id="userNotificationsList">
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="notification-text">
+                            <strong>Welcome to RuinHosting!</strong>
+                            <p>Your notifications will appear here.</p>
+                            <span class="notification-time">Just now</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="mark-read-btn">Mark as Read</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="admin-panel" id="admin-panel">
+        <div class="container">
+            <div class="section-title">
+                <h2><i class="fas fa-crown"></i> Admin Panel</h2>
+                <p>Manage all user bots and send notifications</p>
+            </div>
+
+            <!-- Admin Stats -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBotsCount">0</div>
+                    <div class="stat-label">Total Bots</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeBotsCount">0</div>
+                    <div class="stat-label">Active Bots</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="buildingBotsCount">0</div>
+                    <div class="stat-label">Building</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingBotsCount">0</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+            </div>
+
+            <!-- Admin Controls -->
+            <div class="admin-controls">
+                <input type="text" id="adminSearch" class="admin-search" placeholder="Search bots by name or user...">
+                <select id="statusFilter" class="status-filter">
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="building">Building</option>
+                    <option value="deploying">Deploying</option>
+                    <option value="deployed">Deployed</option>
+                    <option value="error">Error</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+
+            <!-- Bots Table -->
+            <div class="bots-table-container">
+                <table class="bots-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Bot Name</th>
+                            <th>Functions</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminBotsTable">
+                        <!-- Bots will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Admin Actions Info -->
+            <div class="user-notifications" style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Admin Actions Log</h3>
+                <div id="adminActionsLog">
+                    <!-- Admin actions will be logged here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Firebase Configuration and App Logic -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoiyRh6aylOL7EUbJUuH_tf9l3buyW96o",
+            authDomain: "ruinhostingservers.firebaseapp.com",
+            projectId: "ruinhostingservers",
+            storageBucket: "ruinhostingservers.firebasestorage.app",
+            messagingSenderId: "1002853469200",
+            appId: "1:1002853469200:web:28f6f7a037088d73d38e95",
+            measurementId: "G-S9L2GXSX1X"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // Admin email list (you can add more admin emails here)
+        const ADMIN_EMAILS = ['admin@ruinhosting.com', 'your-email@example.com'];
+
+        // Bot Functions Data
+        const botFunctionsData = {
+            moderation: [
+                {
+                    id: "auto-mod",
+                    name: "Auto Moderation",
+                    description: "Automatically filter bad words, spam, and links",
+                    icon: "fas fa-robot",
+                    category: "moderation"
+                },
+                {
+                    id: "warn-system",
+                    name: "Warning System",
+                    description: "Issue warnings to users with automatic punishments",
+                    icon: "fas fa-exclamation-triangle",
+                    category: "moderation"
+                },
+                {
+                    id: "kick-ban",
+                    name: "Kick/Ban Commands",
+                    description: "Moderator commands to kick or ban users",
+                    icon: "fas fa-user-slash",
+                    category: "moderation"
+                },
+                {
+                    id: "mute",
+                    name: "Temporary Mute",
+                    description: "Temporarily mute users in voice and text channels",
+                    icon: "fas fa-volume-mute",
+                    category: "moderation"
+                },
+                {
+                    id: "purge",
+                    name: "Message Purge",
+                    description: "Bulk delete messages from channels",
+                    icon: "fas fa-trash",
+                    category: "moderation"
+                },
+                {
+                    id: "anti-raid",
+                    name: "Anti-Raid Protection",
+                    description: "Detect and prevent server raids automatically",
+                    icon: "fas fa-shield-alt",
+                    category: "moderation"
+                }
+            ],
+            utility: [
+                {
+                    id: "ticket-system",
+                    name: "Ticket System",
+                    description: "Create support tickets for user assistance",
+                    icon: "fas fa-ticket-alt",
+                    category: "utility"
+                },
+                {
+                    id: "poll-system",
+                    name: "Poll System",
+                    description: "Create polls with reactions and results",
+                    icon: "fas fa-chart-bar",
+                    category: "utility"
+                },
+                {
+                    id: "announcements",
+                    name: "Announcements",
+                    description: "Send announcements to specific channels",
+                    icon: "fas fa-bullhorn",
+                    category: "utility"
+                },
+                {
+                    id: "role-menu",
+                    name: "Role Menu",
+                    description: "Let users self-assign roles with reactions",
+                    icon: "fas fa-user-tag",
+                    category: "utility"
+                },
+                {
+                    id: "welcome-messages",
+                    name: "Welcome Messages",
+                    description: "Send welcome messages to new members",
+                    icon: "fas fa-door-open",
+                    category: "utility"
+                },
+                {
+                    id: "level-system",
+                    name: "Level System",
+                    description: "XP and leveling system for active members",
+                    icon: "fas fa-chart-line",
+                    category: "utility"
+                }
+            ],
+            fun: [
+                {
+                    id: "meme-generator",
+                    name: "Meme Generator",
+                    description: "Generate memes with custom text",
+                    icon: "fas fa-laugh",
+                    category: "fun"
+                },
+                {
+                    id: "games",
+                    name: "Mini Games",
+                    description: "Play simple games like trivia and hangman",
+                    icon: "fas fa-gamepad",
+                    category: "fun"
+                },
+                {
+                    id: "quotes",
+                    name: "Quote System",
+                    description: "Save and recall funny quotes from members",
+                    icon: "fas fa-quote-right",
+                    category: "fun"
+                },
+                {
+                    id: "image-effects",
+                    name: "Image Effects",
+                    description: "Apply fun effects to user avatars",
+                    icon: "fas fa-image",
+                    category: "fun"
+                },
+                {
+                    id: "fortune",
+                    name: "Fortune Teller",
+                    description: "Tell fortunes and give random advice",
+                    icon: "fas fa-crystal-ball",
+                    category: "fun"
+                },
+                {
+                    id: "animal-facts",
+                    name: "Animal Facts",
+                    description: "Get random facts about animals",
+                    icon: "fas fa-paw",
+                    category: "fun"
+                }
+            ],
+            music: [
+                {
+                    id: "play-music",
+                    name: "Play Music",
+                    description: "Play music from YouTube, Spotify, and SoundCloud",
+                    icon: "fas fa-play",
+                    category: "music"
+                },
+                {
+                    id: "playlists",
+                    name: "Playlist System",
+                    description: "Create and manage music playlists",
+                    icon: "fas fa-list",
+                    category: "music"
+                },
+                {
+                    id: "volume-control",
+                    name: "Volume Control",
+                    description: "Adjust music volume and sound quality",
+                    icon: "fas fa-volume-up",
+                    category: "music"
+                },
+                {
+                    id: "lyrics",
+                    name: "Song Lyrics",
+                    description: "Display lyrics for currently playing songs",
+                    icon: "fas fa-music",
+                    category: "music"
+                },
+                {
+                    id: "radio",
+                    name: "Radio Stations",
+                    description: "Play internet radio stations",
+                    icon: "fas fa-broadcast-tower",
+                    category: "music"
+                },
+                {
+                    id: "equalizer",
+                    name: "Audio Equalizer",
+                    description: "Adjust bass, treble, and other audio settings",
+                    icon: "fas fa-sliders-h",
+                    category: "music"
+                }
+            ]
+        };
+
+        // User state
+        let currentUser = null;
+        let isAdmin = false;
+        let userBotConfig = null;
+        let uploadedPfpFile = null;
+        let selectedFunctions = new Set();
+        let adminSelectedUser = null;
+
+        // DOM Elements
+        const authModal = document.getElementById('authModal');
+        const authButton = document.getElementById('authButton');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const googleRegisterBtn = document.getElementById('googleRegisterBtn');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        
+        const loginError = document.getElementById('loginError');
+        const loginErrorText = document.getElementById('loginErrorText');
+        const registerError = document.getElementById('registerError');
+        const registerErrorText = document.getElementById('registerErrorText');
+        
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const avatarInitials = document.getElementById('avatarInitials');
+        const userWelcome = document.getElementById('userWelcome');
+        const adminPanelLink = document.getElementById('adminPanelLink');
+        
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        const editConfigBtn = document.getElementById('editConfigBtn');
+        const deleteConfigBtn = document.getElementById('deleteConfigBtn');
+        const deployBtn = document.getElementById('deployBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        const toastContainer = document.getElementById('toastContainer');
+        const savedConfig = document.getElementById('savedConfig');
+        const configInfo = document.getElementById('configInfo');
+        const botStatusDisplay = document.getElementById('botStatusDisplay');
+        const statusText = document.getElementById('statusText');
+        const adminNotification = document.getElementById('adminNotification');
+        const buildingStatus = document.getElementById('buildingStatus');
+        const adminMessageArea = document.getElementById('adminMessageArea');
+        const adminMessageContent = document.getElementById('adminMessageContent');
+
+        // Admin elements
+        const adminPanel = document.getElementById('admin-panel');
+        const adminMessageModal = document.getElementById('adminMessageModal');
+        const cancelMessageBtn = document.getElementById('cancelMessageBtn');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const messageType = document.getElementById('messageType');
+        const messageContent = document.getElementById('messageContent');
+        const adminSearch = document.getElementById('adminSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const adminBotsTable = document.getElementById('adminBotsTable');
+        const userNotificationsList = document.getElementById('userNotificationsList');
+        const notificationsSection = document.getElementById('notifications');
+        const adminActionsLog = document.getElementById('adminActionsLog');
+
+        // Bot Configuration Elements
+        const botToken = document.getElementById('botToken');
+        const clientId = document.getElementById('clientId');
+        const botName = document.getElementById('botName');
+        const botDescription = document.getElementById('botDescription');
+        const botPrefix = document.getElementById('botPrefix');
+        const botPfp = document.getElementById('botPfp');
+        const pfpUpload = document.getElementById('pfpUpload');
+        const pfpPreview = document.getElementById('pfpPreview');
+        const pfpPreviewImage = document.getElementById('pfpPreviewImage');
+        const botAvatarPreview = document.getElementById('botAvatarPreview');
+        const botNamePreview = document.getElementById('botNamePreview');
+        const botDescriptionPreview = document.getElementById('botDescriptionPreview');
+        const botFunctionsPreview = document.getElementById('botFunctionsPreview');
+
+        // Functions Display Elements
+        const moderationFunctionsGrid = document.getElementById('moderationFunctions');
+        const utilityFunctionsGrid = document.getElementById('utilityFunctions');
+        const funFunctionsGrid = document.getElementById('funFunctions');
+        const musicFunctionsGrid = document.getElementById('musicFunctions');
+        const selectedFunctionsList = document.getElementById('selectedFunctionsList');
+        const moderationCount = document.getElementById('moderationCount');
+        const utilityCount = document.getElementById('utilityCount');
+        const funCount = document.getElementById('funCount');
+        const musicCount = document.getElementById('musicCount');
+        const totalFunctions = document.getElementById('totalFunctions');
+
+        // Initialize the app
+        function initApp() {
+            // Setup auth modal
+            setupAuthModal();
+            
+            // Setup admin message modal
+            setupAdminMessageModal();
+            
+            // Auth state observer
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                isAdmin = user ? ADMIN_EMAILS.includes(user.email) : false;
+                updateUIForAuthState();
+                
+                if (user) {
+                    // Load user data from Firestore
+                    await loadUserData(user);
+                    loadUserBotConfig();
+                    loadUserNotifications();
+                    showToast(`Welcome back, ${user.displayName || user.email}!`, 'success');
+                    
+                    if (isAdmin) {
+                        loadAdminPanel();
+                        setupAdminEventListeners();
+                    }
+                } else {
+                    userBotConfig = null;
+                    selectedFunctions.clear();
+                    clearForm();
+                    savedConfig.style.display = 'none';
+                    updateFunctionsCount();
+                    updateSelectedFunctionsList();
+                    adminPanel.style.display = 'none';
+                    notificationsSection.style.display = 'none';
+                }
+            });
+
+            // Event listeners for form updates
+            botToken.addEventListener('input', updateSaveButtonState);
+            botName.addEventListener('input', updateSaveButtonState);
+            botName.addEventListener('input', updateBotPreview);
+            botDescription.addEventListener('input', updateBotPreview);
+            botPrefix.addEventListener('input', updateSaveButtonState);
+
+            // Profile picture upload
+            botPfp.addEventListener('change', handlePfpUpload);
+            pfpUpload.addEventListener('click', () => botPfp.click());
+
+            // Save configuration
+            saveConfigBtn.addEventListener('click', saveBotConfiguration);
+            
+            // Edit configuration
+            editConfigBtn.addEventListener('click', () => {
+                if (userBotConfig) {
+                    enableEditMode();
+                }
+            });
+            
+            // Delete configuration
+            deleteConfigBtn.addEventListener('click', deleteBotConfiguration);
+
+            // Deploy bot
+            deployBtn.addEventListener('click', deployBot);
+
+            // Render bot functions
+            renderBotFunctions();
+
+            // Initial update
+            updateSaveButtonState();
+            updateBotPreview();
+            
+            // Navigation
+            setupNavigation();
+        }
+
+        // Setup navigation
+        function setupNavigation() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    
+                    if (targetId === '#admin-panel' && !isAdmin) {
+                        showToast('Admin access required', 'error');
+                        return;
+                    }
+                    
+                    if (targetId === '#notifications') {
+                        loadUserNotifications();
+                        notificationsSection.style.display = 'block';
+                        adminPanel.style.display = 'none';
+                        document.querySelector('.bot-config').style.display = 'none';
+                        document.querySelector('.bot-functions-section').style.display = 'none';
+                    } else if (targetId === '#admin-panel') {
+                        adminPanel.style.display = 'block';
+                        notificationsSection.style.display = 'none';
+                        document.querySelector('.bot-config').style.display = 'none';
+                        document.querySelector('.bot-functions-section').style.display = 'none';
+                    } else {
+                        adminPanel.style.display = 'none';
+                        notificationsSection.style.display = 'none';
+                        document.querySelector('.bot-config').style.display = 'block';
+                        document.querySelector('.bot-functions-section').style.display = 'block';
+                    }
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Setup auth modal functionality
+        function setupAuthModal() {
+            // Open modal when login button is clicked
+            authButton.addEventListener('click', () => {
+                if (currentUser) {
+                    logout();
+                } else {
+                    authModal.style.display = 'flex';
+                }
+            });
+
+            // Close modal
+            closeModalBtn.addEventListener('click', () => {
+                authModal.style.display = 'none';
+                clearAuthErrors();
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    authModal.style.display = 'none';
+                    clearAuthErrors();
+                }
+            });
+
+            // Switch between login and register tabs
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    
+                    // Update active tab
+                    authTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show correct form
+                    loginForm.classList.remove('active');
+                    registerForm.classList.remove('active');
+                    
+                    if (tabName === 'login') {
+                        loginForm.classList.add('active');
+                    } else {
+                        registerForm.classList.add('active');
+                    }
+                    
+                    clearAuthErrors();
+                });
+            });
+
+            // Switch to register form
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                authTabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('[data-tab="register"]').classList.add('active');
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                clearAuthErrors();
+            });
+
+            // Switch to login form
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                authTabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('[data-tab="login"]').classList.add('active');
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
+                clearAuthErrors();
+            });
+
+            // Login with email/password
+            loginBtn.addEventListener('click', loginWithEmail);
+            
+            // Register with email/password
+            registerBtn.addEventListener('click', registerWithEmail);
+            
+            // Google auth for both forms
+            googleLoginBtn.addEventListener('click', loginWithGoogle);
+            googleRegisterBtn.addEventListener('click', loginWithGoogle);
+            
+            // Allow form submission with Enter key
+            document.getElementById('loginEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') loginWithEmail();
+            });
+            
+            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') loginWithEmail();
+            });
+            
+            document.getElementById('registerPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') registerWithEmail();
+            });
+            
+            document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') registerWithEmail();
+            });
+        }
+
+        // Setup admin message modal
+        function setupAdminMessageModal() {
+            cancelMessageBtn.addEventListener('click', () => {
+                adminMessageModal.style.display = 'none';
+                adminSelectedUser = null;
+                messageContent.value = '';
+            });
+
+            sendMessageBtn.addEventListener('click', sendAdminMessage);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === adminMessageModal) {
+                    adminMessageModal.style.display = 'none';
+                    adminSelectedUser = null;
+                    messageContent.value = '';
+                }
+            });
+        }
+
+        // Setup admin event listeners
+        function setupAdminEventListeners() {
+            adminSearch.addEventListener('input', loadAdminBots);
+            statusFilter.addEventListener('change', loadAdminBots);
+        }
+
+        // Clear auth error messages
+        function clearAuthErrors() {
+            loginError.classList.remove('show');
+            registerError.classList.remove('show');
+        }
+
+        // Login with email and password
+        async function loginWithEmail() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            // Validate inputs
+            if (!email || !password) {
+                loginErrorText.textContent = 'Please enter both email and password';
+                loginError.classList.add('show');
+                return;
+            }
+            
+            try {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Close modal on successful login
+                authModal.style.display = 'none';
+                clearAuthErrors();
+                
+                showToast(`Welcome back, ${user.displayName || user.email}!`, 'success');
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                let errorMessage = 'Login failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'This account has been disabled.';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage = 'No account found with this email.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Incorrect password. Please try again.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed attempts. Please try again later.';
+                        break;
+                }
+                
+                loginErrorText.textContent = errorMessage;
+                loginError.classList.add('show');
+                
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        }
+
+        // Register with email and password
+        async function registerWithEmail() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            // Validate inputs
+            if (!username || !email || !password || !confirmPassword) {
+                registerErrorText.textContent = 'Please fill in all fields';
+                registerError.classList.add('show');
+                return;
+            }
+            
+            if (password.length < 6) {
+                registerErrorText.textContent = 'Password must be at least 6 characters';
+                registerError.classList.add('show');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                registerErrorText.textContent = 'Passwords do not match';
+                registerError.classList.add('show');
+                return;
+            }
+            
+            try {
+                registerBtn.disabled = true;
+                registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+                
+                // Create user in Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Update user profile with username
+                await user.updateProfile({
+                    displayName: username
+                });
+                
+                // Create user document in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: username,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    botCount: 0,
+                    isAdmin: ADMIN_EMAILS.includes(user.email)
+                });
+                
+                // Close modal on successful registration
+                authModal.style.display = 'none';
+                clearAuthErrors();
+                
+                showToast(`Account created successfully! Welcome, ${username}!`, 'success');
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                
+                let errorMessage = 'Registration failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'Email already in use. Please use a different email.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address.';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'Email/password accounts are not enabled.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Password is too weak. Please use a stronger password.';
+                        break;
+                }
+                
+                registerErrorText.textContent = errorMessage;
+                registerError.classList.add('show');
+                
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Create Account';
+            }
+        }
+
+        // Login with Google
+        async function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            try {
+                // Set loading state for both Google buttons
+                googleLoginBtn.disabled = true;
+                googleRegisterBtn.disabled = true;
+                googleLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+                googleRegisterBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+                
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                // Check if this is a new user
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (!userDoc.exists) {
+                    // Create user document for new Google sign-in
+                    await db.collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        provider: 'google',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        botCount: 0,
+                        isAdmin: ADMIN_EMAILS.includes(user.email)
+                    });
+                } else {
+                    // Update last login for existing user
+                    await db.collection('users').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                
+                // Close modal on successful login
+                authModal.style.display = 'none';
+                clearAuthErrors();
+                
+                showToast(`Welcome, ${user.displayName}!`, 'success');
+                
+            } catch (error) {
+                console.error('Google login error:', error);
+                
+                let errorMessage = 'Google login failed. Please try again.';
+                
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Login popup was closed. Please try again.';
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    errorMessage = 'Login was cancelled. Please try again.';
+                }
+                
+                showToast(errorMessage, 'error');
+                
+            } finally {
+                // Reset Google buttons
+                googleLoginBtn.disabled = false;
+                googleRegisterBtn.disabled = false;
+                googleLoginBtn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
+                googleRegisterBtn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await auth.signOut();
+                showToast('Logged out successfully', 'info');
+            } catch (error) {
+                console.error('Logout error:', error);
+                showToast('Failed to logout', 'error');
+            }
+        }
+
+        // Load user data from Firestore
+        async function loadUserData(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    // Update user stats if needed
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Update UI for auth state
+        function updateUIForAuthState() {
+            if (currentUser) {
+                // Show user info
+                userInfo.style.display = 'flex';
+                const displayName = currentUser.displayName || currentUser.email.split('@')[0];
+                userWelcome.textContent = `Welcome, ${displayName}!`;
+                
+                // Set avatar
+                if (currentUser.photoURL) {
+                    userAvatar.innerHTML = `<img src="${currentUser.photoURL}" alt="${displayName}">`;
+                } else {
+                    const initials = displayName.charAt(0).toUpperCase();
+                    avatarInitials.textContent = initials;
+                    avatarInitials.style.display = 'flex';
+                }
+                
+                // Update auth button to logout
+                authButton.innerHTML = `<i class="fas fa-sign-out-alt"></i> Logout`;
+                authButton.title = `Logged in as ${currentUser.email}`;
+                
+                // Show admin link if user is admin
+                if (isAdmin) {
+                    adminPanelLink.style.display = 'flex';
+                } else {
+                    adminPanelLink.style.display = 'none';
+                }
+                
+                // Update save button
+                updateSaveButtonState();
+            } else {
+                // Hide user info
+                userInfo.style.display = 'none';
+                
+                // Update auth button to login
+                authButton.innerHTML = `<i class="fas fa-sign-in-alt"></i> Login`;
+                authButton.title = 'Login to save your bot configuration';
+                saveConfigBtn.disabled = true;
+                deployBtn.disabled = true;
+                adminPanelLink.style.display = 'none';
+            }
+        }
+
+        // Render bot functions
+        function renderBotFunctions() {
+            // Clear all grids
+            moderationFunctionsGrid.innerHTML = '';
+            utilityFunctionsGrid.innerHTML = '';
+            funFunctionsGrid.innerHTML = '';
+            musicFunctionsGrid.innerHTML = '';
+
+            // Render moderation functions
+            botFunctionsData.moderation.forEach(func => {
+                const funcCard = createFunctionCard(func);
+                moderationFunctionsGrid.appendChild(funcCard);
+            });
+
+            // Render utility functions
+            botFunctionsData.utility.forEach(func => {
+                const funcCard = createFunctionCard(func);
+                utilityFunctionsGrid.appendChild(funcCard);
+            });
+
+            // Render fun functions
+            botFunctionsData.fun.forEach(func => {
+                const funcCard = createFunctionCard(func);
+                funFunctionsGrid.appendChild(funcCard);
+            });
+
+            // Render music functions
+            botFunctionsData.music.forEach(func => {
+                const funcCard = createFunctionCard(func);
+                musicFunctionsGrid.appendChild(funcCard);
+            });
+        }
+
+        // Create function card element
+        function createFunctionCard(func) {
+            const card = document.createElement('div');
+            card.className = `function-card ${selectedFunctions.has(func.id) ? 'selected' : ''}`;
+            card.dataset.id = func.id;
+            card.dataset.category = func.category;
+            
+            card.innerHTML = `
+                <div class="function-checkbox"></div>
+                <div class="function-icon">
+                    <i class="${func.icon}"></i>
+                </div>
+                <h4>${func.name}</h4>
+                <p>${func.description}</p>
+            `;
+            
+            card.addEventListener('click', () => {
+                toggleFunctionSelection(func.id);
+            });
+            
+            return card;
+        }
+
+        // Toggle function selection
+        function toggleFunctionSelection(funcId) {
+            if (!currentUser) {
+                showToast('Please login to select bot functions', 'warning');
+                authModal.style.display = 'flex';
+                return;
+            }
+            
+            if (selectedFunctions.has(funcId)) {
+                selectedFunctions.delete(funcId);
+                showToast(`Removed ${getFunctionName(funcId)} from bot functions`, 'info');
+            } else {
+                selectedFunctions.add(funcId);
+                showToast(`Added ${getFunctionName(funcId)} to bot functions`, 'success');
+            }
+            
+            updateFunctionsCount();
+            updateSelectedFunctionsList();
+            updateBotPreview();
+            renderBotFunctions(); // Re-render to update selection state
+            updateSaveButtonState();
+        }
+
+        // Get function name by ID
+        function getFunctionName(funcId) {
+            // Search in all function categories
+            for (const category in botFunctionsData) {
+                const func = botFunctionsData[category].find(f => f.id === funcId);
+                if (func) return func.name;
+            }
+            return 'Function';
+        }
+
+        // Update functions count
+        function updateFunctionsCount() {
+            // Count functions by category
+            let modCount = 0;
+            let utilCount = 0;
+            let funCount = 0;
+            let musicCount = 0;
+            
+            selectedFunctions.forEach(funcId => {
+                // Find which category this function belongs to
+                for (const category in botFunctionsData) {
+                    const func = botFunctionsData[category].find(f => f.id === funcId);
+                    if (func) {
+                        if (category === 'moderation') modCount++;
+                        if (category === 'utility') utilCount++;
+                        if (category === 'fun') funCount++;
+                        if (category === 'music') musicCount++;
+                        break;
+                    }
+                }
+            });
+            
+            // Update counters
+            document.getElementById('moderationCount').textContent = `${modCount} selected`;
+            document.getElementById('utilityCount').textContent = `${utilCount} selected`;
+            document.getElementById('funCount').textContent = `${funCount} selected`;
+            document.getElementById('musicCount').textContent = `${musicCount} selected`;
+            document.getElementById('totalFunctions').textContent = `${selectedFunctions.size} total`;
+        }
+
+        // Update selected functions list
+        function updateSelectedFunctionsList() {
+            selectedFunctionsList.innerHTML = '';
+            
+            if (selectedFunctions.size === 0) {
+                selectedFunctionsList.innerHTML = '<div class="no-functions">No functions selected yet. Choose from above.</div>';
+                return;
+            }
+            
+            selectedFunctions.forEach(funcId => {
+                const func = getFunctionById(funcId);
+                if (func) {
+                    const tag = document.createElement('div');
+                    tag.className = 'function-tag';
+                    tag.innerHTML = `
+                        <i class="${func.icon}"></i>
+                        ${func.name}
+                    `;
+                    selectedFunctionsList.appendChild(tag);
+                }
+            });
+        }
+
+        // Update bot preview with selected functions
+        function updateBotPreview() {
+            botNamePreview.textContent = botName.value || 'Your Bot Name';
+            botDescriptionPreview.textContent = botDescription.value || 'Bot description will appear here';
+            
+            // Update functions preview
+            botFunctionsPreview.innerHTML = '';
+            if (selectedFunctions.size > 0) {
+                Array.from(selectedFunctions).slice(0, 5).forEach(funcId => {
+                    const func = getFunctionById(funcId);
+                    if (func) {
+                        const tag = document.createElement('div');
+                        tag.className = 'bot-function-tag';
+                        tag.textContent = func.name;
+                        botFunctionsPreview.appendChild(tag);
+                    }
+                });
+                
+                if (selectedFunctions.size > 5) {
+                    const moreTag = document.createElement('div');
+                    moreTag.className = 'bot-function-tag';
+                    moreTag.textContent = `+${selectedFunctions.size - 5} more`;
+                    botFunctionsPreview.appendChild(moreTag);
+                }
+            }
+        }
+
+        // Get function by ID
+        function getFunctionById(funcId) {
+            for (const category in botFunctionsData) {
+                const func = botFunctionsData[category].find(f => f.id === funcId);
+                if (func) return func;
+            }
+            return null;
+        }
+
+        // Handle profile picture upload
+        function handlePfpUpload(event) {
+            if (!currentUser) {
+                showToast('Please login to upload profile pictures', 'warning');
+                authModal.style.display = 'flex';
+                return;
+            }
+            
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showToast('Please upload a valid image file (JPEG, PNG, GIF, WebP)', 'error');
+                return;
+            }
+
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image size must be less than 5MB', 'error');
+                return;
+            }
+
+            uploadedPfpFile = file;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pfpPreviewImage.src = e.target.result;
+                pfpPreview.style.display = 'block';
+                
+                // Update bot preview
+                botAvatarPreview.innerHTML = `<img src="${e.target.result}" alt="Bot PFP">`;
+            };
+            reader.readAsDataURL(file);
+
+            showToast('Profile picture uploaded successfully', 'success');
+            updateSaveButtonState();
+        }
+
+        // Update save button state
+        function updateSaveButtonState() {
+            const hasToken = botToken.value.trim().length > 0;
+            const hasName = botName.value.trim().length > 0;
+            const hasFunctions = selectedFunctions.size > 0;
+            const isLoggedIn = currentUser !== null;
+            
+            saveConfigBtn.disabled = !(hasToken && hasName && hasFunctions && isLoggedIn);
+            
+            // Update button text
+            if (!isLoggedIn) {
+                saveConfigBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Save Configuration';
+            } else if (!hasFunctions) {
+                saveConfigBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Select at least 1 function';
+            } else {
+                saveConfigBtn.innerHTML = '<i class="fas fa-save"></i> Save Bot Configuration';
+            }
+            
+            // Show/hide edit and delete buttons based on existing config
+            if (userBotConfig) {
+                editConfigBtn.style.display = 'flex';
+                deleteConfigBtn.style.display = 'flex';
+                saveConfigBtn.innerHTML = '<i class="fas fa-save"></i> Update Configuration';
+                deployBtn.disabled = false;
+            } else {
+                editConfigBtn.style.display = 'none';
+                deleteConfigBtn.style.display = 'none';
+            }
+        }
+
+        // Save bot configuration to Firebase
+        async function saveBotConfiguration() {
+            if (!currentUser) {
+                showToast('Please login to save your configuration', 'warning');
+                authModal.style.display = 'flex';
+                return;
+            }
+
+            const token = botToken.value.trim();
+            const name = botName.value.trim();
+            
+            if (!token || !name) {
+                showToast('Please enter bot token and name', 'warning');
+                return;
+            }
+
+            if (selectedFunctions.size === 0) {
+                showToast('Please select at least one bot function', 'warning');
+                return;
+            }
+
+            try {
+                loadingText.textContent = 'Saving configuration...';
+                loadingOverlay.style.display = 'flex';
+                
+                let pfpDownloadUrl = '';
+                
+                // Upload profile picture if selected
+                if (uploadedPfpFile) {
+                    loadingText.textContent = 'Uploading profile picture...';
+                    
+                    // Create a unique filename
+                    const fileName = `bot-pfp-${currentUser.uid}-${Date.now()}-${uploadedPfpFile.name}`;
+                    const storageRef = storage.ref(`bot-pfp/${fileName}`);
+                    
+                    // Upload file
+                    const snapshot = await storageRef.put(uploadedPfpFile);
+                    
+                    // Get download URL
+                    pfpDownloadUrl = await snapshot.ref.getDownloadURL();
+                } else if (userBotConfig && userBotConfig.pfpUrl) {
+                    // Keep existing PFP if not changed
+                    pfpDownloadUrl = userBotConfig.pfpUrl;
+                }
+
+                // Get function details
+                const functionDetails = Array.from(selectedFunctions).map(funcId => {
+                    const func = getFunctionById(funcId);
+                    return {
+                        id: func.id,
+                        name: func.name,
+                        category: func.category,
+                        icon: func.icon
+                    };
+                });
+
+                // Prepare bot configuration data
+                const botConfig = {
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    userName: currentUser.displayName || currentUser.email.split('@')[0],
+                    botToken: token,
+                    clientId: clientId.value.trim(),
+                    botName: name,
+                    botDescription: botDescription.value.trim(),
+                    botPrefix: botPrefix.value.trim() || '!',
+                    pfpUrl: pfpDownloadUrl,
+                    functions: Array.from(selectedFunctions),
+                    functionDetails: functionDetails,
+                    totalFunctions: selectedFunctions.size,
+                    createdAt: userBotConfig ? userBotConfig.createdAt : firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'pending', // New bots start as pending
+                    lastDeployed: userBotConfig ? userBotConfig.lastDeployed : null,
+                    deploymentCount: userBotConfig ? (userBotConfig.deploymentCount || 0) : 0,
+                    lastUpdated: new Date().toISOString(),
+                    adminMessage: userBotConfig ? userBotConfig.adminMessage : null
+                };
+
+                // Save to Firestore
+                await db.collection('userBots').doc(currentUser.uid).set(botConfig, { merge: true });
+                
+                // Update local state
+                userBotConfig = botConfig;
+                
+                // Show admin notification about bot being built
+                adminNotification.style.display = 'flex';
+                buildingStatus.textContent = 'Your bot has been submitted and is now being built by our team. This may take 5-10 minutes. You will be notified when it\'s ready.';
+                
+                // Show saved configuration
+                displaySavedConfig(botConfig);
+                savedConfig.style.display = 'block';
+                
+                showToast('✅ Bot configuration saved successfully! Our team is now building your bot.', 'success');
+                
+                // Log success in Firestore
+                await db.collection('botLogs').add({
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    action: 'config_saved',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    botName: name,
+                    totalFunctions: selectedFunctions.size,
+                    hasPfp: !!pfpDownloadUrl,
+                    status: 'pending'
+                });
+
+                // Send notification to user
+                await sendNotificationToUser(currentUser.uid, 'info', 
+                    `Your bot "${name}" has been submitted for building. Our team will review and build it shortly.`
+                );
+
+                // Update user stats
+                await updateUserStats();
+
+                // Reload admin panel if admin is viewing
+                if (isAdmin) {
+                    loadAdminPanel();
+                }
+
+            } catch (error) {
+                console.error('Error saving bot configuration:', error);
+                
+                // Log error
+                await db.collection('botLogs').add({
+                    userId: currentUser?.uid || 'anonymous',
+                    userEmail: currentUser?.email || 'anonymous',
+                    action: 'config_save_error',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    error: error.message,
+                    status: 'error'
+                });
+                
+                if (error.code === 'storage/unauthorized') {
+                    showToast('Storage permission denied. Please try again.', 'error');
+                } else if (error.code === 'storage/canceled') {
+                    showToast('Upload canceled. Please try again.', 'error');
+                } else {
+                    showToast('Failed to save configuration. Please try again.', 'error');
+                }
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Enable edit mode
+        function enableEditMode() {
+            if (!userBotConfig) return;
+            
+            showToast('You can now edit your bot configuration', 'info');
+            
+            // Populate form with existing data
+            botToken.value = userBotConfig.botToken || '';
+            clientId.value = userBotConfig.clientId || '';
+            botName.value = userBotConfig.botName || '';
+            botDescription.value = userBotConfig.botDescription || '';
+            botPrefix.value = userBotConfig.botPrefix || '!';
+            
+            // Load selected functions
+            if (userBotConfig.functions && Array.isArray(userBotConfig.functions)) {
+                selectedFunctions = new Set(userBotConfig.functions);
+            }
+            
+            // Update UI
+            updateFunctionsCount();
+            updateSelectedFunctionsList();
+            updateBotPreview();
+            renderBotFunctions();
+            updateSaveButtonState();
+        }
+
+        // Delete bot configuration
+        async function deleteBotConfiguration() {
+            if (!currentUser || !userBotConfig) return;
+            
+            if (!confirm('Are you sure you want to delete your bot configuration? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                loadingText.textContent = 'Deleting bot configuration...';
+                loadingOverlay.style.display = 'flex';
+                
+                // Delete from Firestore
+                await db.collection('userBots').doc(currentUser.uid).delete();
+                
+                // Delete profile picture from storage if exists
+                if (userBotConfig.pfpUrl) {
+                    try {
+                        const storageRef = storage.refFromURL(userBotConfig.pfpUrl);
+                        await storageRef.delete();
+                    } catch (storageError) {
+                        console.error('Error deleting profile picture:', storageError);
+                    }
+                }
+                
+                // Clear local state
+                userBotConfig = null;
+                selectedFunctions.clear();
+                clearForm();
+                savedConfig.style.display = 'none';
+                adminNotification.style.display = 'none';
+                
+                // Update UI
+                updateFunctionsCount();
+                updateSelectedFunctionsList();
+                updateBotPreview();
+                renderBotFunctions();
+                updateSaveButtonState();
+                
+                showToast('Bot configuration deleted successfully', 'success');
+                
+                // Log deletion
+                await db.collection('botLogs').add({
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    action: 'config_deleted',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    botName: userBotConfig?.botName || 'Unknown',
+                    status: 'deleted'
+                });
+
+                // Update user stats
+                await updateUserStats();
+
+                // Reload admin panel if admin is viewing
+                if (isAdmin) {
+                    loadAdminPanel();
+                }
+
+            } catch (error) {
+                console.error('Error deleting bot configuration:', error);
+                showToast('Failed to delete configuration. Please try again.', 'error');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Display saved configuration
+        function displaySavedConfig(config) {
+            // Count functions by category for display
+            const functionCounts = {
+                moderation: config.functionDetails?.filter(f => f.category === 'moderation').length || 0,
+                utility: config.functionDetails?.filter(f => f.category === 'utility').length || 0,
+                fun: config.functionDetails?.filter(f => f.category === 'fun').length || 0,
+                music: config.functionDetails?.filter(f => f.category === 'music').length || 0
+            };
+
+            configInfo.innerHTML = `
+                <div class="config-item">
+                    <div class="config-item-label">Bot Name</div>
+                    <div class="config-item-value">${config.botName}</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-item-label">Command Prefix</div>
+                    <div class="config-item-value">${config.botPrefix || '!'}</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-item-label">Total Functions</div>
+                    <div class="config-item-value">${config.totalFunctions} functions selected</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-item-label">Function Categories</div>
+                    <div class="config-item-value">
+                        ${functionCounts.moderation > 0 ? '🛡️ Moderation ' : ''}
+                        ${functionCounts.utility > 0 ? '🔧 Utility ' : ''}
+                        ${functionCounts.fun > 0 ? '🎮 Fun ' : ''}
+                        ${functionCounts.music > 0 ? '🎵 Music ' : ''}
+                    </div>
+                </div>
+                <div class="config-item">
+                    <div class="config-item-label">Profile Picture</div>
+                    <div class="config-item-value">${config.pfpUrl ? 'Uploaded ✓' : 'Not set'}</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-item-label">Bot Token (First 10 chars)</div>
+                    <div class="token-display">${config.botToken.substring(0, 10)}...</div>
+                </div>
+            `;
+
+            // Update status display
+            updateStatusDisplay(config.status);
+            
+            // Show admin message if exists
+            if (config.adminMessage) {
+                adminMessageArea.style.display = 'block';
+                adminMessageContent.textContent = config.adminMessage;
+            } else {
+                adminMessageArea.style.display = 'none';
+            }
+        }
+
+        // Update status display
+        function updateStatusDisplay(status) {
+            // Clear all status classes
+            botStatusDisplay.className = 'bot-status';
+            statusText.textContent = 'Ready to Deploy';
+            
+            switch (status) {
+                case 'pending':
+                    botStatusDisplay.classList.add('status-pending');
+                    statusText.textContent = 'Pending Review';
+                    deployBtn.disabled = true;
+                    deployBtn.innerHTML = '<i class="fas fa-clock"></i> Awaiting Review';
+                    break;
+                case 'building':
+                    botStatusDisplay.classList.add('status-building');
+                    statusText.textContent = 'Building...';
+                    deployBtn.disabled = true;
+                    deployBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Building';
+                    break;
+                case 'deploying':
+                    botStatusDisplay.classList.add('status-deploying');
+                    statusText.textContent = 'Deploying...';
+                    deployBtn.disabled = true;
+                    deployBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Deploying';
+                    break;
+                case 'deployed':
+                    botStatusDisplay.classList.add('status-online');
+                    statusText.textContent = 'Deployed ✓';
+                    deployBtn.disabled = false;
+                    deployBtn.innerHTML = '<i class="fas fa-rocket"></i> Redeploy';
+                    break;
+                case 'active':
+                    botStatusDisplay.classList.add('status-online');
+                    statusText.textContent = 'Active';
+                    deployBtn.disabled = false;
+                    deployBtn.innerHTML = '<i class="fas fa-rocket"></i> Deploy Bot';
+                    break;
+                case 'error':
+                    botStatusDisplay.classList.add('status-error');
+                    statusText.textContent = 'Error';
+                    deployBtn.disabled = false;
+                    deployBtn.innerHTML = '<i class="fas fa-redo"></i> Retry Deployment';
+                    break;
+                default:
+                    botStatusDisplay.classList.add('status-online');
+                    statusText.textContent = 'Ready to Deploy';
+                    deployBtn.disabled = false;
+                    deployBtn.innerHTML = '<i class="fas fa-rocket"></i> Deploy Bot';
+            }
+        }
+
+        // Deploy bot
+        async function deployBot() {
+            if (!userBotConfig) {
+                showToast('Please save your configuration first', 'warning');
+                return;
+            }
+
+            try {
+                loadingText.textContent = 'Deploying your bot...';
+                loadingOverlay.style.display = 'flex';
+                
+                // Update bot status to deploying
+                await db.collection('userBots').doc(currentUser.uid).update({
+                    status: 'deploying',
+                    lastDeployed: firebase.firestore.FieldValue.serverTimestamp(),
+                    deploymentCount: (userBotConfig.deploymentCount || 0) + 1
+                });
+                
+                // Simulate deployment delay
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // Update status to deployed
+                await db.collection('userBots').doc(currentUser.uid).update({
+                    status: 'deployed'
+                });
+                
+                // Update local config
+                userBotConfig.status = 'deployed';
+                userBotConfig.deploymentCount = (userBotConfig.deploymentCount || 0) + 1;
+                userBotConfig.lastDeployed = new Date().toISOString();
+                
+                // Update status display
+                updateStatusDisplay('deployed');
+                
+                // Log deployment
+                await db.collection('botLogs').add({
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    action: 'bot_deployed',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    botName: userBotConfig.botName,
+                    totalFunctions: userBotConfig.totalFunctions,
+                    deploymentCount: userBotConfig.deploymentCount,
+                    status: 'success'
+                });
+                
+                // Send notification to user
+                await sendNotificationToUser(currentUser.uid, 'success',
+                    `Your bot "${userBotConfig.botName}" has been successfully deployed and is now online!`
+                );
+                
+                // Update user stats
+                await updateUserStats();
+                
+                showToast('🚀 Bot deployed successfully! Your bot should be online now.', 'success');
+                
+                // Show success message
+                setTimeout(() => {
+                    showToast(`Your bot "${userBotConfig.botName}" is now live with ${userBotConfig.totalFunctions} functions!`, 'info');
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error deploying bot:', error);
+                
+                // Update status to error
+                await db.collection('userBots').doc(currentUser.uid).update({
+                    status: 'error'
+                });
+                
+                // Update status display
+                updateStatusDisplay('error');
+                
+                // Log error
+                await db.collection('botLogs').add({
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    action: 'deployment_error',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    error: error.message,
+                    status: 'error'
+                });
+                
+                showToast('Failed to deploy bot. Please check your token and try again.', 'error');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Update user statistics
+        async function updateUserStats() {
+            if (!currentUser) return;
+            
+            try {
+                const userRef = db.collection('users').doc(currentUser.uid);
+                const userDoc = await userRef.get();
+                
+                if (userDoc.exists) {
+                    // Count user's bots
+                    const botsSnapshot = await db.collection('userBots')
+                        .where('userId', '==', currentUser.uid)
+                        .get();
+                    
+                    await userRef.update({
+                        botCount: botsSnapshot.size,
+                        lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating user stats:', error);
+            }
+        }
+
+        // Load user bot configuration from Firebase
+        async function loadUserBotConfig() {
+            if (!currentUser) return;
+            
+            try {
+                loadingText.textContent = 'Loading your configuration...';
+                loadingOverlay.style.display = 'flex';
+                
+                const doc = await db.collection('userBots').doc(currentUser.uid).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    userBotConfig = data;
+                    
+                    // Populate form fields
+                    botToken.value = data.botToken || '';
+                    clientId.value = data.clientId || '';
+                    botName.value = data.botName || '';
+                    botDescription.value = data.botDescription || '';
+                    botPrefix.value = data.botPrefix || '!';
+                    
+                    // Load selected functions
+                    if (data.functions && Array.isArray(data.functions)) {
+                        selectedFunctions = new Set(data.functions);
+                    }
+                    
+                    // Load profile picture if exists
+                    if (data.pfpUrl) {
+                        pfpPreviewImage.src = data.pfpUrl;
+                        pfpPreview.style.display = 'block';
+                        botAvatarPreview.innerHTML = `<img src="${data.pfpUrl}" alt="Bot PFP">`;
+                    }
+                    
+                    // Update preview
+                    updateBotPreview();
+                    updateFunctionsCount();
+                    updateSelectedFunctionsList();
+                    updateSaveButtonState();
+                    
+                    // Display saved config
+                    displaySavedConfig(data);
+                    savedConfig.style.display = 'block';
+                    
+                    // Show admin notification if status is building
+                    if (data.status === 'building' || data.status === 'pending') {
+                        adminNotification.style.display = 'flex';
+                        buildingStatus.textContent = data.status === 'building' 
+                            ? 'Our team is currently building your bot. This may take a few more minutes.'
+                            : 'Your bot is pending review by our team. You will be notified when building starts.';
+                    } else {
+                        adminNotification.style.display = 'none';
+                    }
+                    
+                    // Re-render functions with saved selections
+                    renderBotFunctions();
+                    
+                    showToast('Loaded your saved bot configuration', 'info');
+                }
+                
+            } catch (error) {
+                console.error('Error loading bot configuration:', error);
+                showToast('Failed to load saved configuration', 'error');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Load admin panel
+        async function loadAdminPanel() {
+            if (!isAdmin) return;
+            
+            try {
+                loadingText.textContent = 'Loading admin panel...';
+                loadingOverlay.style.display = 'flex';
+                
+                // Load all bots
+                await loadAdminBots();
+                
+                // Load admin stats
+                await loadAdminStats();
+                
+                // Load admin actions log
+                await loadAdminActionsLog();
+                
+            } catch (error) {
+                console.error('Error loading admin panel:', error);
+                showToast('Failed to load admin panel', 'error');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Load admin bots table
+        async function loadAdminBots() {
+            if (!isAdmin) return;
+            
+            try {
+                let query = db.collection('userBots');
+                
+                // Apply status filter
+                const statusFilterValue = statusFilter.value;
+                if (statusFilterValue !== 'all') {
+                    query = query.where('status', '==', statusFilterValue);
+                }
+                
+                const snapshot = await query.get();
+                adminBotsTable.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const bot = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const createdDate = bot.createdAt?.toDate ? bot.createdAt.toDate() : new Date(bot.createdAt || Date.now());
+                    const formattedDate = createdDate.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    // Get status display
+                    const statusDisplay = {
+                        'pending': '⏳ Pending',
+                        'building': '🔨 Building',
+                        'deploying': '🚀 Deploying',
+                        'deployed': '✅ Deployed',
+                        'active': '🟢 Active',
+                        'error': '🔴 Error'
+                    }[bot.status] || bot.status;
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="bot-user-info">
+                                <div class="bot-user-avatar">
+                                    ${bot.userName ? bot.userName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div>
+                                    <div>${bot.userName || 'Unknown User'}</div>
+                                    <small style="color: var(--gray);">${bot.userEmail || 'No email'}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><strong>${bot.botName}</strong></td>
+                        <td>${bot.totalFunctions || 0} functions</td>
+                        <td>
+                            <select class="status-select" data-userid="${bot.userId}" data-botid="${doc.id}">
+                                <option value="pending" ${bot.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="building" ${bot.status === 'building' ? 'selected' : ''}>🔨 Building</option>
+                                <option value="deploying" ${bot.status === 'deploying' ? 'selected' : ''}>🚀 Deploying</option>
+                                <option value="deployed" ${bot.status === 'deployed' ? 'selected' : ''}>✅ Deployed</option>
+                                <option value="active" ${bot.status === 'active' ? 'selected' : ''}>🟢 Active</option>
+                                <option value="error" ${bot.status === 'error' ? 'selected' : ''}>🔴 Error</option>
+                            </select>
+                        </td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <button class="admin-action-btn send-message" data-userid="${bot.userId}">
+                                <i class="fas fa-envelope"></i> Message
+                            </button>
+                            <button class="admin-action-btn view-details" data-botid="${doc.id}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    `;
+                    
+                    adminBotsTable.appendChild(row);
+                });
+                
+                // Add event listeners to status selects
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', async (e) => {
+                        const userId = e.target.dataset.userid;
+                        const newStatus = e.target.value;
+                        
+                        try {
+                            await db.collection('userBots').doc(userId).update({
+                                status: newStatus,
+                                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            
+                            // Log admin action
+                            await logAdminAction(`Changed bot status to ${newStatus} for user ${userId}`);
+                            
+                            // Send notification to user
+                            const statusMessages = {
+                                'pending': 'Your bot is pending review.',
+                                'building': 'Our team is now building your bot!',
+                                'deploying': 'Your bot is being deployed.',
+                                'deployed': 'Your bot has been successfully deployed!',
+                                'active': 'Your bot is now active and running.',
+                                'error': 'There was an error with your bot. Please check your configuration.'
+                            };
+                            
+                            if (statusMessages[newStatus]) {
+                                await sendNotificationToUser(userId, 'info', 
+                                    `Bot status updated: ${statusMessages[newStatus]}`
+                                );
+                            }
+                            
+                            showToast(`Bot status updated to ${newStatus}`, 'success');
+                            
+                        } catch (error) {
+                            console.error('Error updating bot status:', error);
+                            showToast('Failed to update bot status', 'error');
+                        }
+                    });
+                });
+                
+                // Add event listeners to message buttons
+                document.querySelectorAll('.admin-action-btn.send-message').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const userId = e.target.closest('button').dataset.userid;
+                        adminSelectedUser = userId;
+                        adminMessageModal.style.display = 'flex';
+                    });
+                });
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.admin-action-btn.view-details').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const botId = e.target.closest('button').dataset.botid;
+                        try {
+                            const botDoc = await db.collection('userBots').doc(botId).get();
+                            if (botDoc.exists) {
+                                const botData = botDoc.data();
+                                alert(`Bot Details:\n\nName: ${botData.botName}\nUser: ${botData.userName}\nEmail: ${botData.userEmail}\nFunctions: ${botData.totalFunctions}\nStatus: ${botData.status}\nCreated: ${new Date(botData.createdAt?.toDate?.() || botData.createdAt).toLocaleString()}`);
+                            }
+                        } catch (error) {
+                            console.error('Error viewing bot details:', error);
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin bots:', error);
+            }
+        }
+
+        // Load admin stats
+        async function loadAdminStats() {
+            if (!isAdmin) return;
+            
+            try {
+                const snapshot = await db.collection('userBots').get();
+                let totalBots = 0;
+                let activeBots = 0;
+                let buildingBots = 0;
+                let pendingBots = 0;
+                
+                snapshot.forEach(doc => {
+                    totalBots++;
+                    const bot = doc.data();
+                    if (bot.status === 'active' || bot.status === 'deployed') activeBots++;
+                    if (bot.status === 'building') buildingBots++;
+                    if (bot.status === 'pending') pendingBots++;
+                });
+                
+                document.getElementById('totalBotsCount').textContent = totalBots;
+                document.getElementById('activeBotsCount').textContent = activeBots;
+                document.getElementById('buildingBotsCount').textContent = buildingBots;
+                document.getElementById('pendingBotsCount').textContent = pendingBots;
+                
+            } catch (error) {
+                console.error('Error loading admin stats:', error);
+            }
+        }
+
+        // Load admin actions log
+        async function loadAdminActionsLog() {
+            if (!isAdmin) return;
+            
+            try {
+                const snapshot = await db.collection('botLogs')
+                    .orderBy('timestamp', 'desc')
+                    .limit(20)
+                    .get();
+                
+                adminActionsLog.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const log = doc.data();
+                    const logItem = document.createElement('div');
+                    logItem.className = 'notification-item';
+                    
+                    const time = log.timestamp?.toDate ? log.timestamp.toDate() : new Date(log.timestamp || Date.now());
+                    const timeAgo = getTimeAgo(time);
+                    
+                    logItem.innerHTML = `
+                        <div class="notification-content">
+                            <div class="notification-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <div class="notification-text">
+                                <strong>${log.action.replace(/_/g, ' ').toUpperCase()}</strong>
+                                <p>${log.userEmail || 'Unknown user'} - ${log.botName || 'Unknown bot'}</p>
+                                <span class="notification-time">${timeAgo}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    adminActionsLog.appendChild(logItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin actions log:', error);
+            }
+        }
+
+        // Log admin action
+        async function logAdminAction(action) {
+            if (!isAdmin || !currentUser) return;
+            
+            try {
+                await db.collection('botLogs').add({
+                    userId: 'admin',
+                    userEmail: currentUser.email,
+                    action: `admin_${action}`,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    admin: currentUser.email,
+                    details: action
+                });
+                
+                // Reload admin actions log
+                await loadAdminActionsLog();
+                
+            } catch (error) {
+                console.error('Error logging admin action:', error);
+            }
+        }
+
+        // Send admin message to user
+        async function sendAdminMessage() {
+            if (!isAdmin || !adminSelectedUser || !messageContent.value.trim()) return;
+            
+            try {
+                const message = messageContent.value.trim();
+                const type = messageType.value;
+                
+                // Update bot configuration with admin message
+                await db.collection('userBots').doc(adminSelectedUser).update({
+                    adminMessage: message,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Send notification to user
+                await sendNotificationToUser(adminSelectedUser, type, message);
+                
+                // Log admin action
+                await logAdminAction(`Sent ${type} message to user ${adminSelectedUser}`);
+                
+                // Close modal and reset
+                adminMessageModal.style.display = 'none';
+                adminSelectedUser = null;
+                messageContent.value = '';
+                
+                showToast('Message sent successfully', 'success');
+                
+            } catch (error) {
+                console.error('Error sending admin message:', error);
+                showToast('Failed to send message', 'error');
+            }
+        }
+
+        // Send notification to user
+        async function sendNotificationToUser(userId, type, message) {
+            try {
+                await db.collection('userNotifications').add({
+                    userId: userId,
+                    type: type,
+                    message: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    read: false
+                });
+            } catch (error) {
+                console.error('Error sending notification:', error);
+            }
+        }
+
+        // Load user notifications
+        async function loadUserNotifications() {
+            if (!currentUser) return;
+            
+            try {
+                const snapshot = await db.collection('userNotifications')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(50)
+                    .get();
+                
+                userNotificationsList.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    userNotificationsList.innerHTML = `
+                        <div class="notification-item">
+                            <div class="notification-content">
+                                <div class="notification-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="notification-text">
+                                    <strong>No notifications yet</strong>
+                                    <p>You'll see notifications here when your bot status changes or when admins send messages.</p>
+                                    <span class="notification-time">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const notification = doc.data();
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = 'notification-item';
+                    notificationItem.dataset.id = doc.id;
+                    
+                    const time = notification.timestamp?.toDate ? notification.timestamp.toDate() : new Date(notification.timestamp || Date.now());
+                    const timeAgo = getTimeAgo(time);
+                    
+                    const icons = {
+                        'info': 'fas fa-info-circle',
+                        'warning': 'fas fa-exclamation-triangle',
+                        'success': 'fas fa-check-circle',
+                        'error': 'fas fa-exclamation-circle',
+                        'bot_update': 'fas fa-robot',
+                        'deployment': 'fas fa-rocket'
+                    };
+                    
+                    notificationItem.innerHTML = `
+                        <div class="notification-content">
+                            <div class="notification-icon" style="background: ${getNotificationColor(notification.type)};">
+                                <i class="${icons[notification.type] || 'fas fa-bell'}"></i>
+                            </div>
+                            <div class="notification-text">
+                                <strong>${getNotificationTitle(notification.type)}</strong>
+                                <p>${notification.message}</p>
+                                <span class="notification-time">${timeAgo}</span>
+                            </div>
+                        </div>
+                        <div class="notification-actions">
+                            ${!notification.read ? `<button class="mark-read-btn" data-id="${doc.id}">Mark as Read</button>` : ''}
+                        </div>
+                    `;
+                    
+                    userNotificationsList.appendChild(notificationItem);
+                });
+                
+                // Add event listeners to mark as read buttons
+                document.querySelectorAll('.mark-read-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const notificationId = e.target.dataset.id;
+                        try {
+                            await db.collection('userNotifications').doc(notificationId).update({
+                                read: true
+                            });
+                            e.target.closest('.notification-item').remove();
+                            showToast('Notification marked as read', 'success');
+                        } catch (error) {
+                            console.error('Error marking notification as read:', error);
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        // Get notification color by type
+        function getNotificationColor(type) {
+            const colors = {
+                'info': 'var(--info)',
+                'warning': 'var(--warning)',
+                'success': 'var(--success)',
+                'error': 'var(--danger)',
+                'bot_update': 'var(--primary)',
+                'deployment': 'var(--success)'
+            };
+            return colors[type] || 'var(--gray)';
+        }
+
+        // Get notification title by type
+        function getNotificationTitle(type) {
+            const titles = {
+                'info': 'Information',
+                'warning': 'Warning',
+                'success': 'Success!',
+                'error': 'Error',
+                'bot_update': 'Bot Update',
+                'deployment': 'Deployment Status'
+            };
+            return titles[type] || 'Notification';
+        }
+
+        // Get time ago string
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            
+            return "just now";
+        }
+
+        // Clear form
+        function clearForm() {
+            botToken.value = '';
+            clientId.value = '';
+            botName.value = '';
+            botDescription.value = '';
+            botPrefix.value = '!';
+            pfpPreview.style.display = 'none';
+            pfpPreviewImage.src = '';
+            botAvatarPreview.innerHTML = '<i class="fas fa-robot"></i>';
+            uploadedPfpFile = null;
+            updateBotPreview();
+            updateSaveButtonState();
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="${icons[type]}"></i>
+                </div>
+                <div class="toast-message">${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Remove toast after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

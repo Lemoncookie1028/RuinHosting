@@ -10,7 +10,6 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --primary: #ffd700;
@@ -1037,8 +1036,8 @@
           <div class="plan-price">£0.00<span>/month</span></div>
           <p>Ideal for testing and small projects</p>
           <ul class="features">
-            <li>4 CPU Cores</li>
-            <li>4 GB RAM</li>
+            <li>2 CPU Cores</li>
+            <li>3 GB RAM</li>
             <li>15GB SSD Storage</li>
             <li>Unlimited Player Slots</li>
             <li>Basic DDoS Protection</li>
@@ -1052,7 +1051,7 @@
           <div class="plan-price">£1.50<span>/month</span></div>
           <p>Perfect for small gaming communities</p>
           <ul class="features">
-            <li>6 CPU Cores</li>
+            <li>4 CPU Cores</li>
             <li>6 GB RAM</li>
             <li>30GB SSD Storage</li>
             <li>Unlimited Player Slots</li>
@@ -1067,7 +1066,7 @@
           <div class="plan-price">£2.50<span>/month</span></div>
           <p>Perfect for small gaming servers</p>
           <ul class="features">
-            <li>8 CPU Cores</li>
+            <li>6 CPU Cores</li>
             <li>8 GB RAM</li>
             <li>45GB SSD Storage</li>
             <li>Unlimited Player Slots</li>
@@ -1089,7 +1088,7 @@
             <li>DDoS Protection</li>
             <li>Priority Support</li>
           </ul>
-          <button class="cta-button" onclick="handleServiceClick('Elite Plan')">Get Started</button>
+          <button class="cta-button" onclick="handleServiceClick('Pro Plan')">Get Started</button>
         </div>
         
         <div class="pricing-card popular">
@@ -1284,7 +1283,6 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore(); // Initialize Firestore
 
     // DOM Elements
     const authModal = document.getElementById('authModal');
@@ -1339,7 +1337,7 @@
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       if (currentUser) {
         // User is logged in, redirect to dashboard
-        window.location.href = 'bots.html';
+        window.location.href = 'dashboard.html';
       } else {
         // User is not logged in, show auth modal
         authModal.classList.add('active');
@@ -1351,7 +1349,7 @@
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       if (currentUser) {
         // User is logged in, redirect to dashboard
-        window.location.href = 'bots.html';
+        window.location.href = 'dashboard.html';
       } else {
         // User is not logged in, show auth modal
         authModal.classList.add('active');
@@ -1419,14 +1417,6 @@
           const user = userCredential.user;
           showSuccess(loginSuccess, 'Successfully signed in!');
           
-          // Update last login timestamp in Firestore
-          db.collection('users').doc(user.uid).update({
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-          }).catch(error => {
-            console.log("Error updating last login:", error);
-            // Continue even if this fails
-          });
-          
           // Get user data
           const userData = {
             id: user.uid,
@@ -1449,6 +1439,7 @@
           }, 1500);
         })
         .catch((error) => {
+          const errorCode = error.code;
           const errorMessage = error.message;
           showError(loginError, errorMessage);
         });
@@ -1469,19 +1460,8 @@
           const user = userCredential.user;
           
           // Update user profile with username
-          return user.updateProfile({
+          user.updateProfile({
             displayName: username
-          }).then(() => {
-            // Create user document in Firestore
-            return db.collection('users').doc(user.uid).set({
-              uid: user.uid,
-              username: username,
-              email: email,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              plan: 'free', // Default plan
-              services: [], // Empty array for services
-              lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
           }).then(() => {
             showSuccess(registerSuccess, 'Account created successfully!');
             
@@ -1508,6 +1488,7 @@
           });
         })
         .catch((error) => {
+          const errorCode = error.code;
           const errorMessage = error.message;
           showError(registerError, errorMessage);
         });
@@ -1538,7 +1519,7 @@
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       if (currentUser) {
         // User is logged in, redirect to dashboard
-        window.location.href = 'bots.html';
+        window.location.href = 'dashboard.html';
       } else {
         // User is not logged in, show auth modal
         authModal.classList.add('active');
