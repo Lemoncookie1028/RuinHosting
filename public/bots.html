@@ -45,6 +45,33 @@
           padding: 0 20px;
         }
 
+        /* Plan Badge */
+        .plan-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 1.5rem;
+            animation: pulse 2s infinite;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Plan Warning */
+        .plan-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid #ffeaa7;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         /* Auth Modal */
         .auth-modal {
           display: none;
@@ -1720,6 +1747,7 @@
             <h1>Free Discord Bot Hosting</h1>
             <p>Configure your Discord bot with custom functions. Choose what your bot should do and deploy instantly.</p>
             <a href="#bot-config" class="cta-button">Start Building Your Bot</a>
+            <div class="plan-badge">FREE PLAN: 1 BOT LIMIT</div>
         </div>
     </section>
 
@@ -1729,6 +1757,13 @@
             <div class="section-title">
                 <h2>Step 1: Configure Your Bot</h2>
                 <p>Enter your bot details and upload a profile picture</p>
+            </div>
+            
+            <!-- Plan Warning -->
+            <div class="plan-warning" id="planWarning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Free Plan Limit:</strong> You can only have 1 bot on the free plan. 
+                <a href="#" id="upgradeLink" style="color: var(--primary); font-weight: 600;">Upgrade</a> for more bots.
             </div>
             
             <div class="bot-config-grid">
@@ -2265,6 +2300,10 @@
         const buildingStatus = document.getElementById('buildingStatus');
         const adminMessageArea = document.getElementById('adminMessageArea');
         const adminMessageContent = document.getElementById('adminMessageContent');
+        
+        // Plan limit elements
+        const planWarning = document.getElementById('planWarning');
+        const upgradeLink = document.getElementById('upgradeLink');
 
         // Admin elements
         const adminPanel = document.getElementById('admin-panel');
@@ -2324,6 +2363,10 @@
                 if (user) {
                     // Load user data from Firestore
                     await loadUserData(user);
+                    
+                    // Check if user already has a bot (free plan limit)
+                    await checkBotLimit();
+                    
                     loadUserBotConfig();
                     loadUserNotifications();
                     showToast(`Welcome back, ${user.displayName || user.email}!`, 'success');
@@ -2341,6 +2384,7 @@
                     updateSelectedFunctionsList();
                     adminPanel.style.display = 'none';
                     notificationsSection.style.display = 'none';
+                    planWarning.style.display = 'none';
                 }
             });
 
@@ -2374,12 +2418,39 @@
             // Render bot functions
             renderBotFunctions();
 
+            // Setup upgrade link
+            upgradeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showToast('Contact admin@ruinhosting.com to upgrade your plan!', 'info');
+            });
+
             // Initial update
             updateSaveButtonState();
             updateBotPreview();
             
             // Navigation
             setupNavigation();
+        }
+
+        // Check if user has reached bot limit (free plan)
+        async function checkBotLimit() {
+            if (!currentUser || isAdmin) return false; // Admins can have unlimited
+            
+            try {
+                const userBotRef = db.collection('userBots').doc(currentUser.uid);
+                const userBotDoc = await userBotRef.get();
+                
+                if (userBotDoc.exists) {
+                    // User already has a bot
+                    planWarning.style.display = 'flex';
+                    return true;
+                }
+                planWarning.style.display = 'none';
+                return false;
+            } catch (error) {
+                console.error('Error checking bot limit:', error);
+                return false;
+            }
         }
 
         // Setup navigation
@@ -2890,6 +2961,12 @@
                 return;
             }
             
+            // Check if user has reached bot limit
+            if (!isAdmin && userBotConfig && !selectedFunctions.has(funcId)) {
+                showToast('You already have a bot. Delete it first to make changes.', 'warning');
+                return;
+            }
+            
             if (selectedFunctions.has(funcId)) {
                 selectedFunctions.delete(funcId);
                 showToast(`Removed ${getFunctionName(funcId)} from bot functions`, 'info');
@@ -3052,6 +3129,18 @@
             const hasFunctions = selectedFunctions.size > 0;
             const isLoggedIn = currentUser !== null;
             
+            // Default state
+            saveConfigBtn.disabled = false;
+            
+            // Check free user bot limit
+            if (isLoggedIn && !isAdmin && userBotConfig) {
+                // User already has a bot and is on free plan
+                saveConfigBtn.disabled = true;
+                saveConfigBtn.innerHTML = '<i class="fas fa-crown"></i> Free Plan: 1 Bot Limit';
+                saveConfigBtn.title = 'Free plan is limited to 1 bot. Delete existing bot to create a new one.';
+                return;
+            }
+            
             saveConfigBtn.disabled = !(hasToken && hasName && hasFunctions && isLoggedIn);
             
             // Update button text
@@ -3060,14 +3149,15 @@
             } else if (!hasFunctions) {
                 saveConfigBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Select at least 1 function';
             } else {
-                saveConfigBtn.innerHTML = '<i class="fas fa-save"></i> Save Bot Configuration';
+                saveConfigBtn.innerHTML = userBotConfig ? 
+                    '<i class="fas fa-save"></i> Update Configuration' : 
+                    '<i class="fas fa-save"></i> Save Bot Configuration';
             }
             
             // Show/hide edit and delete buttons based on existing config
             if (userBotConfig) {
                 editConfigBtn.style.display = 'flex';
                 deleteConfigBtn.style.display = 'flex';
-                saveConfigBtn.innerHTML = '<i class="fas fa-save"></i> Update Configuration';
                 deployBtn.disabled = false;
             } else {
                 editConfigBtn.style.display = 'none';
@@ -3081,6 +3171,15 @@
                 showToast('Please login to save your configuration', 'warning');
                 authModal.style.display = 'flex';
                 return;
+            }
+
+            // Check if user already has a bot (for free users)
+            if (!isAdmin) {
+                const hasExistingBot = await checkBotLimit();
+                if (hasExistingBot && !userBotConfig) {
+                    showToast('Free plan is limited to 1 bot. Delete your existing bot first or contact admin.', 'error');
+                    return;
+                }
             }
 
             const token = botToken.value.trim();
@@ -3159,6 +3258,9 @@
                 
                 // Update local state
                 userBotConfig = botConfig;
+                
+                // Update plan warning
+                await checkBotLimit();
                 
                 // Show admin notification about bot being built
                 adminNotification.style.display = 'flex';
@@ -3250,7 +3352,7 @@
         async function deleteBotConfiguration() {
             if (!currentUser || !userBotConfig) return;
             
-            if (!confirm('Are you sure you want to delete your bot configuration? This action cannot be undone.')) {
+            if (!confirm('Are you sure you want to delete your bot? This will free up your 1 bot slot on the free plan.')) {
                 return;
             }
             
@@ -3278,6 +3380,9 @@
                 savedConfig.style.display = 'none';
                 adminNotification.style.display = 'none';
                 
+                // Update plan warning
+                await checkBotLimit();
+                
                 // Update UI
                 updateFunctionsCount();
                 updateSelectedFunctionsList();
@@ -3285,7 +3390,7 @@
                 renderBotFunctions();
                 updateSaveButtonState();
                 
-                showToast('Bot configuration deleted successfully', 'success');
+                showToast('Bot deleted successfully. You can now create a new bot.', 'success');
                 
                 // Log deletion
                 await db.collection('botLogs').add({
@@ -3307,7 +3412,7 @@
 
             } catch (error) {
                 console.error('Error deleting bot configuration:', error);
-                showToast('Failed to delete configuration. Please try again.', 'error');
+                showToast('Failed to delete bot. Please try again.', 'error');
             } finally {
                 loadingOverlay.style.display = 'none';
             }
@@ -3581,6 +3686,11 @@
                             : 'Your bot is pending review by our team. You will be notified when building starts.';
                     } else {
                         adminNotification.style.display = 'none';
+                    }
+                    
+                    // Show limit info for free users
+                    if (!isAdmin) {
+                        planWarning.style.display = 'flex';
                     }
                     
                     // Re-render functions with saved selections
