@@ -153,6 +153,204 @@
       margin-right: 0.5rem;
     }
 
+    /* Verification Status */
+    .verification-status {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: 1rem;
+    }
+    
+    .verification-status.verified {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .verification-status.unverified {
+      background: rgba(255, 107, 0, 0.1);
+      color: var(--secondary);
+    }
+    
+    .verification-reminder {
+      background: rgba(255, 107, 0, 0.1);
+      border: 2px solid rgba(255, 107, 0, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      display: none;
+    }
+    
+    .verification-reminder p {
+      margin-bottom: 1rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+    
+    .verify-email-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .verify-email-btn:hover {
+      background: var(--primary);
+      color: var(--dark);
+    }
+    
+    .verification-sent {
+      color: var(--success);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* Verification Modal */
+    .verification-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .verification-modal.active {
+      display: flex;
+    }
+
+    .verification-container {
+      background: white;
+      border-radius: 16px;
+      padding: 3rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      text-align: center;
+      position: relative;
+    }
+
+    .verification-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+    }
+
+    .verification-icon {
+      font-size: 4rem;
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .verification-container h2 {
+      color: var(--dark);
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    .verification-container p {
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .verification-steps {
+      text-align: left;
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .verification-steps li {
+      margin: 0.8rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .verification-steps li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    .check-verification-btn {
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .check-verification-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Service Disabled State */
+    .service-disabled {
+      position: relative;
+      pointer-events: none;
+    }
+
+    .service-disabled::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      backdrop-filter: blur(2px);
+    }
+
+    .verify-to-access {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--secondary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      z-index: 10;
+      text-align: center;
+      width: 80%;
+    }
+
     /* Hero Section */
     .hero {
       background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
@@ -307,6 +505,7 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.08);
       transition: all 0.3s ease;
       border-top: 4px solid var(--primary);
+      position: relative;
     }
 
     .game-card:hover {
@@ -747,6 +946,29 @@
       display: none;
     }
 
+    .verification-note {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.5rem;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .resend-verification {
+      background: transparent;
+      color: var(--primary);
+      border: none;
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 0.5rem;
+    }
+    
+    .resend-verification:hover {
+      color: var(--primary-dark);
+    }
+
     /* Toast Notifications */
     .toast-container {
       position: fixed;
@@ -833,13 +1055,22 @@
         padding: 2rem 1.5rem;
       }
       
+      .verification-container {
+        padding: 2rem 1.5rem;
+      }
+      
       .header-buttons {
         flex-direction: column;
         gap: 0.5rem;
       }
       
-      .user-welcome {
-        display: none;
+      .user-welcome, .verification-status {
+        display: none !important;
+      }
+      
+      .verification-reminder {
+        margin: 0.5rem;
+        padding: 1rem;
       }
     }
   </style>
@@ -862,6 +1093,7 @@
         </nav>
         <div class="header-buttons">
           <span class="user-welcome" id="user-welcome"></span>
+          <span id="verification-status" class="verification-status" style="display: none;"></span>
           <button class="logout-btn" id="logout-btn" style="display: none;">
             <i class="fas fa-sign-out-alt"></i> Sign Out
           </button>
@@ -870,6 +1102,53 @@
       </div>
     </div>
   </header>
+
+  <!-- Verification Modal (Forced) -->
+  <div id="verification-modal" class="verification-modal">
+    <div class="verification-container">
+      <div class="verification-icon">
+        <i class="fas fa-envelope-circle-check"></i>
+      </div>
+      <h2>Verify Your Email Address</h2>
+      <p>You must verify your email address before accessing Ruin Hosting services.</p>
+      
+      <div class="verification-steps">
+        <p><strong>Please follow these steps:</strong></p>
+        <ul>
+          <li>Check your email inbox for a verification email</li>
+          <li>Click the verification link in the email</li>
+          <li>Return to this page and click "Check Verification"</li>
+        </ul>
+      </div>
+      
+      <p>If you didn't receive the email, click the button below to resend it.</p>
+      
+      <button id="resend-verification-modal" class="verify-email-btn">
+        <i class="fas fa-paper-plane"></i> Resend Verification Email
+      </button>
+      
+      <button id="check-verification" class="check-verification-btn">
+        <i class="fas fa-sync-alt"></i> Check Verification Status
+      </button>
+      
+      <div id="verification-modal-sent" class="verification-sent">
+        <i class="fas fa-check"></i> Verification email sent! Please check your inbox.
+      </div>
+    </div>
+  </div>
+
+  <!-- Verification Reminder -->
+  <div id="verification-reminder" class="verification-reminder">
+    <div class="container">
+      <p><i class="fas fa-envelope"></i> <strong>IMPORTANT:</strong> You must verify your email address to access any services</p>
+      <button id="send-verification-btn" class="verify-email-btn">
+        <i class="fas fa-paper-plane"></i> Resend Verification Email
+      </button>
+      <div id="verification-sent" class="verification-sent">
+        <i class="fas fa-check"></i> Verification email sent!
+      </div>
+    </div>
+  </div>
 
   <!-- Auth Modal -->
   <div class="auth-modal" id="authModal">
@@ -911,6 +1190,7 @@
         </div>
         <div class="auth-error" id="registerError"></div>
         <div class="auth-success" id="registerSuccess"></div>
+        <p class="verification-note">⚠️ Email verification is required to access any services</p>
         <button type="submit" class="auth-submit">Create Account</button>
       </form>
     </div>
@@ -936,7 +1216,7 @@
         <p>Choose from our range of high-performance hosting solutions</p>
       </div>
       <div class="services-grid">
-        <div class="service-card">
+        <div class="service-card" id="web-hosting-card">
           <div class="service-icon">
             <i class="fas fa-globe"></i>
           </div>
@@ -944,9 +1224,10 @@
           <p>Reliable hosting for websites, applications, and portfolios</p>
           <div class="price free">FREE</div>
           <button class="cta-button" onclick="handleServiceClick('Web Hosting')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="service-card">
+        <div class="service-card" id="discord-bots-card">
           <div class="service-icon">
             <i class="fab fa-discord"></i>
           </div>
@@ -954,9 +1235,10 @@
           <p>Keep your Discord community engaged with reliable bot hosting</p>
           <div class="price free">FREE for first 2 bots</div>
           <button class="cta-button" onclick="handleServiceClick('Discord Bots')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="service-card">
+        <div class="service-card" id="game-servers-card">
           <div class="service-icon">
             <i class="fas fa-gamepad"></i>
           </div>
@@ -964,6 +1246,7 @@
           <p>High-performance servers for Minecraft and other games</p>
           <div class="price">From £2.50/month</div>
           <button class="cta-button" onclick="handleServiceClick('Game Servers')">View Plans</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
       </div>
       
@@ -981,7 +1264,7 @@
         <p>We support a variety of popular games with more coming soon</p>
       </div>
       <div class="games-grid">
-        <div class="game-card">
+        <div class="game-card" id="minecraft-card">
           <div class="game-icon">
             <i class="fas fa-cube"></i>
           </div>
@@ -989,9 +1272,10 @@
           <div class="status available">Available Now</div>
           <p>Fully customizable Java Edition servers with plugin support</p>
           <button class="cta-button" onclick="handleServiceClick('Minecraft Java')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="game-card">
+        <div class="game-card" id="bedrock-card">
           <div class="game-icon">
             <i class="fas fa-cube"></i>
           </div>
@@ -999,9 +1283,10 @@
           <div class="status soon">Coming Soon</div>
           <p>Cross-platform Bedrock Edition servers for all devices</p>
           <button class="cta-button" onclick="handleServiceClick('Minecraft Bedrock')">Notify Me</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="game-card">
+        <div class="game-card" id="dayz-card">
           <div class="game-icon">
             <i class="fas fa-skull-crossbones"></i>
           </div>
@@ -1009,9 +1294,10 @@
           <div class="status soon">Coming Soon</div>
           <p>Survival servers for the ultimate post-apocalyptic experience</p>
           <button class="cta-button" onclick="handleServiceClick('DayZ')">Notify Me</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="game-card">
+        <div class="game-card" id="rust-card">
           <div class="game-icon">
             <i class="fas fa-hammer"></i>
           </div>
@@ -1019,6 +1305,7 @@
           <div class="status soon">Coming Soon</div>
           <p>Survival servers where the only goal is to survive</p>
           <button class="cta-button" onclick="handleServiceClick('Rust')">Notify Me</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
       </div>
     </div>
@@ -1032,7 +1319,7 @@
         <p>Choose the plan that works best for your gaming needs</p>
       </div>
       <div class="pricing-grid">
-        <div class="pricing-card">
+        <div class="pricing-card" id="free-plan-card">
           <h3 class="plan-name">Free Forever</h3>
           <div class="plan-price">£0.00<span>/month</span></div>
           <p>Ideal for testing and small projects</p>
@@ -1045,9 +1332,10 @@
             <li>Basic Support</li>
           </ul>
           <button class="cta-button" onclick="handleServiceClick('Free Plan')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="pricing-card">
+        <div class="pricing-card" id="starter-plan-card">
           <h3 class="plan-name">Starter</h3>
           <div class="plan-price">£1.50<span>/month</span></div>
           <p>Perfect for small gaming communities</p>
@@ -1060,9 +1348,10 @@
             <li>Priority Support</li>
           </ul>
           <button class="cta-button" onclick="handleServiceClick('Starter Plan')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="pricing-card">
+        <div class="pricing-card" id="pro-plan-card">
           <h3 class="plan-name">Pro</h3>
           <div class="plan-price">£2.50<span>/month</span></div>
           <p>Perfect for small gaming servers</p>
@@ -1075,9 +1364,10 @@
             <li>Priority Support</li>
           </ul>
           <button class="cta-button" onclick="handleServiceClick('Pro Plan')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
          
-        <div class="pricing-card">
+        <div class="pricing-card" id="elite-plan-card">
           <h3 class="plan-name">Elite</h3>
           <div class="plan-price">£4.50<span>/month</span></div>
           <p>Perfect for small gaming servers</p>
@@ -1090,9 +1380,10 @@
             <li>Priority Support</li>
           </ul>
           <button class="cta-button" onclick="handleServiceClick('Elite Plan')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
         
-        <div class="pricing-card popular">
+        <div class="pricing-card popular" id="custom-plan-card">
           <div class="popular-badge">MOST POPULAR</div>
           <h3 class="plan-name">Custom</h3>
           <div class="plan-price">£10+<span>/month</span></div>
@@ -1106,6 +1397,7 @@
             <li>Priority 24/7 Support</li>
           </ul>
           <button class="cta-button" onclick="handleServiceClick('Custom Plan')">Get Started</button>
+          <div class="verify-to-access" style="display: none;">Verify Email to Access</div>
         </div>
       </div>
     </div>
@@ -1284,14 +1576,22 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore(); // Initialize Firestore
+    const db = firebase.firestore();
 
     // DOM Elements
     const authModal = document.getElementById('authModal');
+    const verificationModal = document.getElementById('verification-modal');
     const authButton = document.getElementById('authButton');
     const heroAuthButton = document.getElementById('heroAuthButton');
     const logoutBtn = document.getElementById('logout-btn');
     const userWelcome = document.getElementById('user-welcome');
+    const verificationStatus = document.getElementById('verification-status');
+    const verificationReminder = document.getElementById('verification-reminder');
+    const sendVerificationBtn = document.getElementById('send-verification-btn');
+    const resendVerificationModal = document.getElementById('resend-verification-modal');
+    const checkVerificationBtn = document.getElementById('check-verification');
+    const verificationSent = document.getElementById('verification-sent');
+    const verificationModalSent = document.getElementById('verification-modal-sent');
     const closeAuth = document.getElementById('closeAuth');
     const authTabs = document.querySelectorAll('.auth-tab');
     const authForms = document.querySelectorAll('.auth-form');
@@ -1302,18 +1602,128 @@
     const loginSuccess = document.getElementById('loginSuccess');
     const registerSuccess = document.getElementById('registerSuccess');
 
+    // Get all service cards and verify-to-access overlays
+    const serviceCards = [
+      'web-hosting-card', 'discord-bots-card', 'game-servers-card',
+      'minecraft-card', 'bedrock-card', 'dayz-card', 'rust-card',
+      'free-plan-card', 'starter-plan-card', 'pro-plan-card',
+      'elite-plan-card', 'custom-plan-card'
+    ];
+
     // Check authentication state on page load
     function checkAuthState() {
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       const authToken = localStorage.getItem('ruinHostingAuthToken');
       
       if (currentUser && authToken) {
-        // User is logged in
+        // Check if token is expired
+        const expiryTime = localStorage.getItem('ruinHostingTokenExpiry');
+        if (expiryTime && Date.now() > parseInt(expiryTime)) {
+          handleLogout();
+          return;
+        }
+        
+        // User is logged in, check email verification
+        const firebaseUser = auth.currentUser;
+        if (firebaseUser) {
+          checkEmailVerification(firebaseUser);
+        } else {
+          auth.onAuthStateChanged((user) => {
+            if (user) {
+              checkEmailVerification(user);
+            }
+          });
+        }
+        
         updateUIForLoggedIn(currentUser);
       } else {
-        // User is not logged in
         updateUIForLoggedOut();
       }
+    }
+
+    // Check email verification status
+    function checkEmailVerification(user) {
+      if (user) {
+        const isVerified = user.emailVerified;
+        updateVerificationUI(isVerified);
+        
+        // Update user data in localStorage
+        const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+        if (currentUser) {
+          currentUser.emailVerified = isVerified;
+          localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(currentUser));
+        }
+        
+        // Update Firestore with verification status
+        db.collection('users').doc(user.uid).update({
+          emailVerified: isVerified,
+          lastVerifiedCheck: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(error => {
+          console.log("Error updating verification status:", error);
+        });
+        
+        // Show/hide verification reminder
+        if (!isVerified) {
+          verificationReminder.style.display = 'block';
+          showVerificationModal();
+          disableAllServices();
+        } else {
+          verificationReminder.style.display = 'none';
+          verificationModal.classList.remove('active');
+          enableAllServices();
+        }
+      }
+    }
+
+    // Update verification UI
+    function updateVerificationUI(isVerified) {
+      if (isVerified) {
+        verificationStatus.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
+        verificationStatus.className = 'verification-status verified';
+        verificationStatus.style.display = 'inline-flex';
+      } else {
+        verificationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Unverified';
+        verificationStatus.className = 'verification-status unverified';
+        verificationStatus.style.display = 'inline-flex';
+      }
+    }
+
+    // Show verification modal (forced)
+    function showVerificationModal() {
+      verificationModal.classList.add('active');
+    }
+
+    // Hide verification modal
+    function hideVerificationModal() {
+      verificationModal.classList.remove('active');
+    }
+
+    // Disable all service cards for unverified users
+    function disableAllServices() {
+      serviceCards.forEach(cardId => {
+        const card = document.getElementById(cardId);
+        if (card) {
+          card.classList.add('service-disabled');
+          const verifyOverlay = card.querySelector('.verify-to-access');
+          if (verifyOverlay) {
+            verifyOverlay.style.display = 'block';
+          }
+        }
+      });
+    }
+
+    // Enable all service cards for verified users
+    function enableAllServices() {
+      serviceCards.forEach(cardId => {
+        const card = document.getElementById(cardId);
+        if (card) {
+          card.classList.remove('service-disabled');
+          const verifyOverlay = card.querySelector('.verify-to-access');
+          if (verifyOverlay) {
+            verifyOverlay.style.display = 'none';
+          }
+        }
+      });
     }
 
     // Update UI when user is logged in
@@ -1323,23 +1733,96 @@
       logoutBtn.style.display = 'flex';
       authButton.textContent = 'Dashboard';
       heroAuthButton.textContent = 'Go to Dashboard';
+      
+      // Check verification status
+      if (user.emailVerified) {
+        updateVerificationUI(true);
+        verificationReminder.style.display = 'none';
+        hideVerificationModal();
+        enableAllServices();
+      } else {
+        updateVerificationUI(false);
+        verificationReminder.style.display = 'block';
+        showVerificationModal();
+        disableAllServices();
+      }
     }
 
     // Update UI when user is logged out
     function updateUIForLoggedOut() {
       userWelcome.textContent = '';
       userWelcome.style.display = 'none';
+      verificationStatus.style.display = 'none';
       logoutBtn.style.display = 'none';
+      verificationReminder.style.display = 'none';
+      verificationModal.classList.remove('active');
       authButton.textContent = 'Client Area';
       heroAuthButton.textContent = 'Get Started - Client Area';
+      enableAllServices(); // Enable services for logged out users (they can see but not access)
     }
+
+    // Send email verification
+    function sendEmailVerification() {
+      const user = auth.currentUser;
+      if (user) {
+        user.sendEmailVerification()
+          .then(() => {
+            verificationSent.style.display = 'block';
+            verificationModalSent.style.display = 'block';
+            showToast('Verification email sent! Please check your inbox.', 'success');
+            
+            // Hide success messages after 5 seconds
+            setTimeout(() => {
+              verificationSent.style.display = 'none';
+              verificationModalSent.style.display = 'none';
+            }, 5000);
+          })
+          .catch((error) => {
+            console.error('Error sending verification email:', error);
+            showToast('Error sending verification email. Please try again.', 'error');
+          });
+      }
+    }
+
+    // Handle verification button clicks
+    sendVerificationBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendEmailVerification();
+    });
+
+    resendVerificationModal.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendEmailVerification();
+    });
+
+    // Handle check verification button
+    checkVerificationBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (user) {
+        user.reload().then(() => {
+          checkEmailVerification(user);
+          if (user.emailVerified) {
+            showToast('Email verified successfully! You can now access all services.', 'success');
+          } else {
+            showToast('Email not verified yet. Please check your inbox.', 'warning');
+          }
+        });
+      }
+    });
 
     // Show auth modal
     authButton.addEventListener('click', () => {
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       if (currentUser) {
-        // User is logged in, redirect to dashboard
-        window.location.href = 'bots.html';
+        if (currentUser.emailVerified) {
+          // User is logged in and verified, redirect to dashboard
+          window.location.href = 'bots.html';
+        } else {
+          // User is logged in but not verified, show verification modal
+          showVerificationModal();
+          showToast('Please verify your email to access the dashboard', 'warning');
+        }
       } else {
         // User is not logged in, show auth modal
         authModal.classList.add('active');
@@ -1350,10 +1833,13 @@
       e.preventDefault();
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       if (currentUser) {
-        // User is logged in, redirect to dashboard
-        window.location.href = 'bots.html';
+        if (currentUser.emailVerified) {
+          window.location.href = 'bots.html';
+        } else {
+          showVerificationModal();
+          showToast('Please verify your email to access the dashboard', 'warning');
+        }
       } else {
-        // User is not logged in, show auth modal
         authModal.classList.add('active');
       }
     });
@@ -1369,11 +1855,9 @@
       tab.addEventListener('click', () => {
         const tabName = tab.getAttribute('data-tab');
         
-        // Update active tab
         authTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         
-        // Show corresponding form
         authForms.forEach(form => {
           form.classList.remove('active');
           if (form.id === `${tabName}Form`) {
@@ -1415,8 +1899,16 @@
       
       auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          // Signed in
           const user = userCredential.user;
+          
+          // STRICT: Check if email is verified
+          if (!user.emailVerified) {
+            showError(loginError, 'Email not verified. Please verify your email first.');
+            showVerificationModal();
+            sendEmailVerification(); // Auto-send verification on login attempt
+            return;
+          }
+          
           showSuccess(loginSuccess, 'Successfully signed in!');
           
           // Update last login timestamp in Firestore
@@ -1424,14 +1916,14 @@
             lastLogin: firebase.firestore.FieldValue.serverTimestamp()
           }).catch(error => {
             console.log("Error updating last login:", error);
-            // Continue even if this fails
           });
           
           // Get user data
           const userData = {
             id: user.uid,
             email: user.email,
-            username: user.displayName || user.email.split('@')[0]
+            username: user.displayName || user.email.split('@')[0],
+            emailVerified: user.emailVerified
           };
           
           // Store user data and auth token
@@ -1465,31 +1957,35 @@
       
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          // Signed up
           const user = userCredential.user;
           
-          // Update user profile with username
-          return user.updateProfile({
-            displayName: username
+          // Send verification email
+          return user.sendEmailVerification().then(() => {
+            // Update user profile with username
+            return user.updateProfile({
+              displayName: username
+            });
           }).then(() => {
             // Create user document in Firestore
             return db.collection('users').doc(user.uid).set({
               uid: user.uid,
               username: username,
               email: email,
+              emailVerified: false,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              plan: 'free', // Default plan
-              services: [], // Empty array for services
+              plan: 'free',
+              services: [],
               lastLogin: firebase.firestore.FieldValue.serverTimestamp()
             });
           }).then(() => {
-            showSuccess(registerSuccess, 'Account created successfully!');
+            showSuccess(registerSuccess, 'Account created! Check your email for verification link.');
             
             // Get user data
             const userData = {
               id: user.uid,
               email: user.email,
-              username: username
+              username: username,
+              emailVerified: false
             };
             
             // Store user data and auth token
@@ -1500,11 +1996,12 @@
             // Update UI
             updateUIForLoggedIn(userData);
             
-            // Close modal after delay
+            // Close modal and show verification modal
             setTimeout(() => {
               authModal.classList.remove('active');
-              showToast('Account created successfully!', 'success');
-            }, 1500);
+              showVerificationModal();
+              showToast('Account created! Please verify your email to continue.', 'success');
+            }, 2000);
           });
         })
         .catch((error) => {
@@ -1514,30 +2011,32 @@
     });
 
     // Handle logout
-    logoutBtn.addEventListener('click', function() {
-      // Sign out from Firebase
+    function handleLogout() {
       auth.signOut().then(() => {
-        // Clear all auth data
         localStorage.removeItem('ruinHostingCurrentUser');
         localStorage.removeItem('ruinHostingAuthToken');
         localStorage.removeItem('ruinHostingTokenExpiry');
-        
-        // Update UI
         updateUIForLoggedOut();
-        
-        // Show success message
         showToast('Successfully signed out!', 'info');
       }).catch((error) => {
         console.error('Error signing out:', error);
         showToast('Error signing out', 'error');
       });
-    });
+    }
+
+    logoutBtn.addEventListener('click', handleLogout);
 
     // Handle service clicks
     function handleServiceClick(serviceName) {
       const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
       if (currentUser) {
-        // User is logged in, redirect to dashboard
+        // STRICT: Check if email is verified
+        if (!currentUser.emailVerified) {
+          showVerificationModal();
+          showToast('Please verify your email to access ' + serviceName, 'warning');
+          return;
+        }
+        // User is logged in and verified, redirect to dashboard
         window.location.href = 'bots.html';
       } else {
         // User is not logged in, show auth modal
@@ -1586,10 +2085,48 @@
         authModal.classList.remove('active');
         clearErrors();
       }
+      if (e.target === verificationModal) {
+        // Don't allow closing verification modal by clicking outside
+        showToast('You must verify your email to continue', 'warning');
+      }
+    });
+
+    // Listen for auth state changes (for email verification)
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        checkEmailVerification(user);
+        
+        // Listen for email verification
+        user.reload().then(() => {
+          if (user.emailVerified) {
+            const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+            if (currentUser && !currentUser.emailVerified) {
+              currentUser.emailVerified = true;
+              localStorage.setItem('ruinHostingCurrentUser', JSON.stringify(currentUser));
+              updateVerificationUI(true);
+              verificationReminder.style.display = 'none';
+              hideVerificationModal();
+              enableAllServices();
+              showToast('Email verified successfully! You can now access all services.', 'success');
+            }
+          }
+        });
+      }
     });
 
     // Check auth state on page load
     document.addEventListener('DOMContentLoaded', checkAuthState);
+
+    // Add periodic check for email verification (every 10 seconds for unverified users)
+    setInterval(() => {
+      const user = auth.currentUser;
+      const currentUser = JSON.parse(localStorage.getItem('ruinHostingCurrentUser'));
+      if (user && currentUser && !currentUser.emailVerified) {
+        user.reload().then(() => {
+          checkEmailVerification(user);
+        });
+      }
+    }, 10000);
   </script>
 </body>
 </html>
